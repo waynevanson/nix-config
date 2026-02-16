@@ -34,8 +34,9 @@
       ...
     }: {
       imports = [
-        (modulesPath + "/installer/scan/not-detected.nix")
-        (modulesPath + "/profiles/qemu-guest.nix")
+        "${modulesPath}/installer/scan/not-detected.nix"
+        "${modulesPath}/profiles/qemu-guest.nix"
+        "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
       ];
 
       nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -53,6 +54,12 @@
         isNormalUser = true;
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
+        ];
+        extraGroups = [
+          "wheel"
+          "networkmanager"
+          "video"
+          "render"
         ];
       };
 
@@ -89,7 +96,7 @@
 
       networking.firewall = {
         enable = true;
-        allowedTCPPorts = [sshPort 8080 8443];
+        allowedTCPPorts = [22 80 433];
       };
 
       services.openssh = {
@@ -102,12 +109,12 @@
         };
       };
 
-      services.fail2ban.enable = true;
-
-      services.endlessh = {
+      services.fail2ban = {
         enable = true;
-        port = 22;
-        openFirewall = true;
+        maxretry = 5;
+        ignoreIP = [
+          "192.168.0.0/16"
+        ];
       };
     };
   in {
