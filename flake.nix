@@ -21,6 +21,7 @@
     disko,
     flake-utils,
     nixpkgs,
+    self,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -118,10 +119,18 @@
       };
     };
   in {
-    nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
-      inherit system pkgs;
-      specialArgs = {inherit inputs;};
-      modules = [homelab'];
+    packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
+    nixosConfigurations = {
+      ${hostname} = nixpkgs.lib.nixosSystem {
+        inherit system pkgs;
+        specialArgs = {inherit inputs;};
+        modules = [homelab'];
+      };
+      bootable = nixpkgs.lib.nixosSystem {
+        inherit system pkgs;
+        specialArgs = {inherit inputs;};
+        modules = [./machine/bootable.nix];
+      };
     };
   };
 }
