@@ -13,6 +13,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -26,17 +27,17 @@
     pkgs = import nixpkgs {inherit system;};
     hostname = "homelab";
     username = "waynevanson";
-    sshPort = 8022;
 
     system' = {
       modulesPath,
       pkgs,
+      # --arg bootable true
+      bootable ? false,
       ...
     }: {
       imports = [
         "${modulesPath}/installer/scan/not-detected.nix"
         "${modulesPath}/profiles/qemu-guest.nix"
-        "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
       ];
 
       nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -67,7 +68,7 @@
       environment.systemPackages = with pkgs; [
         curl
         git
-        tar
+        gnutar
         zip
         unzip
       ];
@@ -94,37 +95,33 @@
         enableIPv6 = true;
       };
 
-      networking.firewall = {
-        enable = true;
-        allowedTCPPorts = [22 80 433];
-      };
+      # other modules will do their thing
+      networking.firewall.enable = true;
+    };
 
-      services.openssh = {
-        ports = [sshPort];
-        settings = {
-          PasswordAuthentication = false;
-          KbdInteractiveAuthentication = false;
-          PermitRootLogin = "no";
-          AllowUsers = [username];
+    homelab' = {
+      imports = [
+        ./disk-configuration.nix
+        ./ssh.nix
+        {
+          hardware.facter.reportPath = ./facter.json;
+        }
+        system'
+      ];
+
+      homelab = {
+        ssh = {
+          enable = true;
+          port = 8022;
+          username = "waynevanson";
         };
-      };
-
-      services.fail2ban = {
-        enable = true;
-        maxretry = 5;
-        ignoreIP = [
-          "192.168.0.0/16"
-        ];
       };
     };
   in {
     nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
       inherit system pkgs;
       specialArgs = {inherit inputs;};
-      modules = [
-        ./disk-configuration.nix
-        system'
-      ];
+      modules = [homelab'];
     };
   };
 }

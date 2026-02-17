@@ -35,10 +35,15 @@ in {
       {
         ssd-a = {
           type = "disk";
-          device = "/dev/disk/by-uuid/?";
+          device = "/dev/disk/by-id/ata-CT240BX500SSD1_1906E1720EA1";
           content = {
             type = "gpt";
             partitions = {
+              boot = {
+                name = "boot";
+                size = "1M";
+                type = "EF02";
+              };
               ESP = {
                 size = "64M";
                 type = "EF00";
@@ -62,9 +67,9 @@ in {
         };
       }
       // createDisksZfs {
-        hdd-a = "/dev/disk/by-uuid/?";
-        hdd-b = "/dev/disk/by-uuid/?";
-        hdd-c = "/dev/disk/by-uuid/?";
+        hdd-a = "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M2KFNKPE";
+        hdd-b = "/dev/disk/by-id/ata-WDC_WD20EZRZ-00Z5HB0_WD-WCC4M6AT08AF";
+        hdd-c = "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ";
       };
 
     zpool = {
