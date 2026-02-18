@@ -46,20 +46,7 @@ let
     networking.firewall.enable = true;
   };
 
-  user' = {
-    users.users.${username} = {
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
-      ];
-      extraGroups = [
-        "wheel"
-        "networkmanager"
-        "video"
-        "render"
-      ];
-    };
-
+  packages' = {pkgs, ...}: {
     # todo: modules from tmux, zsh
     environment.systemPackages = with pkgs; [
       curl
@@ -88,21 +75,25 @@ let
   facter' = {
     hardware.facter.reportPath = ./facter.json;
   };
+
+  homelab' = {
+    homelab = {
+      user = "waynevanson";
+      ssh = {
+        enable = true;
+        username = "waynevanson";
+      };
+    };
+  };
 in {
   imports = [
     ./disk-configuration.nix
-    ./ssh.nix
+    ../../services/ssh.nix
+    ../../users
     facter'
+    homelab'
     network'
+    packages'
     system'
-    user'
   ];
-
-  homelab = {
-    ssh = {
-      enable = true;
-      port = 8022;
-      username = "waynevanson";
-    };
-  };
 }
