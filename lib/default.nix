@@ -1,9 +1,12 @@
 {
-  modularise = args: path: options: createConfig: let
-    config' = args.lib.getAttrByPath path args.config;
-    configured = createConfig config';
+  # functional lense for creating modules
+  modularise = args: path: {
+    options,
+    config,
+  }: let
+    config' = config (args.lib.getAttrByPath args.config);
   in {
     options = args.lib.setAttrByPath path options;
-    config = args.lib.setAttrByPath path configured;
+    config = args.lib.setAttrByPath path config';
   };
 }
