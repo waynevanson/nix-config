@@ -16,7 +16,7 @@
     '';
   };
 in {
-  options.waynevanson.programs.alacritty.enable = lib.mkEnable {};
+  options.waynevanson.programs.alacritty.enable = lib.mkEnableOption {};
 
   config = lib.mkIf config.waynevanson.programs.alacritty.enable {
     environment.systemPackages = [

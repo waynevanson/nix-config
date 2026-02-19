@@ -38,6 +38,8 @@
     programs.zsh.enable = true;
     programs.bitwig.enable = true;
 
+    services.cosmic.enable = true;
+
     nix.enable = true;
   };
 
@@ -52,18 +54,20 @@
 
   host' = {
     system.stateVersion = "25.05";
+
+    networking.hostName = "nixos"; # Define your hostname.
+
+    boot.loader.efi.canTouchEfiVariables = true;
   };
 in {
-  flake.nixosConfigurations.desktop = lib.nixosSystem {
-    modules = [
-      ./disk-configuration.nix
-      hardware'
-      host'
-      user'
-    ];
+  imports = [
+    ./disk-configuration.nix
+    ../../modules
+    hardware'
+    host'
+    user'
+  ];
 
-    inherit waynevanson;
-    system = "x86_64-linux";
-    environment.systemPackages = packages;
-  };
+  inherit waynevanson;
+  environment.systemPackages = packages;
 }

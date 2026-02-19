@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  options.waynevanson.programs.nixvim.enable = lib.mkEnable {};
+  options.waynevanson.programs.nixvim.enable = lib.mkEnableOption {};
 
   config = lib.mkIf config.waynevanson.programs.nixvim.enable {
     programs.nixvim = {

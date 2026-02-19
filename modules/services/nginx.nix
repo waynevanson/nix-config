@@ -2,14 +2,15 @@
   config,
   lib,
   ...
-}: let
-  cfg = config.homelab.nginx;
-in {
+}
+: {
   options.homelab.nginx = {
-    enable = true;
+    enable = lib.mkEnableOption {
+      default = false;
+    };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf config.homelab.nginx.enable {
     services.nginx = {
       enable = true;
 
@@ -69,6 +70,6 @@ in {
       defaults.email = "waynevanson@gmail.com";
     };
 
-    firewall.allowedTCPPorts = [80 443];
+    networking.firewall.allowedTCPPorts = [80 443];
   };
 }

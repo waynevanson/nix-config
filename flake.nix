@@ -16,8 +16,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,25 +24,34 @@
 
   outputs = {
     disko,
-    flake-parts,
     nixpkgs,
-    self,
+    nixvim,
     ...
-  } @ inputs:
-    flake-parts.lib.mkFlake {
-      inherit inputs;
-    }
-    {
-      imports = [
-        disko.nixosModules.default
-        ./modules
-      ];
-
-      flake = {
-        specialArgs = {
-          inherit inputs;
-          lib' = import ./lib;
-        };
-      };
+  } @ inputs: let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
     };
+    specialArgs = {inherit inputs;};
+  in {
+    nixosModules = {};
+    nixosConfigurations = {
+      nixos = nixpkgs.lib.nixosSystem {
+        inherit system pkgs specialArgs;
+        modules = [
+          disko.nixosModules.default
+          nixvim.nixosModules.nixvim
+          ./hosts/desktop
+        ];
+      };
+      # homelab = nixpkgs.lib.nixosSystem {
+      #   inherit system pkgs specialArgs;
+      #   modules = [
+      #     disko.nixosModules.default
+      #     # ./hosts/homelab
+      #   ];
+      # };
+    };
+  };
 }

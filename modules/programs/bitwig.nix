@@ -16,7 +16,7 @@
     };
   };
 in {
-  options.waynevanson.programs.bitwig.enable = lib.mkEnable {};
+  options.waynevanson.programs.bitwig.enable = lib.mkEnableOption {};
 
   config = lib.mkIf config.waynevanson.programs.bitwig.enable {
     environment.systemPackages = [bitwig'];

@@ -4,5 +4,6 @@
     ./alacritty
     ./nixvim
     ./bitwig.nix
+    ./zsh.nix
   ];
 }
