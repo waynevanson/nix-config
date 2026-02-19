@@ -33,15 +33,18 @@
   } @ inputs:
     flake-parts.lib.mkFlake {
       inherit inputs;
-      lib' = import ./lib;
     }
     {
-      modules = [
+      imports = [
         disko.nixosModules.default
-        ./nixosModules
+        ./modules
       ];
 
       flake = {
+        specialArgs = {
+          inherit inputs;
+          lib' = import ./lib;
+        };
       };
     };
 }
