@@ -1,8 +1,4 @@
-{
-  lib,
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   hardware' = {
     hardware.facter.reportPath = ./facter.json;
   };
