@@ -89,7 +89,6 @@ in {
   imports = [
     ./disk-configuration.nix
     ../../services/ssh.nix
-    ../../users
     facter'
     homelab'
     network'

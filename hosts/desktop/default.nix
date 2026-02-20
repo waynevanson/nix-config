@@ -46,6 +46,18 @@
       extraGroups = ["audio" "video" "networkmanager" "wheel"];
       inherit packages;
     };
+
+    # mount /mnt/secondary to /home/waynevanson/code
+    systemd.tmpfiles.settings = {
+      "waynevanson-code" = {
+        "/home/waynevanson/code".d = {
+          type = "L";
+          user = "waynevanson";
+          group = "users";
+          argument = "/mnt/secondary";
+        };
+      };
+    };
   };
 
   host' = {

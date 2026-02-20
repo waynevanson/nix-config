@@ -1,4 +1,4 @@
-{
+{self, ...}: {
   disko.devices = {
     disk = {
       sdd-a = {
@@ -45,9 +45,11 @@
               content = {
                 type = "filesystem";
                 format = "ext4";
-                mountpoint = "/home/waynevanson/code";
-                # todo: how to ensure this has correct ownership?
-                mountOptions = [];
+                mountpoint = "/mnt/secondary";
+                mountOptions = [
+                  "uid=${self.users.users.waynevanson.uid}"
+                  "gid=${self.users.users.waynevanson.gid}"
+                ];
               };
             };
           };
