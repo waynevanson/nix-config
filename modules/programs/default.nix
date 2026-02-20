@@ -1,9 +1,9 @@
 {
   imports = [
-    ./tmux.nix
     ./alacritty
-    ./nixvim
     ./bitwig.nix
+    ./nixvim
+    ./tmux.nix
     ./zsh.nix
   ];
 }

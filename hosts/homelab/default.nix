@@ -54,19 +54,13 @@ let
       unzip
     ];
 
-    programs.tmux = {
-      enable = true;
-      newSession = true;
-      keyMode = "vi";
-      baseIndex = 1;
-      historyLimit = 99999;
-      customPaneNavigationAndResize = true;
-      clock24 = true;
-      escapeTime = 0;
-    };
-
     programs.zsh = {
       enable = true;
+    };
+
+    programs.direnv = {
+      enable = true;
+      silent = true;
     };
   };
 
@@ -76,6 +70,8 @@ let
 
   waynevanson = {
     programs.zsh.enable = true;
+    programs.tmux.enable = true;
+    programs.nixvim.enable = true;
   };
 
   homelab = {

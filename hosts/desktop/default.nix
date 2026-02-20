@@ -39,6 +39,12 @@
     services.cosmic.enable = true;
 
     nix.enable = true;
+
+    programs.firefox.enable = true;
+    programs.direnv = {
+      enable = true;
+      silent = true;
+    };
   };
 
   user' = {

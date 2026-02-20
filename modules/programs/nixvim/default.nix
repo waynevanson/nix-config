@@ -38,9 +38,7 @@
 
       plugins = {
         lspconfig.enable = true;
-        cmp = {
-          enable = true;
-        };
+        cmp.enable = true;
         cmp-nvim-lsp.enable = true;
       };
 
