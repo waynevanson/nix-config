@@ -1,4 +1,4 @@
-{self, ...}: {
+{
   disko.devices = {
     disk = {
       sdd-a = {
@@ -46,10 +46,6 @@
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/mnt/secondary";
-                mountOptions = [
-                  "uid=${self.users.users.waynevanson.uid}"
-                  "gid=${self.users.users.waynevanson.gid}"
-                ];
               };
             };
           };

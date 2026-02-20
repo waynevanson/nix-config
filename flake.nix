@@ -35,7 +35,6 @@
     };
     specialArgs = {inherit inputs;};
   in {
-    nixosModules = {};
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         inherit system pkgs specialArgs;
