@@ -10,8 +10,6 @@
 #
 # Maybe I should set up all services to run inside of the containers
 let
-  username = "waynevanson";
-
   system' = {
     modulesPath,
     pkgs,
@@ -76,23 +74,22 @@ let
     hardware.facter.reportPath = ./facter.json;
   };
 
-  homelab' = {
-    homelab = {
-      user = "waynevanson";
-      ssh = {
-        enable = true;
-        username = "waynevanson";
-      };
-    };
+  waynevanson = {
+    programs.zsh.enable = true;
+  };
+
+  homelab = {
+    ssh.enable = true;
   };
 in {
   imports = [
     ./disk-configuration.nix
-    ../../services/ssh.nix
+    ../../modules
     facter'
-    homelab'
     network'
     packages'
     system'
   ];
+
+  inherit homelab waynevanson;
 }

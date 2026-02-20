@@ -33,6 +33,8 @@
     programs.alacritty.enable = true;
     programs.zsh.enable = true;
     programs.bitwig.enable = true;
+    programs.nixvim.enable = true;
+    programs.tmux.enable = true;
 
     services.cosmic.enable = true;
 

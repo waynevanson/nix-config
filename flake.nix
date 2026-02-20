@@ -45,13 +45,15 @@
           ./hosts/desktop
         ];
       };
-      # homelab = nixpkgs.lib.nixosSystem {
-      #   inherit system pkgs specialArgs;
-      #   modules = [
-      #     disko.nixosModules.default
-      #     # ./hosts/homelab
-      #   ];
-      # };
+      homelab = nixpkgs.lib.nixosSystem {
+        inherit system pkgs specialArgs;
+        modules = [
+          disko.nixosModules.default
+          # this doesn't use nixvim but still needs acces to the module to consider it's options.
+          nixvim.nixosModules.nixvim
+          ./hosts/homelab
+        ];
+      };
     };
   };
 }

@@ -1,17 +1,11 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: {
   options.homelab.ssh = {
     enable = lib.mkEnableOption {
       description = "Enable SSH for HomeLab";
-    };
-
-    username = lib.mkOption {
-      type = lib.types.str;
-      description = "User allowed to login via ssh";
     };
   };
 
@@ -23,7 +17,7 @@
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
-        AllowUsers = [config.homelab.ssh.username];
+        AllowUsers = ["waynevanson"];
       };
     };
 
