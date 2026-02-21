@@ -39,7 +39,9 @@
     services.cosmic.enable = true;
 
     nix.enable = true;
+  };
 
+  system' = {
     programs.firefox.enable = true;
     programs.direnv = {
       enable = true;
@@ -81,6 +83,7 @@ in {
     ../../modules
     hardware'
     host'
+    system'
     user'
   ];
 

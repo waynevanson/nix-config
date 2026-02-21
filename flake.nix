@@ -53,6 +53,17 @@
           ./hosts/homelab
         ];
       };
+      bootable = nixpkgs.lib.nixosSystem {
+        inherit system pkgs specialArgs;
+
+        modules = [
+          # this doesn't use nixvim but still needs acces to the module to consider it's options.
+          disko.nixosModules.default
+          # this doesn't use nixvim but still needs acces to the module to consider it's options.
+          nixvim.nixosModules.nixvim
+          ./hosts/bootable
+        ];
+      };
     };
   };
 }

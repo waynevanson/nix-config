@@ -1,6 +1,9 @@
 # We kind of want a similar setup to truenas.
 # 1 drive for OS and other stuff defined in the system
 # then the rest in ZFS RAIDZ for data and applications
+#
+# how to get this on the machine.
+# boot i
 {
   inputs,
   lib,
