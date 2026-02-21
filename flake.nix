@@ -26,6 +26,7 @@
     disko,
     nixpkgs,
     nixvim,
+    self,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -35,6 +36,8 @@
     };
     specialArgs = {inherit inputs;};
   in {
+    packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
+
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         inherit system pkgs specialArgs;
@@ -44,6 +47,7 @@
           ./hosts/desktop
         ];
       };
+
       homelab = nixpkgs.lib.nixosSystem {
         inherit system pkgs specialArgs;
         modules = [
@@ -53,6 +57,7 @@
           ./hosts/homelab
         ];
       };
+
       bootable = nixpkgs.lib.nixosSystem {
         inherit system pkgs specialArgs;
 
