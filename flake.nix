@@ -27,22 +27,12 @@
       config.allowUnfree = true;
     };
 
-    apps = {
-      install = pkgs.writeShellScriptBin "run" ''
-        nix run github:nix-community/nixos-anywhere -- \
-        --flake .#homelab \
-        --target-host root@192.168.1.103 \
-        -i $1 \
-        --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
-      '';
-      update = pkgs.writeShellScriptBin "run" ''
-        NIX_SSHOPTS="-p 8022" \
-        nixos-rebuild switch \
-        --flake .#homelab \
-        --target-host waynevanson@192.168.1.103 \
-        --sudo
-      '';
-    };
+    createScriptApps = pkgs.lib.mapAttrs (_appName: appScript: let
+      package = pkgs.writeShellScriptBin "run" appScript;
+    in {
+      type = "app";
+      program = "${package}/bin/run";
+    });
 
     createNixosConfigurations = pkgs.lib.mapAttrs (_hostname: hostModule:
       nixpkgs.lib.nixosSystem {
@@ -55,24 +45,30 @@
         specialArgs = {inherit inputs;};
       });
   in {
-    apps.${system} = {
-      install = {
-        type = "app";
-        program = "${apps.install}/bin/run";
-      };
+    apps.${system} = createScriptApps {
+      install = ''
+        nix run github:nix-community/nixos-anywhere -- \
+        --flake .#homelab \
+        --target-host root@192.168.1.103 \
+        -i $1 \
+        --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
+      '';
 
-      update = {
-        type = "app";
-        program = "${apps.update}/bin/run";
-      };
+      update = ''
+        NIX_SSHOPTS="-p 8022" \
+        nixos-rebuild switch \
+        --flake .#homelab \
+        --target-host waynevanson@192.168.1.103 \
+        --sudo
+      '';
     };
-
-    packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
 
     nixosConfigurations = createNixosConfigurations {
       bootable = ./hosts/bootable;
       homelab = ./hosts/homelab;
       nixos = ./hosts/desktop;
     };
+
+    packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
   };
 }
