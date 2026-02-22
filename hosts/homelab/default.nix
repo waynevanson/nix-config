@@ -72,6 +72,7 @@ let
     programs.zsh.enable = true;
     programs.tmux.enable = true;
     programs.nixvim.enable = true;
+    nix.enable = true;
   };
 
   homelab = {

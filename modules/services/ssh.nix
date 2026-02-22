@@ -37,6 +37,13 @@
 
     security.sudo.wheelNeedsPassword = false;
 
+    # users.users.audience = {
+    #   hashedPassword = "$6$q/jbmzAMGAbH0yro$Htz8D5erZg45CQ1VlJ3SweKNxNYVcjSg/bseMhKcnnJgqziyTtScaVLhaRMl/lmFFbeg/QQeyx8wVxrDcnX.o/";
+    #   isNormalUser = true;
+    # };
+
+    # services.getty.autologinUser = "audience";
+
     users.users.waynevanson = {
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
