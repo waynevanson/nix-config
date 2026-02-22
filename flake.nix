@@ -1,12 +1,3 @@
-# NixOS Homelab setup
-#
-# Setup with `nixos-anywhere`
-# `disko` for disk configuration via ZFS
-# `agenix` for security/keys
-#
-# NixOS Modules where available
-# Nix containers where applicable
-# docker-compose file into nix containers when required
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -30,11 +21,11 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
+
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
     };
-    specialArgs = {inherit inputs;};
 
     apps = {
       install = pkgs.writeShellScriptBin "run" ''
@@ -52,6 +43,17 @@
         --sudo
       '';
     };
+
+    createNixosConfigurations = pkgs.lib.mapAttrs (_hostname: hostModule:
+      nixpkgs.lib.nixosSystem {
+        inherit system pkgs;
+        modules = [
+          disko.nixosModules.default
+          nixvim.nixosModules.nixvim
+          hostModule
+        ];
+        specialArgs = {inherit inputs;};
+      });
   in {
     apps.${system} = {
       install = {
@@ -67,37 +69,10 @@
 
     packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
 
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        inherit system pkgs specialArgs;
-        modules = [
-          disko.nixosModules.default
-          nixvim.nixosModules.nixvim
-          ./hosts/desktop
-        ];
-      };
-
-      homelab = nixpkgs.lib.nixosSystem {
-        inherit system pkgs specialArgs;
-        modules = [
-          disko.nixosModules.default
-          # this doesn't use nixvim but still needs acces to the module to consider it's options.
-          nixvim.nixosModules.nixvim
-          ./hosts/homelab
-        ];
-      };
-
-      bootable = nixpkgs.lib.nixosSystem {
-        inherit system pkgs specialArgs;
-
-        modules = [
-          # this doesn't use nixvim but still needs acces to the module to consider it's options.
-          disko.nixosModules.default
-          # this doesn't use nixvim but still needs acces to the module to consider it's options.
-          nixvim.nixosModules.nixvim
-          ./hosts/bootable
-        ];
-      };
+    nixosConfigurations = createNixosConfigurations {
+      bootable = ./hosts/bootable;
+      homelab = ./hosts/homelab;
+      nixos = ./hosts/desktop;
     };
   };
 }
