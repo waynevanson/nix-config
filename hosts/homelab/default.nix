@@ -57,11 +57,6 @@ let
     programs.zsh = {
       enable = true;
     };
-
-    programs.direnv = {
-      enable = true;
-      silent = true;
-    };
   };
 
   facter' = {
@@ -73,6 +68,7 @@ let
     programs.tmux.enable = true;
     programs.nixvim.enable = true;
     nix.enable = true;
+    programs.direnv.enable = true;
   };
 
   homelab = {

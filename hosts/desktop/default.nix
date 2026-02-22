@@ -35,6 +35,7 @@
     programs.bitwig.enable = true;
     programs.nixvim.enable = true;
     programs.tmux.enable = true;
+    programs.direnv.enable = true;
 
     services.cosmic.enable = true;
 
@@ -43,10 +44,6 @@
 
   system' = {
     programs.firefox.enable = true;
-    programs.direnv = {
-      enable = true;
-      silent = true;
-    };
   };
 
   user' = {
