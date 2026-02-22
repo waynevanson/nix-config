@@ -37,12 +37,12 @@
 
     security.sudo.wheelNeedsPassword = false;
 
-    # users.users.audience = {
-    #   hashedPassword = "$6$q/jbmzAMGAbH0yro$Htz8D5erZg45CQ1VlJ3SweKNxNYVcjSg/bseMhKcnnJgqziyTtScaVLhaRMl/lmFFbeg/QQeyx8wVxrDcnX.o/";
-    #   isNormalUser = true;
-    # };
+    users.users.audience = {
+      hashedPassword = "$6$q/jbmzAMGAbH0yro$Htz8D5erZg45CQ1VlJ3SweKNxNYVcjSg/bseMhKcnnJgqziyTtScaVLhaRMl/lmFFbeg/QQeyx8wVxrDcnX.o/";
+      isNormalUser = true;
+    };
 
-    # services.getty.autologinUser = "audience";
+    services.getty.autologinUser = "audience";
 
     users.users.waynevanson = {
       openssh.authorizedKeys.keys = [
