@@ -1,8 +1,7 @@
 {...}: {
   imports = [
-    ./services
-    ./programs
-    ./virtualisation
+    ./waynevanson
+    ./homelab
     ./nix.nix
   ];
 }
