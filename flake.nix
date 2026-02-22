@@ -35,7 +35,36 @@
       config.allowUnfree = true;
     };
     specialArgs = {inherit inputs;};
+
+    apps = {
+      install = pkgs.writeShellScriptBin "run" ''
+        nix run github:nix-community/nixos-anywhere -- \
+        --flake .#homelab \
+        --target-host waynevanson@192.168.1.103 \
+        -i "$1" \
+        --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
+      '';
+      update = pkgs.writeShellScriptBin "run" ''
+        NIX_SSHOPTS="-p 8022" \
+        nixos-rebuild switch \
+        --flake .#homelab \
+        --target-host waynevanson@192.168.1.103 \
+        --sudo
+      '';
+    };
   in {
+    apps.${system} = {
+      install = {
+        type = "app";
+        program = "${apps.install}/bin/run";
+      };
+
+      update = {
+        type = "app";
+        program = "${apps.update}/bin/run";
+      };
+    };
+
     packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
 
     nixosConfigurations = {

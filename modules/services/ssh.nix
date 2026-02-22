@@ -14,6 +14,9 @@
       enable = true;
       ports = [8022];
       settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+        PermitRootLogin = "no";
         AllowUsers = ["waynevanson"];
       };
     };
@@ -31,6 +34,8 @@
       port = 22;
       openFirewall = true;
     };
+
+    security.sudo.wheelNeedsPassword = false;
 
     users.users.waynevanson = {
       openssh.authorizedKeys.keys = [

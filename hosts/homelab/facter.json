@@ -1566,7 +1566,7 @@
           "[13]",
           "[14]"
         ],
-        "bogo": 7199,
+        "bogo": 7200,
         "cache": 512,
         "units": 8,
         "page_size": 4096,
@@ -1601,7 +1601,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 5,
+          "bus": 4,
           "number": 0
         },
         "base_class": {
@@ -1629,16 +1629,16 @@
           "name": "0A80",
           "value": 0
         },
-        "serial": "WD-WCC4M3XHJ9TJ",
+        "serial": "WD-WCC4M2KFNKPE",
         "model": "WDC WD20EZRZ-22Z",
         "sysfs_id": "/class/block/sdd",
-        "sysfs_bus_id": "5:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata6/host5/target5:0:0/5:0:0:0",
+        "sysfs_bus_id": "4:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata5/host4/target4:0:0/4:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ",
-          "/dev/disk/by-id/wwn-0x50014ee26629f0bd",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-6",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-6.0",
+          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M2KFNKPE",
+          "/dev/disk/by-id/wwn-0x50014ee2bb7fb686",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-5",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-5.0",
           "/dev/sdd"
         ],
         "resources": [
@@ -1682,7 +1682,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 1,
+          "bus": 5,
           "number": 0
         },
         "base_class": {
@@ -1702,7 +1702,7 @@
         },
         "device": {
           "hex": "0000",
-          "name": "WD20EZRZ-00Z",
+          "name": "WD20EZRZ-22Z",
           "value": 0
         },
         "revision": {
@@ -1710,16 +1710,16 @@
           "name": "0A80",
           "value": 0
         },
-        "serial": "WD-WCC4M6AT08AF",
-        "model": "WDC WD20EZRZ-00Z",
+        "serial": "WD-WCC4M3XHJ9TJ",
+        "model": "WDC WD20EZRZ-22Z",
         "sysfs_id": "/class/block/sdb",
-        "sysfs_bus_id": "1:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata2/host1/target1:0:0/1:0:0:0",
+        "sysfs_bus_id": "5:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata6/host5/target5:0:0/5:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-WDC_WD20EZRZ-00Z5HB0_WD-WCC4M6AT08AF",
-          "/dev/disk/by-id/wwn-0x50014ee2bb008eee",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-2",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-2.0",
+          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ",
+          "/dev/disk/by-id/wwn-0x50014ee26629f0bd",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-6",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-6.0",
           "/dev/sdb"
         ],
         "resources": [
@@ -1854,7 +1854,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 4,
+          "bus": 1,
           "number": 0
         },
         "base_class": {
@@ -1874,7 +1874,7 @@
         },
         "device": {
           "hex": "0000",
-          "name": "WD20EZRZ-22Z",
+          "name": "WD20EZRZ-00Z",
           "value": 0
         },
         "revision": {
@@ -1882,16 +1882,16 @@
           "name": "0A80",
           "value": 0
         },
-        "serial": "WD-WCC4M2KFNKPE",
-        "model": "WDC WD20EZRZ-22Z",
+        "serial": "WD-WCC4M6AT08AF",
+        "model": "WDC WD20EZRZ-00Z",
         "sysfs_id": "/class/block/sdc",
-        "sysfs_bus_id": "4:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata5/host4/target4:0:0/4:0:0:0",
+        "sysfs_bus_id": "1:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata2/host1/target1:0:0/1:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M2KFNKPE",
-          "/dev/disk/by-id/wwn-0x50014ee2bb7fb686",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-5",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-5.0",
+          "/dev/disk/by-id/ata-WDC_WD20EZRZ-00Z5HB0_WD-WCC4M6AT08AF",
+          "/dev/disk/by-id/wwn-0x50014ee2bb008eee",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-2",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-2.0",
           "/dev/sdc"
         ],
         "resources": [
