@@ -12,11 +12,8 @@
   config = lib.mkIf config.homelab.ssh.enable {
     services.openssh = {
       enable = true;
-      ports = [22];
+      ports = [8022];
       settings = {
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-        PermitRootLogin = "no";
         AllowUsers = ["waynevanson"];
       };
     };
@@ -33,6 +30,14 @@
       enable = true;
       port = 22;
       openFirewall = true;
+    };
+
+    users.users.waynevanson = {
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
+      ];
+      isNormalUser = true;
+      extraGroups = ["wheel" "networkmanager"];
     };
   };
 }

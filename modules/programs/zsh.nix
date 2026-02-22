@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   config' = config.waynevanson.programs.zsh;
@@ -15,5 +16,7 @@ in {
       enableBashCompletion = true;
       enableLsColors = true;
     };
+
+    users.defaultUserShell = pkgs.zsh;
   };
 }
