@@ -45,13 +45,13 @@ let
   };
 
   packages' = {pkgs, ...}: {
-    # todo: modules from tmux, zsh
     environment.systemPackages = with pkgs; [
       curl
       git
       gnutar
       zip
       unzip
+      neofetch
     ];
 
     programs.zsh = {

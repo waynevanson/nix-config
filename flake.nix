@@ -40,8 +40,8 @@
       install = pkgs.writeShellScriptBin "run" ''
         nix run github:nix-community/nixos-anywhere -- \
         --flake .#homelab \
-        --target-host waynevanson@192.168.1.103 \
-        -i "$1" \
+        --target-host root@192.168.1.103 \
+        -i $1 \
         --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
       '';
       update = pkgs.writeShellScriptBin "run" ''

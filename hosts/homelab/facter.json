@@ -1682,7 +1682,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 5,
+          "bus": 0,
           "number": 0
         },
         "base_class": {
@@ -1695,37 +1695,31 @@
           "name": "Disk",
           "value": 0
         },
-        "vendor": {
-          "hex": "0000",
-          "name": "WDC",
-          "value": 0
-        },
         "device": {
           "hex": "0000",
-          "name": "WD20EZRZ-22Z",
+          "name": "CT240BX500SSD1",
           "value": 0
         },
         "revision": {
           "hex": "0000",
-          "name": "0A80",
+          "name": "R013",
           "value": 0
         },
-        "serial": "WD-WCC4M3XHJ9TJ",
-        "model": "WDC WD20EZRZ-22Z",
+        "serial": "1906E1720EA1",
+        "model": "CT240BX500SSD1",
         "sysfs_id": "/class/block/sdb",
-        "sysfs_bus_id": "5:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata6/host5/target5:0:0/5:0:0:0",
+        "sysfs_bus_id": "0:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata1/host0/target0:0:0/0:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ",
-          "/dev/disk/by-id/wwn-0x50014ee26629f0bd",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-6",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-6.0",
+          "/dev/disk/by-id/ata-CT240BX500SSD1_1906E1720EA1",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-1",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-1.0",
           "/dev/sdb"
         ],
         "resources": [
           {
             "type": "disk_geo",
-            "cylinders": 243201,
+            "cylinders": 29185,
             "heads": 255,
             "sectors": 63,
             "size": "0x0",
@@ -1734,7 +1728,7 @@
           {
             "type": "size",
             "unit": "sectors",
-            "value_1": 3907029168,
+            "value_1": 468862128,
             "value_2": 512
           }
         ],
@@ -1854,7 +1848,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 1,
+          "bus": 5,
           "number": 0
         },
         "base_class": {
@@ -1874,7 +1868,7 @@
         },
         "device": {
           "hex": "0000",
-          "name": "WD20EZRZ-00Z",
+          "name": "WD20EZRZ-22Z",
           "value": 0
         },
         "revision": {
@@ -1882,16 +1876,16 @@
           "name": "0A80",
           "value": 0
         },
-        "serial": "WD-WCC4M6AT08AF",
-        "model": "WDC WD20EZRZ-00Z",
+        "serial": "WD-WCC4M3XHJ9TJ",
+        "model": "WDC WD20EZRZ-22Z",
         "sysfs_id": "/class/block/sdc",
-        "sysfs_bus_id": "1:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata2/host1/target1:0:0/1:0:0:0",
+        "sysfs_bus_id": "5:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata6/host5/target5:0:0/5:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-WDC_WD20EZRZ-00Z5HB0_WD-WCC4M6AT08AF",
-          "/dev/disk/by-id/wwn-0x50014ee2bb008eee",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-2",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-2.0",
+          "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ",
+          "/dev/disk/by-id/wwn-0x50014ee26629f0bd",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-6",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-6.0",
           "/dev/sdc"
         ],
         "resources": [
@@ -1935,7 +1929,7 @@
           "value": 133
         },
         "slot": {
-          "bus": 0,
+          "bus": 1,
           "number": 0
         },
         "base_class": {
@@ -1948,31 +1942,37 @@
           "name": "Disk",
           "value": 0
         },
+        "vendor": {
+          "hex": "0000",
+          "name": "WDC",
+          "value": 0
+        },
         "device": {
           "hex": "0000",
-          "name": "CT240BX500SSD1",
+          "name": "WD20EZRZ-00Z",
           "value": 0
         },
         "revision": {
           "hex": "0000",
-          "name": "R013",
+          "name": "0A80",
           "value": 0
         },
-        "serial": "1906E1720EA1",
-        "model": "CT240BX500SSD1",
+        "serial": "WD-WCC4M6AT08AF",
+        "model": "WDC WD20EZRZ-00Z",
         "sysfs_id": "/class/block/sda",
-        "sysfs_bus_id": "0:0:0:0",
-        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata1/host0/target0:0:0/0:0:0:0",
+        "sysfs_bus_id": "1:0:0:0",
+        "sysfs_device_link": "/devices/pci0000:00/0000:00:01.2/0000:15:00.1/ata2/host1/target1:0:0/1:0:0:0",
         "unix_device_names": [
-          "/dev/disk/by-id/ata-CT240BX500SSD1_1906E1720EA1",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-1",
-          "/dev/disk/by-path/pci-0000:15:00.1-ata-1.0",
+          "/dev/disk/by-id/ata-WDC_WD20EZRZ-00Z5HB0_WD-WCC4M6AT08AF",
+          "/dev/disk/by-id/wwn-0x50014ee2bb008eee",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-2",
+          "/dev/disk/by-path/pci-0000:15:00.1-ata-2.0",
           "/dev/sda"
         ],
         "resources": [
           {
             "type": "disk_geo",
-            "cylinders": 29185,
+            "cylinders": 243201,
             "heads": 255,
             "sectors": 63,
             "size": "0x0",
@@ -1981,7 +1981,7 @@
           {
             "type": "size",
             "unit": "sectors",
-            "value_1": 468862128,
+            "value_1": 3907029168,
             "value_2": 512
           }
         ],
@@ -3218,6 +3218,28 @@
     "network_interface": [
       {
         "index": 68,
+        "attached_to": 0,
+        "class_list": [
+          "network_interface"
+        ],
+        "base_class": {
+          "hex": "0107",
+          "name": "Network Interface",
+          "value": 263
+        },
+        "sub_class": {
+          "hex": "0000",
+          "name": "Loopback",
+          "value": 0
+        },
+        "model": "Loopback network interface",
+        "sysfs_id": "/class/net/lo",
+        "unix_device_names": [
+          "lo"
+        ]
+      },
+      {
+        "index": 69,
         "attached_to": 26,
         "class_list": [
           "network_interface"
@@ -3255,28 +3277,6 @@
         ],
         "driver_modules": [
           "r8169"
-        ]
-      },
-      {
-        "index": 69,
-        "attached_to": 0,
-        "class_list": [
-          "network_interface"
-        ],
-        "base_class": {
-          "hex": "0107",
-          "name": "Network Interface",
-          "value": 263
-        },
-        "sub_class": {
-          "hex": "0000",
-          "name": "Loopback",
-          "value": 0
-        },
-        "model": "Loopback network interface",
-        "sysfs_id": "/class/net/lo",
-        "unix_device_names": [
-          "lo"
         ]
       }
     ],
