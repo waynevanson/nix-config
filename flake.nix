@@ -58,7 +58,7 @@
         NIX_SSHOPTS="-p 8022" \
         nixos-rebuild switch \
         --flake .#homelab \
-        --target-host waynevanson@192.168.1.103 \
+        --target-host waynevanson@waynevanson.com \
         --sudo
       '';
     };

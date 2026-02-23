@@ -28,12 +28,6 @@ in {
           # "/".return = "301 https://$host$request_uri";
         };
       };
-
-      "192.168.1.103" = {
-        locations = {
-          "/.well-known/health-check".return = "204";
-        };
-      };
     };
 
     security.acme = {
