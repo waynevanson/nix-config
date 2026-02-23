@@ -1,9 +1,14 @@
+# todo: the outcome, probably a module called reverse proxy
+# Reverse proxy
+# Open ports 80 and 443, enable acme for certs, https and hsts by default, and then route traffic to
+# nixos containers powered by systemd.
+#
+# One challenge will be networking bridge. Privatise the network
 {
   config,
   lib,
   ...
-}
-: {
+}: {
   options.homelab.nginx = {
     enable = lib.mkEnableOption {
       default = false;
@@ -11,6 +16,8 @@
   };
 
   config = lib.mkIf config.homelab.nginx.enable {
+    homelab.services.acme.enable = true;
+
     services.nginx = {
       enable = true;
 
@@ -20,6 +27,7 @@
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
 
+      # HSTS hardening settings
       appendHttpConfig = ''
         # Add HSTS header with preloading to HTTPS requests.
         # Adding this header to HTTP requests is discouraged
@@ -43,31 +51,6 @@
         # This might create errors
         proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
       '';
-
-      virtualHosts = {
-        # I want all these paths for certs,
-        # then configure each app/service separately.
-        "*.waynevanson.com" = {
-          enableACME = true;
-          forceSSL = true;
-
-          locations."/" = {
-            enableACME = true;
-            addSSL = true;
-
-            # Set true when app requires websockets
-            proxyWebsockets = false;
-
-            # Think this is who i pass the traffic to?
-            proxyPass = "http://127.0.0.1:12345";
-          };
-        };
-      };
-    };
-
-    security.acme = {
-      acceptTerms = true;
-      defaults.email = "waynevanson@gmail.com";
     };
 
     networking.firewall.allowedTCPPorts = [80 443];
