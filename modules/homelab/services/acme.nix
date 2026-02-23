@@ -6,6 +6,7 @@
   config' = config.homelab.services.acme;
   # todo: docs looked incorrect and this looks correct
   webroot = "/var/lib/acme/.challenges";
+  cert = "/var/lib/acme/waynevanson.com/fullchain.pem";
 in {
   options.homelab.services.acme.enable = lib.mkEnableOption {};
 
@@ -18,6 +19,9 @@ in {
     # Allow Nginx to listen to
     services.nginx.virtualHosts = {
       "waynevanson.com" = {
+        addSSL = true;
+        sslCertificateKey = "/var/lib/acme/waynevanson.com/key.pem";
+        sslCertificate = "/var/lib/acme/waynevanson.com/cert.pem";
         locations = {
           "/.well-known/health-check".return = "204";
 
