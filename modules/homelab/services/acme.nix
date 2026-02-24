@@ -33,16 +33,26 @@ in {
       };
     };
 
+    # Probably doesn't need to be a secret
+    sops.secrets.spaceship = {
+      owner = "nginx";
+      group = "nginx";
+    };
+
+    #todo: add certs to config
     #  I mean this really is the cert part right?
     security.acme = {
       acceptTerms = true;
       defaults = {
+        dnsProvider = "spaceship";
         email = "waynevanson@gmail.com";
         group = "nginx";
-        webroot = challenges;
+        environmentFile = config.sops.secrets.spaceship.path;
       };
 
-      certs.${domain} = {};
+      certs.${domain} = {
+        extraDomainNames = ["*.${domain}"];
+      };
     };
   };
 }
