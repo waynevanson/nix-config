@@ -8,13 +8,12 @@
   config' = config.homelab.services.acme;
   challenges = "/var/lib/acme/.challenges";
   certs = "/var/lib/acme/waynevanson.com";
+  domain = "waynevanson.com";
   # takes hosts
   # createApplication = lib.mapAttrs (hostname: value: {});
 in {
   options.homelab.services.acme = {
     enable = lib.mkEnableOption {};
-    # Record<hostname, {acme,}>
-    # hosts = lib.mkAttrsOption {};
   };
 
   config = lib.mkIf config'.enable {
@@ -25,17 +24,16 @@ in {
 
     # Allow Nginx to listen to
     services.nginx.virtualHosts = {
-      "waynevanson.com" = {
+      "${domain}" = {
         addSSL = true;
         sslCertificateKey = "${certs}/key.pem";
         sslCertificate = "${certs}/cert.pem";
-        locations = {
-          # Place challenged in a common directory
-          "/.well-known/acme-challenge".root = challenges;
-        };
+        # Place challenged in a common directory
+        locations."/.well-known/acme-challenge".root = challenges;
       };
     };
 
+    #  I mean this really is the cert part right?
     security.acme = {
       acceptTerms = true;
       defaults = {
@@ -44,10 +42,7 @@ in {
         webroot = challenges;
       };
 
-      certs."waynevanson.com" = {
-        # todo: check if this works.
-        extraDomainNames = ["git.waynevanson.com"];
-      };
+      certs.${domain} = {};
     };
   };
 }

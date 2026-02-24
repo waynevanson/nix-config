@@ -1,6 +1,10 @@
 ## TODO
 
-1. Create commands that can be run via `nix run .#install-homelab`.
+1. Use `sops-nix` and hold some secrets for use with something (not sure yet).
+2. Continue to user HTTP-01 for certs, but allow each webserver to add certs.
+3. add repos to git.waynevanson.com add this in a container!
+4. add jellyfin via containers!
+5. find where to mount all this stuff on the system (kind of like truenas)
 
 ## USB
 
