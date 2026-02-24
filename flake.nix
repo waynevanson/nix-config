@@ -11,6 +11,11 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -18,6 +23,7 @@
     nixpkgs,
     nixvim,
     self,
+    sops-nix,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -40,6 +46,7 @@
         modules = [
           disko.nixosModules.default
           nixvim.nixosModules.nixvim
+          sops-nix.nixosModules.sops
           hostModule
         ];
         specialArgs = {inherit inputs;};
@@ -59,8 +66,15 @@
         nixos-rebuild switch \
         --flake .#homelab \
         --target-host waynevanson@waynevanson.com \
+        --build-host waynevanson@waynevanson.com \
         --sudo
       '';
+    };
+
+    devShells.${system}.default = pkgs.mkShell {
+      buildInputs = with pkgs; [
+        sops
+      ];
     };
 
     nixosConfigurations = createNixosConfigurations {

@@ -72,9 +72,9 @@ let
   };
 
   homelab = {
-    ssh.enable =
-      true;
+    ssh.enable = true;
     nginx.enable = true;
+    services.git.enable = true;
   };
 in {
   imports = [

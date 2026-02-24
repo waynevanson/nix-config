@@ -1,14 +1,21 @@
+# todo: DNS level? sops-nix to hold secrets from spaceship
+# todo: a service
 {
   config,
   lib,
   ...
 }: let
   config' = config.homelab.services.acme;
-  # todo: docs looked incorrect and this looks correct
-  webroot = "/var/lib/acme/.challenges";
-  cert = "/var/lib/acme/waynevanson.com/fullchain.pem";
+  challenges = "/var/lib/acme/.challenges";
+  certs = "/var/lib/acme/waynevanson.com";
+  # takes hosts
+  # createApplication = lib.mapAttrs (hostname: value: {});
 in {
-  options.homelab.services.acme.enable = lib.mkEnableOption {};
+  options.homelab.services.acme = {
+    enable = lib.mkEnableOption {};
+    # Record<hostname, {acme,}>
+    # hosts = lib.mkAttrsOption {};
+  };
 
   config = lib.mkIf config'.enable {
     # /var/lib/acme/.challenges must be writable by the ACME user
@@ -20,16 +27,11 @@ in {
     services.nginx.virtualHosts = {
       "waynevanson.com" = {
         addSSL = true;
-        sslCertificateKey = "/var/lib/acme/waynevanson.com/key.pem";
-        sslCertificate = "/var/lib/acme/waynevanson.com/cert.pem";
+        sslCertificateKey = "${certs}/key.pem";
+        sslCertificate = "${certs}/cert.pem";
         locations = {
-          "/.well-known/health-check".return = "204";
-
           # Place challenged in a common directory
-          "/.well-known/acme-challenge".root = webroot;
-
-          # Redirect everyone else to HTTPS
-          # "/".return = "301 https://$host$request_uri";
+          "/.well-known/acme-challenge".root = challenges;
         };
       };
     };
@@ -38,15 +40,13 @@ in {
       acceptTerms = true;
       defaults = {
         email = "waynevanson@gmail.com";
-        # server = "https://acme-staging-v02.api.letsencrypt.org/directory";
         group = "nginx";
-        inherit webroot;
+        webroot = challenges;
       };
 
       certs."waynevanson.com" = {
-        # todo: add this as module options
-        # ["ai.waynevanson.com" "photos.waynevanson.com" "git.waynevanson.com"]
-        # extraDomainNames = [];
+        # todo: check if this works.
+        extraDomainNames = ["git.waynevanson.com"];
       };
     };
   };
