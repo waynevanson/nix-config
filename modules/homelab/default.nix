@@ -1,7 +1,7 @@
 {
   imports = [
     ./services
-    ./sops.nix
+    ./secrets.nix
     ./virtualisation
   ];
 }
