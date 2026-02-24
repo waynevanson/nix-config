@@ -75,6 +75,7 @@ let
     ssh.enable = true;
     nginx.enable = true;
     services.git.enable = true;
+    secrets.enable = true;
   };
 in {
   imports = [
