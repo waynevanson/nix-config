@@ -1,0 +1,7 @@
+keys:
+  - &waynevanson age1qssg5g2jkt9n68lq4hyjmr56uucnanckkvseecyanzflmyalpu3s2ss4g9
+creation_rules:
+  - path_regexp: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *waynevanson
