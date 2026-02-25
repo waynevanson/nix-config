@@ -3,7 +3,7 @@
     ./acme.nix
     ./git.nix
     ./jellyfin.nix
-    ./nginx.nix
+    ./reverse-proxy.nix
     ./ssh.nix
   ];
 }

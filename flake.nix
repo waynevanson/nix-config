@@ -67,7 +67,8 @@
         --flake .#homelab \
         --target-host waynevanson@waynevanson.com \
         --build-host waynevanson@waynevanson.com \
-        --sudo
+        --sudo \
+        --ask-sudo-password
       '';
     };
 

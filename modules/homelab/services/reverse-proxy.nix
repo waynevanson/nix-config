@@ -9,13 +9,13 @@
   lib,
   ...
 }: {
-  options.homelab.nginx = {
+  options.homelab.services.reverse-proxy = {
     enable = lib.mkEnableOption {
       default = false;
     };
   };
 
-  config = lib.mkIf config.homelab.nginx.enable {
+  config = lib.mkIf config.homelab.services.reverse-proxy.enable {
     homelab.services.acme.enable = true;
 
     services.nginx = {

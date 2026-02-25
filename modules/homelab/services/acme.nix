@@ -6,11 +6,16 @@
   ...
 }: let
   config' = config.homelab.services.acme;
-  challenges = "/var/lib/acme/.challenges";
   certs = "/var/lib/acme/waynevanson.com";
   domain = "waynevanson.com";
-  # takes hosts
-  # createApplication = lib.mapAttrs (hostname: value: {});
+  # Apply certs to all virtual hosts
+  virtualHostDefaults = {
+    addSSL = true;
+    sslCertificateKey = "${certs}/key.pem";
+    sslCertificate = "${certs}/cert.pem";
+  };
+  secretPath = "spaceship.env";
+  token = "spaceship/token";
 in {
   options.homelab.services.acme = {
     enable = lib.mkEnableOption {};
@@ -24,35 +29,35 @@ in {
 
     # Allow Nginx to listen to
     services.nginx.virtualHosts = {
-      "${domain}" = {
-        addSSL = true;
-        sslCertificateKey = "${certs}/key.pem";
-        sslCertificate = "${certs}/cert.pem";
-        # Place challenged in a common directory
-        locations."/.well-known/acme-challenge".root = challenges;
-      };
+      "${domain}" = virtualHostDefaults;
     };
 
-    # Probably doesn't need to be a secret
-    sops.secrets.spaceship = {
+    # having trouble reading these files...
+
+    sops.secrets.${token} = {
       owner = "nginx";
       group = "nginx";
     };
 
-    #todo: add certs to config
-    #  I mean this really is the cert part right?
+    sops.templates.${secretPath} = {
+      content = ''
+        SPACESHIP_API_KEY=ka3Ec2FcvBmwagXS27QA
+        SPACESHIP_API_TOKEN=${config.sops.secrets.${token}.path}
+      '';
+      owner = "nginx";
+      group = "nginx";
+    };
+
     security.acme = {
       acceptTerms = true;
       defaults = {
         dnsProvider = "spaceship";
         email = "waynevanson@gmail.com";
         group = "nginx";
-        environmentFile = config.sops.secrets.spaceship.path;
+        environmentFile = config.sops.templates.${secretPath}.path;
       };
 
-      certs.${domain} = {
-        extraDomainNames = ["*.${domain}"];
-      };
+      certs.${domain}.extraDomainNames = ["*.${domain}"];
     };
   };
 }

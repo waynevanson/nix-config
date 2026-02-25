@@ -73,7 +73,7 @@ let
 
   homelab = {
     ssh.enable = true;
-    nginx.enable = true;
+    services.reverse-proxy.enable = true;
     services.git.enable = true;
     secrets.enable = true;
   };
