@@ -14,6 +14,8 @@ in {
     nginx = {
       virtualHosts.${cfg.settings.server.DOMAIN} = {
         forceSSL = true;
+        enableACME = true;
+        acmeRoot = null;
         sslCertificateKey = "${certs}/key.pem";
         sslCertificate = "${certs}/cert.pem";
         extraConfig = ''

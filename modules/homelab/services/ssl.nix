@@ -43,8 +43,6 @@ in {
       sslCertificate = config'.key;
     };
 
-    # having trouble reading these files...
-
     sops = {
       secrets.${token} = {
         owner = "nginx";
@@ -54,7 +52,7 @@ in {
       templates.${secret} = {
         content = ''
           SPACESHIP_API_KEY=ka3Ec2FcvBmwagXS27QA
-          SPACESHIP_API_TOKEN=${config.sops.secrets.${token}.path}
+          SPACESHIP_API_TOKEN=${config.sops.placeholder.${token}}
         '';
         owner = "nginx";
         group = "nginx";
@@ -65,8 +63,8 @@ in {
       acceptTerms = true;
       defaults = {
         dnsProvider = "spaceship";
-        email = "waynevanson@gmail.com";
         group = "nginx";
+        email = "waynevanson@gmail.com";
         environmentFile = config.sops.templates.${secret}.path;
       };
 
