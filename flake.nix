@@ -12,6 +12,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -54,7 +59,8 @@
   in {
     apps.${system} = createScriptApps {
       install = ''
-        nix run github:nix-community/nixos-anywhere -- \
+        nix run .#prebuild  && \
+        nixos-anywhere \
         --flake .#homelab \
         --target-host root@192.168.1.103 \
         -i $1 \
@@ -63,7 +69,8 @@
 
       update = ''
         NIX_SSHOPTS="-p 8022" \
-        nixos-rebuild switch \
+        nixos-rebuild \
+        switch \
         --flake .#homelab \
         --target-host waynevanson@waynevanson.com \
         --build-host waynevanson@waynevanson.com \
@@ -76,6 +83,8 @@
       buildInputs = with pkgs; [
         sops
         age
+        yq
+        ssh-to-age
       ];
     };
 
