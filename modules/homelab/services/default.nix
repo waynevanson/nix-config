@@ -1,9 +1,9 @@
 {
   imports = [
-    ./git.nix
+    ./acme.nix
+    ./forgejo.nix
     ./jellyfin.nix
-    ./reverse-proxy.nix
+    ./nginx.nix
     ./ssh.nix
-    ./ssl.nix
   ];
 }

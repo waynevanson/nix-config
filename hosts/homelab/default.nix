@@ -63,31 +63,31 @@ let
     hardware.facter.reportPath = ./facter.json;
   };
 
-  waynevanson = {
-    programs.zsh.enable = true;
-    programs.tmux.enable = true;
-    programs.nixvim.enable = true;
-    nix.enable = true;
-    programs.direnv.enable = true;
-  };
+  modules' = {
+    waynevanson = {
+      programs.zsh.enable = true;
+      programs.tmux.enable = true;
+      programs.nixvim.enable = true;
+      nix.enable = true;
+      programs.direnv.enable = true;
+    };
 
-  homelab = {
-    services.ssh.enable = true;
-    services.ssl.domain = "waynevanson.com";
-    services.ssl.enable = true;
-    services.reverse-proxy.enable = true;
-    services.git.enable = true;
-    secrets.enable = true;
+    homelab = {
+      services.ssh.enable = true;
+      services.acme.enable = true;
+      services.nginx.enable = true;
+      services.forgejo.enable = true;
+      sops.enable = true;
+    };
   };
 in {
   imports = [
     ./disk-configuration.nix
     ../../modules
     facter'
+    modules'
     network'
     packages'
     system'
   ];
-
-  inherit homelab waynevanson;
 }

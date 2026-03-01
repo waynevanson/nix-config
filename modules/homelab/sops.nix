@@ -3,9 +3,9 @@
   lib,
   ...
 }: let
-  config' = config.homelab.secrets;
+  config' = config.homelab.sops;
 in {
-  options.homelab.secrets.enable = lib.mkEnableOption {};
+  options.homelab.sops.enable = lib.mkEnableOption {};
 
   config = lib.mkIf config'.enable {
     sops.defaultSopsFile = ../../secrets/main.yaml;

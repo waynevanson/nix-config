@@ -4,20 +4,23 @@
   config,
   ...
 }: let
+  config' = config.homelab.services.forgejo;
   cfg = config.services.forgejo;
   srv = cfg.settings.server;
   certs = "/var/lib/acme/waynevanson.com";
 in {
-  options.homelab.services.git.enable = lib.mkEnableOption {};
+  options.homelab.services.forgejo.enable = lib.mkEnableOption {};
 
-  config.services = lib.mkIf config.homelab.services.git.enable {
+  config.services = lib.mkIf config'.enable {
     nginx = {
       virtualHosts.${cfg.settings.server.DOMAIN} = {
+        #  apply these to all hosts
         forceSSL = true;
         enableACME = true;
         acmeRoot = null;
         sslCertificateKey = "${certs}/key.pem";
         sslCertificate = "${certs}/cert.pem";
+
         extraConfig = ''
           client_max_body_size 512M;
         '';

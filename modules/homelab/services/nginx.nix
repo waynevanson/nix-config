@@ -9,25 +9,17 @@
   lib,
   ...
 }: let
-  config' = config.homelab.services.reverse-proxy;
+  config' = config.homelab.services.nginx;
 in {
-  options.homelab.services.reverse-proxy = {
+  options.homelab.services.nginx = {
     enable = lib.mkEnableOption {
       default = false;
-    };
-
-    virtualHosts = lib.mkOption {
-      type = lib.types.attrsOf lib.types.attrs;
     };
   };
 
   config = lib.mkIf config'.enable {
-    homelab.services.ssl.enable = true;
-
     services.nginx = {
       enable = true;
-
-      virtualHosts = {};
 
       # Use recommended settings
       # recommendedGzipSettings = true;
@@ -60,7 +52,5 @@ in {
       #   proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
       # '';
     };
-    networking.firewall.enable = true;
-    networking.firewall.allowedTCPPorts = [80 443];
   };
 }
