@@ -2,14 +2,16 @@
   config,
   lib,
   ...
-}: {
-  options.homelab.ssh = {
+}: let
+  config' = config.homelab.services.ssh;
+in {
+  options.homelab.services.ssh = {
     enable = lib.mkEnableOption {
       description = "Enable SSH for HomeLab";
     };
   };
 
-  config = lib.mkIf config.homelab.ssh.enable {
+  config = lib.mkIf config'.enable {
     services.openssh = {
       enable = true;
       ports = [8022];

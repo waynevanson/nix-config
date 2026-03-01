@@ -8,18 +8,26 @@
   config,
   lib,
   ...
-}: {
+}: let
+  config' = config.homelab.services.reverse-proxy;
+in {
   options.homelab.services.reverse-proxy = {
     enable = lib.mkEnableOption {
       default = false;
     };
+
+    virtualHosts = lib.mkOption {
+      type = lib.types.attrsOf lib.types.attrs;
+    };
   };
 
-  config = lib.mkIf config.homelab.services.reverse-proxy.enable {
-    homelab.services.acme.enable = true;
+  config = lib.mkIf config'.enable {
+    homelab.services.ssl.enable = true;
 
     services.nginx = {
       enable = true;
+
+      virtualHosts = {};
 
       # Use recommended settings
       # recommendedGzipSettings = true;

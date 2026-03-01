@@ -72,7 +72,9 @@ let
   };
 
   homelab = {
-    ssh.enable = true;
+    services.ssh.enable = true;
+    services.ssl.domain = "waynevanson.com";
+    services.ssl.enable = true;
     services.reverse-proxy.enable = true;
     services.git.enable = true;
     secrets.enable = true;
