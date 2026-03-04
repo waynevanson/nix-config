@@ -7,7 +7,8 @@
   config' = config.homelab.services.acme;
   certs = "/var/lib/acme/${config'.domain}";
   dotenv = "spaceship.env";
-  token = "spaceship/token";
+  path = "spaceship/token";
+  token = "spaceship-token";
 in {
   options.homelab.services.acme = {
     enable = lib.mkEnableOption {};
@@ -58,6 +59,7 @@ in {
       secrets.${token} = {
         owner = "nginx";
         group = "nginx";
+        key = path;
       };
 
       templates.${dotenv} = {
