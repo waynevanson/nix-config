@@ -25,6 +25,7 @@
 
   outputs = {
     disko,
+    nixos-anywhere,
     nixpkgs,
     nixvim,
     self,
@@ -59,7 +60,6 @@
   in {
     apps.${system} = createScriptApps {
       install = ''
-        nix run .#prebuild  && \
         nixos-anywhere \
         --flake .#homelab \
         --target-host root@192.168.1.103 \
@@ -81,10 +81,11 @@
 
     devShells.${system}.default = pkgs.mkShell {
       buildInputs = with pkgs; [
-        sops
         age
-        yq
+        nixos-anywhere.packages.${system}.default
+        sops
         ssh-to-age
+        yq
       ];
     };
 

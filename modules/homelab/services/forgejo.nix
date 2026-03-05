@@ -15,11 +15,10 @@ in {
     nginx = {
       virtualHosts.${cfg.settings.server.DOMAIN} = {
         #  apply these to all hosts
-        forceSSL = true;
-        enableACME = true;
-        acmeRoot = null;
-        sslCertificateKey = "${certs}/key.pem";
+        addSSL = true;
+        useACMEHost = "waynevanson.com";
         sslCertificate = "${certs}/cert.pem";
+        sslCertificateKey = "${certs}/key.pem";
 
         extraConfig = ''
           client_max_body_size 512M;

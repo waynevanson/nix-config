@@ -5,19 +5,15 @@
   ...
 }: let
   config' = config.homelab.services.acme;
-  certs = "/var/lib/acme/${config'.domain}";
+  certs = "/var/lib/acme/waynevanson.com";
   dotenv = "spaceship.env";
   path = "spaceship/token";
   token = "spaceship-token";
+  owner = config.users.users.acme.name;
+  group = config.users.users.acme.group;
 in {
   options.homelab.services.acme = {
     enable = lib.mkEnableOption {};
-
-    domain = lib.mkOption {
-      type = lib.types.str;
-      readOnly = true;
-      default = "waynevanson.com";
-    };
 
     certificate = lib.mkOption {
       type = lib.types.str;
@@ -35,11 +31,11 @@ in {
   config = lib.mkIf config'.enable {
     networking.firewall.allowedTCPPorts = [80 443];
 
-    services.nginx.virtualHosts."${config'.domain}" = {
-      # todo: Apply certs to all virtual hosts
+    services.nginx.virtualHosts."waynevanson.com" = {
       addSSL = true;
-      sslCertificateKey = config'.certificate;
-      sslCertificate = config'.key;
+      enableACME = true;
+      sslCertificate = config'.certificate;
+      sslCertificateKey = config'.key;
     };
 
     security.acme = {
@@ -51,24 +47,26 @@ in {
         environmentFile = config.sops.templates.${dotenv}.path;
       };
 
-      certs.${config'.domain}.extraDomainNames = ["*.${config'.domain}"];
+      certs."waynevanson.com" = {
+        domain = "waynevanson.com";
+        extraDomainNames = ["*.waynevanson.com"];
+        dnsPropagationCheck = true;
+      };
     };
 
     # DNS validation
     sops = {
       secrets.${token} = {
-        owner = "nginx";
-        group = "nginx";
         key = path;
+        inherit owner group;
       };
 
       templates.${dotenv} = {
         content = ''
           SPACESHIP_API_KEY=ka3Ec2FcvBmwagXS27QA
-          SPACESHIP_API_TOKEN=${config.sops.placeholder.${token}}
+          SPACESHIP_API_SECRET=${config.sops.placeholder.${token}}
         '';
-        owner = "nginx";
-        group = "nginx";
+        inherit owner group;
       };
     };
 
