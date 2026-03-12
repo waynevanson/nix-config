@@ -14,13 +14,13 @@
     direnv
     discord
     ghidra
-    inputs.opencode.packages.${system}.default
     # todo: modularise
     git
     gnutar
     nerd-fonts.jetbrains-mono
     nfs-utils
     nil
+    inputs.opencode.packages.${system}.default
     openscad
     prusa-slicer
     runelite
@@ -29,6 +29,7 @@
     wget
     vscode.fhs
     xz
+    zed-editor
     zip
   ];
 
