@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  inputs,
+  system,
+  ...
+}: let
   hardware' = {
     hardware.facter.reportPath = ./facter.json;
   };
@@ -9,11 +14,11 @@
     direnv
     discord
     ghidra
+    inputs.opencode.packages.${system}.default
     # todo: modularise
     git
     gnutar
     nerd-fonts.jetbrains-mono
-    neofetch
     nfs-utils
     nil
     openscad
