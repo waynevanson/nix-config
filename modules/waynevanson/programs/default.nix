@@ -1,6 +1,5 @@
 {
   imports = [
-    ./alacritty
     ./bitwig.nix
     ./direnv.nix
     ./nixvim
