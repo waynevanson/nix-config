@@ -98,7 +98,10 @@
 
     networking.hostName = "nixos"; # Define your hostname.
 
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader = {
+      efi.canTouchEfiVariables = true;
+      systemd-boot.enable = true;
+    };
   };
 in {
   imports = [
