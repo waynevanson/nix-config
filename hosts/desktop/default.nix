@@ -102,7 +102,8 @@
   };
 in {
   imports = [
-    ./disk-configuration.nix
+    #./disk-configuration.nix
+    ./hardware-configuration.nix
     ../../modules
     hardware'
     host'
