@@ -26,10 +26,16 @@
       url = "github:anomalyco/opencode";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     disko,
+    home-manager,
     nixos-anywhere,
     nixpkgs,
     nixvim,
@@ -57,6 +63,7 @@
         inherit system pkgs;
         modules = [
           disko.nixosModules.default
+          home-manager.nixosModules.default
           nixvim.nixosModules.nixvim
           sops-nix.nixosModules.sops
           hostModule
