@@ -55,12 +55,15 @@
     home-manager.useUserPackages = true;
 
     # Configuration for regular user
-    home-manager.users.waynevanson = {pkgs, ...}: {
-      home.username = "waynevanson";
-      home.homeDirectory = "/home/waynevanson";
-      home.stateVersion = "25.05";
+    home-manager.users.waynevanson = {...}: {
+      imports = [../../home-manager];
 
-      # Let Home Manager install and manage itself
+      home = {
+        username = "waynevanson";
+        homeDirectory = "/home/waynevanson";
+        stateVersion = "25.05";
+      };
+
       programs.home-manager.enable = true;
     };
   };
