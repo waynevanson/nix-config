@@ -95,6 +95,7 @@
     devShells.${system}.default = pkgs.mkShell {
       buildInputs = with pkgs; [
         age
+        biome
         nixos-anywhere.packages.${system}.default
         sops
         ssh-to-age
