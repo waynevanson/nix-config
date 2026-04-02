@@ -29,7 +29,7 @@
     wget
     vscode.fhs
     xz
-    zed-editor
+    zed-editor.fhs
     zip
   ];
 
