@@ -72,6 +72,7 @@
           specialArgs = { inherit inputs system; };
         }
       );
+
     in
     {
       apps.${system} = createScriptApps {

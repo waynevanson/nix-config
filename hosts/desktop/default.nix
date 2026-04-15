@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   system,
+  lib,
   ...
 }:
 let
@@ -10,27 +11,37 @@ let
   };
 
   packages = with pkgs; [
-    alejandra
     curl
     direnv
     discord
-    ghidra
     # todo: modularise
     git
     gnutar
     nerd-fonts.jetbrains-mono
-    nfs-utils
     nil
+    nixd
     openscad
     prusa-slicer
-    runelite
-    tuckr
     unzip
     wget
-    vscode.fhs
     xz
     zed-editor.fhs
     zip
+    (pkgs.pi-coding-agent.overrideAttrs rec {
+      version = "0.67.3";
+      src = fetchFromGitHub {
+        owner = "badlogic";
+        repo = "pi-mono";
+        tag = "v${version}";
+        hash = "sha256-2hSf1X42sH5jhVKCiZM/EIEfQae2mFUX6FGVM/vgtPc=";
+      };
+      npmDepsHash = "sha256-3xFxY0iKiwjM0psijzdSqed5UOjIAOyWPwQ15fqfc4I=";
+      npmDeps = pkgs.fetchNpmDeps {
+        inherit src;
+        name = "pi-coding-agent-${version}-npm-deps";
+        hash = npmDepsHash;
+      };
+    })
   ];
 
   waynevanson = {
