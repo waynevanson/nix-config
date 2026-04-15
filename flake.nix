@@ -69,7 +69,7 @@
             sops-nix.nixosModules.sops
             hostModule
           ];
-          specialArgs = { inherit inputs system; };
+          specialArgs = { inherit inputs system self; };
         }
       );
 
@@ -113,6 +113,9 @@
         nixos = ./hosts/desktop;
       };
 
-      packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
+      packages.${system} = {
+        pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
+        bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
+      };
     };
 }
