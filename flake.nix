@@ -22,93 +22,96 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    opencode = {
-      url = "github:anomalyco/opencode";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = {
-    disko,
-    home-manager,
-    nixos-anywhere,
-    nixpkgs,
-    nixvim,
-    opencode,
-    self,
-    sops-nix,
-    ...
-  } @ inputs: let
-    system = "x86_64-linux";
+  outputs =
+    {
+      disko,
+      home-manager,
+      nixos-anywhere,
+      nixpkgs,
+      nixvim,
+      self,
+      sops-nix,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
 
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-    };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
 
-    createScriptApps = pkgs.lib.mapAttrs (_appName: appScript: let
-      package = pkgs.writeShellScriptBin "run" appScript;
-    in {
-      type = "app";
-      program = "${package}/bin/run";
-    });
+      createScriptApps = pkgs.lib.mapAttrs (
+        _appName: appScript:
+        let
+          package = pkgs.writeShellScriptBin "run" appScript;
+        in
+        {
+          type = "app";
+          program = "${package}/bin/run";
+        }
+      );
 
-    createNixosConfigurations = pkgs.lib.mapAttrs (_hostname: hostModule:
-      nixpkgs.lib.nixosSystem {
-        inherit system pkgs;
-        modules = [
-          disko.nixosModules.default
-          home-manager.nixosModules.default
-          nixvim.nixosModules.nixvim
-          sops-nix.nixosModules.sops
-          hostModule
+      createNixosConfigurations = pkgs.lib.mapAttrs (
+        _hostname: hostModule:
+        nixpkgs.lib.nixosSystem {
+          inherit system pkgs;
+          modules = [
+            disko.nixosModules.default
+            home-manager.nixosModules.default
+            nixvim.nixosModules.nixvim
+            sops-nix.nixosModules.sops
+            hostModule
+          ];
+          specialArgs = { inherit inputs system; };
+        }
+      );
+    in
+    {
+      apps.${system} = createScriptApps {
+        install = ''
+          nixos-anywhere \
+          --flake .#homelab \
+          --target-host root@192.168.1.103 \
+          -i $1 \
+          --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
+        '';
+
+        update = ''
+          NIX_SSHOPTS="-p 8022" \
+          nixos-rebuild \
+          switch \
+          --flake .#homelab \
+          --target-host waynevanson@waynevanson.com \
+          --build-host waynevanson@waynevanson.com \
+          --sudo \
+          --ask-sudo-password
+        '';
+      };
+
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          age
+          biome
+          nixos-anywhere.packages.${system}.default
+          sops
+          ssh-to-age
+          yq
         ];
-        specialArgs = {inherit inputs system;};
-      });
-  in {
-    apps.${system} = createScriptApps {
-      install = ''
-        nixos-anywhere \
-        --flake .#homelab \
-        --target-host root@192.168.1.103 \
-        -i $1 \
-        --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
-      '';
+      };
 
-      update = ''
-        NIX_SSHOPTS="-p 8022" \
-        nixos-rebuild \
-        switch \
-        --flake .#homelab \
-        --target-host waynevanson@waynevanson.com \
-        --build-host waynevanson@waynevanson.com \
-        --sudo \
-        --ask-sudo-password
-      '';
+      nixosConfigurations = createNixosConfigurations {
+        bootable = ./hosts/bootable;
+        homelab = ./hosts/homelab;
+        nixos = ./hosts/desktop;
+      };
+
+      packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
     };
-
-    devShells.${system}.default = pkgs.mkShell {
-      buildInputs = with pkgs; [
-        age
-        biome
-        nixos-anywhere.packages.${system}.default
-        sops
-        ssh-to-age
-        yq
-      ];
-    };
-
-    nixosConfigurations = createNixosConfigurations {
-      bootable = ./hosts/bootable;
-      homelab = ./hosts/homelab;
-      nixos = ./hosts/desktop;
-    };
-
-    packages.${system}.bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
-  };
 }

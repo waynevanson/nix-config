@@ -3,7 +3,8 @@
   inputs,
   system,
   ...
-}: let
+}:
+let
   hardware' = {
     hardware.facter.reportPath = ./facter.json;
   };
@@ -20,7 +21,6 @@
     nerd-fonts.jetbrains-mono
     nfs-utils
     nil
-    inputs.opencode.packages.${system}.default
     openscad
     prusa-slicer
     runelite
@@ -55,17 +55,19 @@
     home-manager.useUserPackages = true;
 
     # Configuration for regular user
-    home-manager.users.waynevanson = {...}: {
-      imports = [../../home-manager];
+    home-manager.users.waynevanson =
+      { ... }:
+      {
+        imports = [ ../../home-manager ];
 
-      home = {
-        username = "waynevanson";
-        homeDirectory = "/home/waynevanson";
-        stateVersion = "25.05";
+        home = {
+          username = "waynevanson";
+          homeDirectory = "/home/waynevanson";
+          stateVersion = "25.05";
+        };
+
+        programs.home-manager.enable = true;
       };
-
-      programs.home-manager.enable = true;
-    };
   };
 
   system' = {
@@ -95,8 +97,18 @@
     users.users.waynevanson = {
       isNormalUser = true;
       description = "Wayne Van Son";
-      extraGroups = ["audio" "video" "networkmanager" "wheel"];
+      extraGroups = [
+        "audio"
+        "video"
+        "networkmanager"
+        "wheel"
+      ];
       inherit packages;
+    };
+
+    programs.nix-ld = {
+      enable = true;
+      # libraries = [];
     };
 
     # mount /mnt/secondary to /home/waynevanson/code
@@ -140,7 +152,8 @@
       systemd-boot.enable = true;
     };
   };
-in {
+in
+{
   imports = [
     #./disk-configuration.nix
     ./hardware-configuration.nix

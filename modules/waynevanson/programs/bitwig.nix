@@ -3,9 +3,10 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   # Workaround for https://github.com/NixOS/nixpkgs/issues/446226
-  bitwig' = pkgs.bitwig-studio.override {
+  bitwig' = pkgs.bitwig-studio5.override {
     bitwig-studio-unwrapped = pkgs.bitwig-studio5-unwrapped.overrideAttrs rec {
       version = "5.0.11";
       src = pkgs.fetchurl {
@@ -15,10 +16,11 @@
       };
     };
   };
-in {
-  options.waynevanson.programs.bitwig.enable = lib.mkEnableOption {};
+in
+{
+  options.waynevanson.programs.bitwig.enable = lib.mkEnableOption { };
 
   config = lib.mkIf config.waynevanson.programs.bitwig.enable {
-    environment.systemPackages = [bitwig'];
+    environment.systemPackages = [ bitwig' ];
   };
 }
