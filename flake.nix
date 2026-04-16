@@ -114,8 +114,8 @@
       };
 
       packages.${system} = {
-        pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
         bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
+        pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
       };
     };
 }
