@@ -2,7 +2,6 @@
   pkgs,
   inputs,
   system,
-  lib,
   ...
 }:
 let
@@ -28,6 +27,9 @@ let
     zed-editor.fhs
     zip
     inputs.self.packages.${system}.pi-coding-agent
+    claude-code
+    opencode
+    inputs.meridian.packages.${system}.meridian
   ];
 
   waynevanson = {
