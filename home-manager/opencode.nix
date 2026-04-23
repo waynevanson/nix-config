@@ -4,6 +4,6 @@
 }:
 {
   xdg.configFile."opencode/opencode.json".text = builtins.toJSON {
-    plugin = [ config.services.meridian.opencode.pluginPath ];
+    plugin = [ "opencode-claude-auth@latest" ];
   };
 }
