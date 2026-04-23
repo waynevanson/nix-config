@@ -3,7 +3,7 @@
     ./alacritty.nix
     ./direnv.nix
     ./oh-my-posh
-    ./opencode.nix
+    ./opencode
     ./zsh.nix
   ];
 }
