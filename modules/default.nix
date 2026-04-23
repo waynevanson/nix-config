@@ -2,6 +2,5 @@
 {
   imports = [
     ./waynevanson
-    ./nix.nix
   ];
 }

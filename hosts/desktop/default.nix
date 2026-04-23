@@ -26,6 +26,7 @@ let
     xz
     zed-editor.fhs
     zip
+    inputs.self.packages.${system}.bitwig
     inputs.self.packages.${system}.pi-coding-agent
     claude-code
     opencode
@@ -36,15 +37,9 @@ let
     # virtualisation.docker.enable = true;
     virtualisation.containerd.enable = true;
 
-    programs.zsh.enable = true;
-    programs.bitwig.enable = true;
     programs.nixvim.enable = true;
-    programs.tmux.enable = true;
-    programs.direnv.enable = true;
 
     services.cosmic.enable = true;
-
-    nix.enable = true;
   };
 
   # Home Manager configuration for both users
@@ -97,6 +92,9 @@ let
   };
 
   user' = {
+    users.defaultUserShell = pkgs.zsh;
+    programs.zsh.enable = true;
+
     users.users.waynevanson = {
       isNormalUser = true;
       description = "Wayne Van Son";
@@ -145,6 +143,22 @@ let
     };
   };
 
+  nix' = {
+    nix.settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+
+      substituters = [
+        "https://nix-community.cachix.org"
+      ];
+
+      trusted-public-keys = [
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      ];
+
+      trusted-users = [ "@wheel" "waynevanson" ];
+    };
+  };
+
   host' = {
     system.stateVersion = "25.05";
 
@@ -163,6 +177,7 @@ in
     ../../modules
     hardware'
     host'
+    nix'
     system'
     user'
     homeManager
