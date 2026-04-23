@@ -52,6 +52,10 @@ let
     # Use global pkgs and enable user packages
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
+    home-manager.extraSpecialArgs = { inherit inputs system; };
+    home-manager.sharedModules = [
+      inputs.meridian.homeManagerModules.default
+    ];
 
     # Configuration for regular user
     home-manager.users.waynevanson =
