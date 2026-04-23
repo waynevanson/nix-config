@@ -1,4 +1,5 @@
 # home-manager config
+{ config, lib, ... }:
 {
 
   services.meridian = {
@@ -12,8 +13,13 @@
     };
 
     # Extra env vars not covered by settings
-    # environment = {
-    #   MERIDIAN_MAX_CONCURRENT = "20";
-    # };
+    environment = {
+      PATH = lib.mkForce "/run/current-system/sw/bin:${config.home.profileDirectory}/bin:/usr/bin:/bin";
+    };
+  };
+
+  home.sessionVariables = {
+    ANTHROPIC_API_KEY = "x";
+    ANTHROPIC_BASE_URL = "http://127.0.0.1:3456";
   };
 }
