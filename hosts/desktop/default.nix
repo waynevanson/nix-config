@@ -9,30 +9,6 @@ let
     hardware.facter.reportPath = ./facter.json;
   };
 
-  packages = with pkgs; [
-    curl
-    direnv
-    discord
-    # todo: modularise
-    git
-    gnutar
-    nerd-fonts.jetbrains-mono
-    nil
-    nixd
-    openscad
-    prusa-slicer
-    unzip
-    wget
-    xz
-    zed-editor.fhs
-    zip
-    inputs.self.packages.${system}.bitwig
-    inputs.self.packages.${system}.pi-coding-agent
-    claude-code
-    opencode
-    inputs.meridian.packages.${system}.meridian
-  ];
-
   waynevanson = {
     # virtualisation.docker.enable = true;
     virtualisation.containerd.enable = true;
@@ -69,8 +45,6 @@ let
   };
 
   system' = {
-    programs.firefox.enable = true;
-
     # todo: move this somewhere so it's consumed by everything
     # Set your time zone.
     time.timeZone = "Australia/Melbourne";
@@ -104,42 +78,11 @@ let
         "networkmanager"
         "wheel"
       ];
-      inherit packages;
     };
 
     programs.nix-ld = {
       enable = true;
       # libraries = [];
-    };
-
-    # mount /mnt/secondary to /home/waynevanson/code
-    # systemd.tmpfiles.settings = {
-    #   "waynevanson-code" = {
-    #     "/home/waynevanson/code".d = {
-    #       type = "L";
-    #       user = "waynevanson";
-    #       group = "users";
-    #       argument = "/mnt/secondary";
-    #     };
-    #   };
-    # };
-
-    # Set your time zone.
-    time.timeZone = "Australia/Melbourne";
-
-    # Select internationalisation properties.
-    i18n.defaultLocale = "en_AU.UTF-8";
-
-    i18n.extraLocaleSettings = {
-      LC_ADDRESS = "en_AU.UTF-8";
-      LC_IDENTIFICATION = "en_AU.UTF-8";
-      LC_MEASUREMENT = "en_AU.UTF-8";
-      LC_MONETARY = "en_AU.UTF-8";
-      LC_NAME = "en_AU.UTF-8";
-      LC_NUMERIC = "en_AU.UTF-8";
-      LC_PAPER = "en_AU.UTF-8";
-      LC_TELEPHONE = "en_AU.UTF-8";
-      LC_TIME = "en_AU.UTF-8";
     };
   };
 
@@ -184,5 +127,4 @@ in
   ];
 
   inherit waynevanson;
-  environment.systemPackages = packages;
 }
