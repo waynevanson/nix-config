@@ -52,17 +52,6 @@
         config.allowUnfree = true;
       };
 
-      createScriptApps = pkgs.lib.mapAttrs (
-        _appName: appScript:
-        let
-          package = pkgs.writeShellScriptBin "run" appScript;
-        in
-        {
-          type = "app";
-          program = "${package}/bin/run";
-        }
-      );
-
       createNixosConfigurations = pkgs.lib.mapAttrs (
         _hostname: hostModule:
         nixpkgs.lib.nixosSystem {
@@ -80,26 +69,6 @@
 
     in
     {
-      apps.${system} = createScriptApps {
-        install = ''
-          nixos-anywhere \
-          --flake .#homelab \
-          --target-host root@192.168.1.103 \
-          -i $1 \
-          --generate-hardware-config nixos-facter ./hosts/homelab/facter.json
-        '';
-
-        update = ''
-          NIX_SSHOPTS="-p 8022" \
-          nixos-rebuild \
-          switch \
-          --flake .#homelab \
-          --target-host waynevanson@waynevanson.com \
-          --build-host waynevanson@waynevanson.com \
-          --sudo \
-          --ask-sudo-password
-        '';
-      };
 
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
@@ -113,13 +82,10 @@
       };
 
       nixosConfigurations = createNixosConfigurations {
-        bootable = ./hosts/bootable;
-        homelab = ./hosts/homelab;
         nixos = ./hosts/desktop;
       };
 
       packages.${system} = {
-        bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
         pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
       };
     };
