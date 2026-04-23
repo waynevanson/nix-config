@@ -33,8 +33,6 @@
     claude-code
     opencode
     inputs.self.packages.${system}.bitwig
-    inputs.self.packages.${system}.pi-coding-agent
-    inputs.meridian.packages.${system}.meridian
   ];
 
   programs.firefox.enable = true;
