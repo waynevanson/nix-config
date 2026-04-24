@@ -9,19 +9,25 @@ let
     hardware.facter.reportPath = ./facter.json;
   };
 
-  waynevanson = {
-    # virtualisation.docker.enable = true;
-    virtualisation.containerd.enable = true;
+  waynevanson' = {
+    waynevanson = {
+      # virtualisation.docker.enable = true;
+      virtualisation.containerd.enable = true;
 
-    services.cosmic.enable = true;
+      services.cosmic.enable = true;
+    };
   };
 
   # Home Manager configuration for both users
-  homeManager = {
+  homeManager' = {
     # Use global pkgs and enable user packages
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.extraSpecialArgs = { inherit inputs system; };
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      extraSpecialArgs = {
+        inherit inputs system;
+      };
+    };
 
     # Configuration for regular user
     home-manager.users.waynevanson =
@@ -122,9 +128,7 @@ in
     nix'
     system'
     user'
-    homeManager
+    homeManager'
+    waynevanson'
   ];
-
-  inherit waynevanson;
-
 }
