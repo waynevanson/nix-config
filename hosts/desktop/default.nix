@@ -13,8 +13,6 @@ let
     # virtualisation.docker.enable = true;
     virtualisation.containerd.enable = true;
 
-    programs.nixvim.enable = true;
-
     services.cosmic.enable = true;
   };
 
@@ -24,9 +22,6 @@ let
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
     home-manager.extraSpecialArgs = { inherit inputs system; };
-    home-manager.sharedModules = [
-      inputs.meridian.homeManagerModules.default
-    ];
 
     # Configuration for regular user
     home-manager.users.waynevanson =
@@ -39,8 +34,6 @@ let
           homeDirectory = "/home/waynevanson";
           stateVersion = "25.05";
         };
-
-        programs.home-manager.enable = true;
       };
   };
 
@@ -88,7 +81,10 @@ let
 
   nix' = {
     nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
 
       substituters = [
         "https://nix-community.cachix.org"
@@ -98,7 +94,10 @@ let
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
 
-      trusted-users = [ "@wheel" "waynevanson" ];
+      trusted-users = [
+        "@wheel"
+        "waynevanson"
+      ];
     };
   };
 
@@ -127,4 +126,5 @@ in
   ];
 
   inherit waynevanson;
+
 }

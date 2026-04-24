@@ -7,11 +7,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nixos-anywhere = {
       url = "github:nix-community/nixos-anywhere";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,7 +34,6 @@
       home-manager,
       nixos-anywhere,
       nixpkgs,
-      nixvim,
       self,
       sops-nix,
       ...
@@ -59,7 +53,6 @@
           modules = [
             disko.nixosModules.default
             home-manager.nixosModules.default
-            nixvim.nixosModules.nixvim
             sops-nix.nixosModules.sops
             hostModule
           ];

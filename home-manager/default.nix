@@ -17,6 +17,8 @@
   home.packages = with pkgs; [
     curl
     discord
+    fd
+    fzf
     # todo: modularise
     git
     gnutar
@@ -25,6 +27,7 @@
     nixd
     openscad
     prusa-slicer
+    ripgrep
     unzip
     wget
     xz
@@ -35,5 +38,10 @@
     inputs.self.packages.${system}.bitwig
   ];
 
-  programs.firefox.enable = true;
+  programs = {
+    firefox.enable = true;
+    home-manager.enable = true;
+    vim.enable = true;
+    vim.defaultEditor = true;
+  };
 }
