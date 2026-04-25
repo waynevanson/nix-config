@@ -27,7 +27,7 @@ Follow these steps to produce a written plan the user can execute later.
   plan name prefix, formatted as `YYYYMMDDTHHMMSSZ` (compact form, no
   separators).
 - Write the plan to a markdown file at the path:
-  `plans/<timestamp>-<slug>.md`
+  `.agents/plans/<timestamp>-<slug>.md`
   where `<slug>` is a short kebab-case summary of the goal (e.g.
   `20260426T120000Z-add-auth-flow.md`).
 - Use the following template for the plan file:
