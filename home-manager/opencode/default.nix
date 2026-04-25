@@ -1,9 +1,4 @@
 {
-  config,
-  ...
-}:
-{
-  xdg.configFile."opencode/opencode.json".text = builtins.toJSON {
-    plugin = [ "opencode-claude-auth@latest" ];
-  };
+  xdg.configFile."opencode/opencode.json".source = ./opencode.json;
+  xdg.configFile."opencode/skills".source = ./skills;
 }

@@ -13,7 +13,6 @@ let
     waynevanson = {
       # virtualisation.docker.enable = true;
       virtualisation.containerd.enable = true;
-
       services.cosmic.enable = true;
     };
   };
