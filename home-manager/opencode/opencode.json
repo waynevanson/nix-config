@@ -7,5 +7,5 @@
 			"~/.cargo/**": "allow",
 			"~/.config/opencode/**": "allow"
 		}
-	}
+	},
 }
