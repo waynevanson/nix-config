@@ -4,7 +4,7 @@ mode: primary
 permission:
   edit:
     "*": deny
-    ".agents/plans/*": allow
+    ".agents/plans/**/*": allow
   bash: ask
 ---
 
