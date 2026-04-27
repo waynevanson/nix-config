@@ -5,7 +5,6 @@ permission:
   edit:
     "*": deny
     ".agents/plans/**/*": allow
-  bash: ask
 ---
 
 # Plan Mode
