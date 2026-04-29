@@ -32,6 +32,16 @@ Ask as many questions as possible, using the dependency graph to decide which qu
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
-## After answered questions
+If a question can't be answered after exploring the codebase, ask a question to the user using the question tool.
 
-If the plan was read from a file, apply these changes to the file.
+## After each round of questioning
+
+Once a round of questions has been completed
+
+1. Reevaluate understanding of plan.
+2. Recalculate dependency graph.
+3. If the plan was read from a file, apply these changes to the plan.
+4. Show the new dependency graph
+   - highlighting in bold the new questions
+   - strikethrough deleted questions
+5. Ask the next round of questions.

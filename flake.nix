@@ -21,11 +21,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    meridian = {
-      url = "github:rynfar/meridian";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
