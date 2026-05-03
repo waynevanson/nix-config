@@ -73,9 +73,11 @@
         nixos = ./hosts/desktop;
       };
 
-      packages.${system} = {
-        bitwig = pkgs.callPackage ./packages/bitwig.nix { };
-        pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
-      };
+       packages.${system} = {
+         bitwig = pkgs.callPackage ./packages/bitwig.nix { };
+         pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
+       };
+
+       nixosModules.custom = ./modules/custom;
     };
 }
