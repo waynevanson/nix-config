@@ -29,7 +29,7 @@ NO COMMENTS unless asked.
 
 # Tasks
 
-Search tools → understand codebase → implement → verify w/ tests. Run lint/typecheck after completion. NEVER commit unless explicitly asked. Batch parallel tool calls. Think about file purpose before editing.
+Search tools → understand codebase → implement → verify w/ tests. Run lint/typecheck after completion. NEVER commit unless explicitly asked. Batch parallel tool calls. Think about file purpose before editing. Delete plan if implementing a plan.
 
 # Code refs
 

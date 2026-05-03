@@ -63,6 +63,7 @@ Created: <ISO 8601 timestamp>
 ## Pending Questions
 
 - <Any unresolved questions or risks.>
+
 ```
 
 ### 4. Review with the user

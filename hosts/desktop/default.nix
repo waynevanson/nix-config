@@ -9,8 +9,8 @@ let
     hardware.facter.reportPath = ./facter.json;
   };
 
-  waynevanson' = {
-    waynevanson = {
+  custom' = {
+    custom = {
       # virtualisation.docker.enable = true;
       virtualisation.containerd.enable = true;
       services.cosmic.enable = true;
@@ -128,6 +128,6 @@ in
     system'
     user'
     homeManager'
-    waynevanson'
+     custom'
   ];
 }

@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: {
-  options.waynevanson.virtualisation.docker.enable = lib.mkEnableOption {};
+  options.custom.virtualisation.docker.enable = lib.mkEnableOption {};
 
-  config = lib.mkIf config.waynevanson.virtualisation.docker.enable {
+  config = lib.mkIf config.custom.virtualisation.docker.enable {
     virtualisation.docker.enable = true;
     users.users.waynevanson.extraGroups = ["docker"];
     environment.systemPackages = with pkgs; [

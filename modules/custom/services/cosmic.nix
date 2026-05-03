@@ -3,9 +3,9 @@
   lib,
   ...
 }: let
-  config' = config.waynevanson.services.cosmic;
+   config' = config.custom.services.cosmic;
 in {
-  options.waynevanson.services.cosmic = {
+  options.custom.services.cosmic = {
     enable = lib.mkEnableOption {};
   };
 

@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  config' = config.waynevanson.virtualisation.containerd;
+   config' = config.custom.virtualisation.containerd;
 in {
-  options.waynevanson.virtualisation.containerd.enable = lib.mkEnableOption {};
+  options.custom.virtualisation.containerd.enable = lib.mkEnableOption {};
 
   config = lib.mkIf config'.enable {
     virtualisation.containerd.enable = true;
