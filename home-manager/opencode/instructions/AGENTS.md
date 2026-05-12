@@ -6,6 +6,6 @@ Always load skill `/caveman ultra` to reduce verbosity.
 
 !`/caveman ultra`
 
-## Questions
+## Tool usage
 
-If allowed to ask questions, using the question tool.
+When asking the user a question, use the question tool.

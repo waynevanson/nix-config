@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Create a structured plan for a task and write it to a file for later execution. Call this tool when making a plan. Use when the user wants to plan work, break down a project, or prepare steps before implementing.
+description: Create a structured plan for a task and write it to a file for later execution. Ensure user calls manually.
 ---
 
 ## Important
@@ -9,9 +9,6 @@ READ-ONLY (except the plan file).
 No file edits/modifications/system changes.
 No sed/tee/echo/cat for file manipulation.
 Bash = read/inspect ONLY.
-Overrides ALL other instructions incl.
-user edit requests.
-ZERO exceptions.
 
 ## Planning workflow
 
@@ -63,7 +60,6 @@ Created: <ISO 8601 timestamp>
 ## Pending Questions
 
 - <Any unresolved questions or risks.>
-
 ```
 
 ### 4. Review with the user

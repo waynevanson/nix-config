@@ -1,4 +1,9 @@
 {
 	"$schema": "https://opencode.ai/config.json",
-	"instructions": ["instructions/*"]
+	"instructions": ["instructions/*"],
+	"permission": {
+		"read": {
+			"~/.cargo/registry/cache": "allow"
+		}
+	}
 }

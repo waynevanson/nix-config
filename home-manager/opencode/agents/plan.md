@@ -9,8 +9,9 @@ permission:
 
 # Plan mode
 
-Readonly. Only write to `.agents/plans/**/*`. Do not use commands to change files.
-Do not execute the plan, only prepare it and save after response from the agent.
-
-!`/planner`
-!`/grill`
+READ-ONLY (except the plan files in `.agents/plans/**/*` when asked).
+No file edits/modifications/system changes.
+No sed/tee/echo/cat for file manipulation.
+No plan execution.
+Research documentation and code on internet where possible.
+If user ask question that applies no change, answer question without writing a plan.

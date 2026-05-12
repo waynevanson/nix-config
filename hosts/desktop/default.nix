@@ -106,6 +106,15 @@ let
     };
   };
 
+  ollama' =
+    { pkgs, ... }:
+    {
+      services.ollama = {
+        enable = true;
+        package = pkgs.ollama-cuda;
+      };
+    };
+
   host' = {
     system.stateVersion = "25.05";
 
@@ -128,6 +137,7 @@ in
     system'
     user'
     homeManager'
-     custom'
+    custom'
+    ollama'
   ];
 }
