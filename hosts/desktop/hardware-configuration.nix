@@ -39,6 +39,7 @@
     ];
   };
 
+  # # todo: Add filesystem stuff here
   # fileSystems."/mnt/secondary" = {
   #   device = "72e2f52d-81b7-40f9-a0f8-2a4c329a7d12";
   #   fsType = "ext4";

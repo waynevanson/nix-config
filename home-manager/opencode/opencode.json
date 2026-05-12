@@ -5,5 +5,21 @@
 		"read": {
 			"~/.cargo/registry/cache": "allow"
 		}
+	},
+	"provider": {
+		"llama": {
+			"npm": "@ai-sdk/openai-compatible",
+			"options": {
+				"baseURL": "http://localhost:11434/v1",
+				"apiKey": " "
+			},
+			"models": {
+				"hf.co/unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_M": {
+					"name": "(Local) Qwen 3 Coder Next",
+					"tool_call": true,
+					"reasoning": false
+				}
+			}
+		}
 	}
 }
