@@ -131,29 +131,29 @@ let
 
   attic' = {
     sops = {
-      secrets.attic-secret = {
+      secrets.atticd-secret = {
         sopsFile = ../../.sops.secrets.yaml;
-        key = "attic/secret";
+        key = "atticd/secret";
       };
 
-      templates.attic-environment-file = {
+      templates.atticd-environment-file = {
         content = ''
-          ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.attic-secret}
+          ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.atticd-secret}
         '';
-        owner = "attic";
+        owner = "atticd";
       };
     };
 
     services.atticd = {
       enable = true;
-      environmentFile = config.sops.templates.attic-environment-file.path;
+      environmentFile = config.sops.templates.atticd-environment-file.path;
       settings = {
         jwt = { };
         listen = "[::]:2884";
       };
     };
 
-    services.nginx.virtualHosts."attic.waynevanson.com" = {
+    services.nginx.virtualHosts."atticd.waynevanson.com" = {
       useACMEHost = "waynevanson.com";
       forceSSL = true;
       locations."/" = {
