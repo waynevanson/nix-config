@@ -2,9 +2,22 @@
 
 let
   sops' = {
-    sops.secrets.spaceship-token = {
+    sops.secrets.spaceship-client-id = {
       sopsFile = ../../.sops.secrets.yaml;
-      key = "spaceship/token";
+      key = "spaceship/client-id";
+    };
+
+    sops.secrets.spaceship-client-secret = {
+      sopsFile = ../../.sops.secrets.yaml;
+      key = "spaceship/client-secret";
+    };
+
+    sops.templates.spacetime-environment-file = {
+      content = ''
+        SPACESHIP_API_KEY=${config.sops.placeholder.spaceship-client-id}
+        SPACESHIP_API_SECRET=${config.sops.placeholder.spaceship-client-secret}
+      '';
+      owner = "acme";
     };
   };
 
@@ -15,8 +28,10 @@ let
       certs."waynevanson.com" = {
         dnsProvider = "spaceship";
         webroot = null;
+        # todo: rotate because Gwen leaked
         credentialFiles = {
-          "SPACESHIP_API_TOKEN_FILE" = config.sops.secrets.spaceship-token.path;
+          "SPACESHIP_API_KEY_FILE" = config.sops.secrets.spaceship-client-id.path;
+          "SPACESHIP_API_SECRET_FILE" = config.sops.secrets.spaceship-client-secret.path;
         };
       };
     };
@@ -26,8 +41,8 @@ let
     services.nginx = {
       enable = true;
       virtualHosts."waynevanson.com" = {
-        # enableACME = true;
-        # forceSSL = true;
+        enableACME = true;
+        forceSSL = true;
         locations."/" = {
           return = "200 'Hello from NixOS server'";
         };
@@ -77,8 +92,8 @@ let
 in
 {
   imports = [
-    # sops'
-    # acme'
+    sops'
+    acme'
     nginx'
     ssh'
     host'
