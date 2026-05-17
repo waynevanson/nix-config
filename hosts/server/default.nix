@@ -2,27 +2,32 @@
 
 let
   sops' = {
-    sops.secrets.spaceship-client-id = {
-      sopsFile = ../../.sops.secrets.yaml;
-      key = "spaceship/client-id";
-    };
-
-    sops.secrets.spaceship-client-secret = {
-      sopsFile = ../../.sops.secrets.yaml;
-      key = "spaceship/client-secret";
-    };
-
-    sops.templates.spacetime-environment-file = {
-      content = ''
-        SPACESHIP_API_KEY=${config.sops.placeholder.spaceship-client-id}
-        SPACESHIP_API_SECRET=${config.sops.placeholder.spaceship-client-secret}
-      '';
-      owner = "acme";
-    };
 
   };
 
   acme' = {
+    sops = {
+      secrets = {
+        spaceship-client-id = {
+          sopsFile = ../../.sops.secrets.yaml;
+          key = "spaceship/client-id";
+        };
+
+        spaceship-client-secret = {
+          sopsFile = ../../.sops.secrets.yaml;
+          key = "spaceship/client-secret";
+        };
+      };
+
+      templates.spacetime-environment-file = {
+        content = ''
+          SPACESHIP_API_KEY=${config.sops.placeholder.spaceship-client-id}
+          SPACESHIP_API_SECRET=${config.sops.placeholder.spaceship-client-secret}
+        '';
+        owner = "acme";
+      };
+    };
+
     security.acme = {
       acceptTerms = true;
       defaults.email = "waynevanson@gmail.com";
@@ -47,24 +52,6 @@ let
           enableACME = true;
           forceSSL = true;
         };
-        "attic.waynevanson.com" = {
-          useACMEHost = "waynevanson.com";
-          forceSSL = true;
-        };
-        "git.waynevanson.com" = {
-          useACMEHost = "waynevanson.com";
-          forceSSL = true;
-          locations."/" = {
-            proxyPass = "http://localhost:3000";
-            proxyWebsockets = true;
-            extraConfig = ''
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-            '';
-          };
-        };
       };
     };
 
@@ -83,6 +70,7 @@ let
       database.port = 5432;
       database.name = "forgejo";
       database.user = "forgejo";
+      # todo: this should probably be a file, but with a variable name or not?
       database.passwordFile = config.sops.secrets.forgejo-db-pass.path;
       lfs.enable = true;
       settings = {
@@ -129,7 +117,7 @@ let
     };
   };
 
-  attic' = {
+  atticd' = {
     sops = {
       secrets.atticd-secret = {
         sopsFile = ../../.sops.secrets.yaml;
@@ -140,10 +128,19 @@ let
         content = ''
           ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.atticd-secret}
         '';
-        owner = "atticd";
+        owner = config.services.atticd.user;
       };
     };
 
+    users = {
+      groups.atticd = { };
+      users.atticd = {
+        isSystemUser = true;
+        group = "atticd";
+      };
+    };
+
+    # todo: point to s3 garage on server
     services.atticd = {
       enable = true;
       environmentFile = config.sops.templates.atticd-environment-file.path;
@@ -175,6 +172,7 @@ let
       key = "garage/rpc-secret";
     };
 
+    # todo: add
     services.garage = {
       enable = true;
       package = config.nixpkgs.pkgs.garage;
@@ -183,6 +181,7 @@ let
         consistency_mode = "consistent";
         data_dir = "/var/lib/garage";
         rpc_bind_addr = "[::]:3901";
+        # todo: use sops
         rpc_secret = "4425f5c26c5e11581d3223904324dcb5b5d5dfb14e5e7f35e38c595424f5f1e6";
         s3_api = {
           api_bind_addr = "[::]:3900";
@@ -214,9 +213,9 @@ let
       # devices = [ ];
       efiSupport = true;
       efiInstallAsRemovable = true;
-
     };
 
+    # Allows use of `--sudo` without a password when running `nixos-rebuild switch`
     security.sudo.wheelNeedsPassword = false;
 
     users.users.waynevanson = {
@@ -243,7 +242,7 @@ let
 in
 {
   imports = [
-    attic'
+    atticd'
     sops'
     acme'
     nginx'
