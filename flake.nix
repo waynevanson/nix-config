@@ -71,7 +71,7 @@
 
       nixosConfigurations = createNixosConfigurations {
         nixos = ./hosts/desktop;
-        # server = ./hosts/server;
+        server = ./hosts/server;
       };
 
       packages.${system} = {

@@ -14,6 +14,7 @@ let
       defaults.email = "waynevanson@gmail.com";
       certs."waynevanson.com" = {
         dnsProvider = "spaceship";
+        webroot = null;
         credentialFiles = {
           "SPACESHIP_API_TOKEN_FILE" = config.sops.secrets.spaceship-token.path;
         };
@@ -39,11 +40,35 @@ let
     ];
   };
 
+  host' = {
+    networking.hostName = "server";
+
+    boot.loader.grub = {
+      enable = true;
+      devices = [ "/dev/sda" ]; # TODO: change to actual disk
+    };
+
+    fileSystems."/" = {
+      device = "/dev/sda1"; # TODO: change to actual root partition
+      fsType = "ext4";
+    };
+
+    users.users.waynevanson = {
+      isNormalUser = true;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
+      ];
+    };
+
+    system.stateVersion = "26.05";
+  };
+
   ssh' = {
-    services.ssh = {
+    services.sshd = {
       enable = true;
     };
   };
+
 in
 {
   imports = [
@@ -51,5 +76,6 @@ in
     acme'
     nginx'
     ssh'
+    host'
   ];
 }
