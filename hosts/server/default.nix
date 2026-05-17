@@ -19,6 +19,7 @@ let
       '';
       owner = "acme";
     };
+
   };
 
   acme' = {
@@ -73,6 +74,7 @@ let
     ];
   };
 
+  # todo: allow self to create account and sign in
   forgejo' = {
     services.forgejo = {
       enable = true;
@@ -109,6 +111,61 @@ let
     sops.secrets.forgejo-db-pass = {
       sopsFile = ../../.sops.secrets.yaml;
       key = "postgres/password";
+    };
+
+    services.nginx.virtualHosts."git.waynevanson.com" = {
+      useACMEHost = "waynevanson.com";
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:3000";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
+  };
+
+  attic' = {
+    sops = {
+      secrets.attic-secret = {
+        sopsFile = ../../.sops.secrets.yaml;
+        key = "attic/secret";
+      };
+
+      templates.attic-environment-file = {
+        content = ''
+          ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.attic-secret}
+        '';
+        owner = "attic";
+      };
+    };
+
+    services.atticd = {
+      enable = true;
+      environmentFile = config.sops.templates.attic-environment-file.path;
+      settings = {
+        jwt = { };
+        listen = "[::]:2884";
+      };
+    };
+
+    services.nginx.virtualHosts."attic.waynevanson.com" = {
+      useACMEHost = "waynevanson.com";
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:2884";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
     };
   };
 
@@ -186,6 +243,7 @@ let
 in
 {
   imports = [
+    attic'
     sops'
     acme'
     nginx'
