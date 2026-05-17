@@ -187,20 +187,39 @@ let
           api_bind_addr = "[::]:3900";
           s3_region = "garage";
         };
+        s3_web = {
+          bind_addr = "[::]:3902";
+          root_domain = ".web.garage.localhost";
+        };
       };
     };
 
-    services.nginx.virtualHosts."s3.waynevanson.com" = {
-      useACMEHost = "waynevanson.com";
-      forceSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:3900";
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        '';
+    services.nginx.virtualHosts = {
+      "s3.garage.waynevanson.com" = {
+        useACMEHost = "waynevanson.com";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:3900";
+          extraConfig = ''
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+          '';
+        };
+      };
+      "web.garage.waynevanson.com" = {
+        useACMEHost = "waynevanson.com";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:3902";
+          extraConfig = ''
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+          '';
+        };
       };
     };
   };
