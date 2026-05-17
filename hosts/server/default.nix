@@ -113,13 +113,20 @@ let
   };
 
   garage' = {
+    sops.secrets.garage-rpc-secret = {
+      sopsFile = ../../.sops.secrets.yaml;
+      key = "garage/rpc-secret";
+    };
+
     services.garage = {
       enable = true;
       package = config.nixpkgs.pkgs.garage;
       settings = {
+        replication_factor = 1;
+        consistency_mode = "consistent";
         data_dir = "/var/lib/garage";
         rpc_bind_addr = "[::]:3901";
-        rpc_secret = "";
+        rpc_secret = "4425f5c26c5e11581d3223904324dcb5b5d5dfb14e5e7f35e38c595424f5f1e6";
         s3_api = {
           api_bind_addr = "[::]:3900";
           s3_region = "garage";
