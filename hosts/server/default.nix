@@ -32,7 +32,10 @@ let
       acceptTerms = true;
       defaults.email = "waynevanson@gmail.com";
       certs."waynevanson.com" = {
-        extraDomainNames = [ "*.waynevanson.com" ];
+        extraDomainNames = [
+          "*.waynevanson.com"
+          "*.*.waynevanson.com"
+        ];
         dnsProvider = "spaceship";
         webroot = null;
 
