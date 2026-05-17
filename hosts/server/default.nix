@@ -26,9 +26,10 @@ let
       acceptTerms = true;
       defaults.email = "waynevanson@gmail.com";
       certs."waynevanson.com" = {
+        extraDomainNames = [ "*.waynevanson.com" ];
         dnsProvider = "spaceship";
         webroot = null;
-        # todo: rotate because Gwen leaked
+
         credentialFiles = {
           "SPACESHIP_API_KEY_FILE" = config.sops.secrets.spaceship-client-id.path;
           "SPACESHIP_API_SECRET_FILE" = config.sops.secrets.spaceship-client-secret.path;
@@ -40,9 +41,15 @@ let
   nginx' = {
     services.nginx = {
       enable = true;
-      virtualHosts."waynevanson.com" = {
-        enableACME = true;
-        forceSSL = true;
+      virtualHosts = {
+        "waynevanson.com" = {
+          enableACME = true;
+          forceSSL = true;
+        };
+        "attic.waynevanson.com" = {
+          useACMEHost = "waynevanson.com";
+          forceSSL = true;
+        };
       };
     };
 
