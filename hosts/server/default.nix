@@ -48,7 +48,10 @@ let
       # devices = [ ];
       efiSupport = true;
       efiInstallAsRemovable = true;
+
     };
+
+    security.sudo.wheelNeedsPassword = false;
 
     users.users.waynevanson = {
       isNormalUser = true;
