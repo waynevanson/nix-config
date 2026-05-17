@@ -44,13 +44,10 @@ let
     networking.hostName = "server";
 
     boot.loader.grub = {
-      enable = true;
-      devices = [ "/dev/sda" ]; # TODO: change to actual disk
-    };
-
-    fileSystems."/" = {
-      device = "/dev/sda1"; # TODO: change to actual root partition
-      fsType = "ext4";
+      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+      # devices = [ ];
+      efiSupport = true;
+      efiInstallAsRemovable = true;
     };
 
     users.users.waynevanson = {
@@ -69,6 +66,10 @@ let
     };
   };
 
+  facter' = {
+    hardware.facter.reportPath = ./facter.json;
+  };
+
 in
 {
   imports = [
@@ -77,5 +78,7 @@ in
     nginx'
     ssh'
     host'
+    facter'
+    ./disko-configuration.nix
   ];
 }
