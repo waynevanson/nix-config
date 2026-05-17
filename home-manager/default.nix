@@ -36,6 +36,8 @@
     claude-code
     opencode
     inputs.self.packages.${system}.bitwig
+    s5cmd
+    openssl
   ];
 
   programs = {

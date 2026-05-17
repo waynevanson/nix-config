@@ -1,3 +1,4 @@
+# todo: sopsFile should be the default
 { config, ... }:
 
 let
@@ -171,22 +172,43 @@ let
   };
 
   garage' = {
-    sops.secrets.garage-rpc-secret = {
-      sopsFile = ../../.sops.secrets.yaml;
-      key = "garage/rpc-secret";
+    # todo: make accessible for s5cmd
+    sops = {
+      secrets = {
+        garage-rpc-secret = {
+          sopsFile = ../../.sops.secrets.yaml;
+          key = "garage/rpc-secret";
+        };
+
+        garage-access-key = {
+          sopsFile = ../../.sops.secrets.yaml;
+          key = "garage/access-key";
+        };
+        garage-secret-key = {
+          sopsFile = ../../.sops.secrets.yaml;
+          key = "garage/secret-key";
+        };
+      };
+
+      templates.garage-environment-file = {
+        content = ''
+          GARAGE_RPC_SECRET=${config.sops.placeholder.garage-rpc-secret}
+          GARAGE_DEFAULT_ACCESS_KEY=${config.sops.placeholder.garage-access-key}
+          GARAGE_DEFAULT_SECRET_KEY=${config.sops.placeholder.garage-secret-key}
+          GARAGE_DEFAULT_BUCKEY="default-bucket"
+        '';
+      };
     };
 
-    # todo: add
     services.garage = {
       enable = true;
       package = config.nixpkgs.pkgs.garage;
+      environmentFile = config.sops.templates.garage-environment-file.path;
       settings = {
         replication_factor = 1;
         consistency_mode = "consistent";
         data_dir = "/var/lib/garage";
         rpc_bind_addr = "[::]:3901";
-        # todo: use sops
-        rpc_secret = "4425f5c26c5e11581d3223904324dcb5b5d5dfb14e5e7f35e38c595424f5f1e6";
         s3_api = {
           api_bind_addr = "[::]:3900";
           s3_region = "garage";
