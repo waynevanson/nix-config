@@ -26,8 +26,8 @@ let
     services.nginx = {
       enable = true;
       virtualHosts."waynevanson.com" = {
-        enableACME = true;
-        forceSSL = true;
+        # enableACME = true;
+        # forceSSL = true;
         locations."/" = {
           return = "200 'Hello from NixOS server'";
         };
@@ -77,8 +77,8 @@ let
 in
 {
   imports = [
-    sops'
-    acme'
+    # sops'
+    # acme'
     nginx'
     ssh'
     host'
