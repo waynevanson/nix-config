@@ -80,7 +80,7 @@ let
           server = {
             DOMAIN = "git.waynevanson.com";
             ROOT_URL = "https://git.waynevanson.com/";
-            HTTP_PORT = 3000;
+            HTTP_PORT = 3098;
             SSH_PORT = lib.head config.services.openssh.ports;
           };
           service = {
@@ -109,7 +109,7 @@ let
         useACMEHost = "waynevanson.com";
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://localhost:3000";
+          proxyPass = "http://localhost:3098";
           proxyWebsockets = true;
           extraConfig = ''
             proxy_set_header Host $host;
