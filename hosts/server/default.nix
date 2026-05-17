@@ -43,9 +43,6 @@ let
       virtualHosts."waynevanson.com" = {
         enableACME = true;
         forceSSL = true;
-        locations."/" = {
-          return = "200 'Hello from NixOS server'";
-        };
       };
     };
 
