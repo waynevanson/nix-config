@@ -33,8 +33,10 @@ let
       defaults.email = "waynevanson@gmail.com";
       certs."waynevanson.com" = {
         extraDomainNames = [
-          "*.waynevanson.com"
-          "*.*.waynevanson.com"
+          "git.waynevanson.com"
+          "atticd.waynevanson.com"
+          "s3.garage.waynevanson.com"
+          "web.garage.waynevanson.com"
         ];
         dnsProvider = "spaceship";
         webroot = null;
