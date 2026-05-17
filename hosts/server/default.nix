@@ -112,6 +112,36 @@ let
     };
   };
 
+  garage' = {
+    services.garage = {
+      enable = true;
+      package = config.nixpkgs.pkgs.garage;
+      settings = {
+        data_dir = "/var/lib/garage";
+        rpc_bind_addr = "[::]:3901";
+        rpc_secret = "";
+        s3_api = {
+          api_bind_addr = "[::]:3900";
+          s3_region = "garage";
+        };
+      };
+    };
+
+    services.nginx.virtualHosts."s3.waynevanson.com" = {
+      useACMEHost = "waynevanson.com";
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:3900";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
+  };
+
   host' = {
     networking.hostName = "server";
 
@@ -156,6 +186,7 @@ in
     ssh'
     host'
     facter'
+    garage'
     ./disko-configuration.nix
   ];
 }
