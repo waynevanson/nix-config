@@ -1,7 +1,6 @@
 { config, ... }:
 
 let
-
   acme' = {
     sops = {
       secrets = {
@@ -64,60 +63,63 @@ let
   };
 
   # todo: allow self to create account and sign in
-  forgejo' = {
-    services.forgejo = {
-      enable = true;
-      database.type = "postgres";
-      database.host = "localhost";
-      database.port = 5432;
-      database.name = "forgejo";
-      database.user = "forgejo";
-      # todo: this should probably be a file, but with a variable name or not?
-      database.passwordFile = config.sops.secrets.forgejo-db-pass.path;
-      lfs.enable = true;
-      settings = {
-        server = {
-          DOMAIN = "git.waynevanson.com";
-          ROOT_URL = "https://git.waynevanson.com/";
-          HTTP_PORT = 3000;
+  forgejo' =
+    { config, lib, ... }:
+    {
+      services.forgejo = {
+        enable = true;
+        database.type = "postgres";
+        database.host = "localhost";
+        database.port = 5432;
+        database.name = "forgejo";
+        database.user = "forgejo";
+        # todo: this should probably be a file, but with a variable name or not?
+        database.passwordFile = config.sops.secrets.forgejo-db-pass.path;
+        lfs.enable = true;
+        settings = {
+          server = {
+            DOMAIN = "git.waynevanson.com";
+            ROOT_URL = "https://git.waynevanson.com/";
+            HTTP_PORT = 3000;
+            SSH_PORT = lib.head config.services.openssh.ports;
+          };
+          service = {
+            DISABLE_REGISTRATION = true;
+          };
         };
-        service = {
-          DISABLE_REGISTRATION = true;
+      };
+
+      services.postgresql = {
+        enable = true;
+        ensureDatabases = [ "forgejo" ];
+        ensureUsers = [
+          {
+            name = "forgejo";
+            ensureDBOwnership = true;
+          }
+        ];
+      };
+
+      sops.secrets.forgejo-db-pass = {
+        sopsFile = ../../.sops.secrets.yaml;
+        key = "postgres/password";
+      };
+
+      services.nginx.virtualHosts."git.waynevanson.com" = {
+        useACMEHost = "waynevanson.com";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:3000";
+          proxyWebsockets = true;
+          extraConfig = ''
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+          '';
         };
       };
     };
-
-    services.postgresql = {
-      enable = true;
-      ensureDatabases = [ "forgejo" ];
-      ensureUsers = [
-        {
-          name = "forgejo";
-          ensureDBOwnership = true;
-        }
-      ];
-    };
-
-    sops.secrets.forgejo-db-pass = {
-      sopsFile = ../../.sops.secrets.yaml;
-      key = "postgres/password";
-    };
-
-    services.nginx.virtualHosts."git.waynevanson.com" = {
-      useACMEHost = "waynevanson.com";
-      forceSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:3000";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        '';
-      };
-    };
-  };
 
   atticd' = {
     sops = {
