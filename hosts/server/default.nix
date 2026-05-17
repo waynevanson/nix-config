@@ -1,9 +1,6 @@
 { config, ... }:
 
 let
-  sops' = {
-
-  };
 
   acme' = {
     sops = {
@@ -267,7 +264,6 @@ in
 {
   imports = [
     atticd'
-    sops'
     acme'
     nginx'
     forgejo'
