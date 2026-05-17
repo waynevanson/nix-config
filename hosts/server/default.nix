@@ -1,19 +1,13 @@
+# todo: fix sops file or else no deploy
 # todo: sopsFile should be the default
-{ config, ... }:
+{ config, lib, ... }:
 
 let
   acme' = {
     sops = {
       secrets = {
-        spaceship-client-id = {
-          sopsFile = ../../.sops.secrets.yaml;
-          key = "spaceship/client-id";
-        };
-
-        spaceship-client-secret = {
-          sopsFile = ../../.sops.secrets.yaml;
-          key = "spaceship/client-secret";
-        };
+        spaceship-client-id.key = "spaceship/client-id";
+        spaceship-client-secret.key = "spaceship/client-secret";
       };
 
       templates.spacetime-environment-file = {
@@ -101,10 +95,7 @@ let
         ];
       };
 
-      sops.secrets.forgejo-db-pass = {
-        sopsFile = ../../.sops.secrets.yaml;
-        key = "postgres/password";
-      };
+      sops.secrets.forgejo-db-pass.key = "postgres/password";
 
       services.nginx.virtualHosts."git.waynevanson.com" = {
         useACMEHost = "waynevanson.com";
@@ -124,10 +115,7 @@ let
 
   atticd' = {
     sops = {
-      secrets.atticd-secret = {
-        sopsFile = ../../.sops.secrets.yaml;
-        key = "atticd/secret";
-      };
+      secrets.atticd-secret.key = "atticd/secret";
 
       templates.atticd-environment-file = {
         content = ''
@@ -175,19 +163,9 @@ let
     # todo: make accessible for s5cmd
     sops = {
       secrets = {
-        garage-rpc-secret = {
-          sopsFile = ../../.sops.secrets.yaml;
-          key = "garage/rpc-secret";
-        };
-
-        garage-access-key = {
-          sopsFile = ../../.sops.secrets.yaml;
-          key = "garage/access-key";
-        };
-        garage-secret-key = {
-          sopsFile = ../../.sops.secrets.yaml;
-          key = "garage/secret-key";
-        };
+        garage-rpc-secret.key = "garage/rpc-secret";
+        garage-access-key.key = "garage/access-key";
+        garage-secret-key.key = "garage/secret-key";
       };
 
       templates.garage-environment-file = {
@@ -197,7 +175,16 @@ let
           GARAGE_DEFAULT_SECRET_KEY=${config.sops.placeholder.garage-secret-key}
           GARAGE_DEFAULT_BUCKEY="default-bucket"
         '';
+        owner = "garage";
       };
+    };
+
+    users = {
+      users.garage = {
+        isSystemUser = true;
+        group = "garage";
+      };
+      groups.garage = { };
     };
 
     services.garage = {
@@ -218,6 +205,11 @@ let
           root_domain = ".web.garage.localhost";
         };
       };
+
+    };
+
+    systemd.services.garage.serviceConfig = {
+      DynamicUser = lib.mkOverride false;
     };
 
     services.nginx.virtualHosts = {
@@ -272,6 +264,7 @@ let
     };
 
     system.stateVersion = "26.05";
+    sops.defaultSopsFile = ../../.sops.secrets.yaml;
   };
 
   ssh' = {
@@ -287,14 +280,14 @@ let
 in
 {
   imports = [
-    atticd'
+    # atticd'
     acme'
     nginx'
     forgejo'
     ssh'
     host'
     facter'
-    garage'
+    # garage'
     ./disko-configuration.nix
   ];
 }
