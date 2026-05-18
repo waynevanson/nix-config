@@ -1,16 +1,4 @@
 let
-  secrets' = {
-    sops.defaultSopsFile = ../../.sops.secrets.yaml;
-    sops.secrets = {
-      spaceship-client-id.key = "spaceship/client-id";
-      spaceship-client-secret.key = "spaceship/client-secret";
-      atticd-secret.key = "atticd/secret";
-      garage-rpc-secret.key = "garage/rpc-secret";
-      garage-access-key.key = "garage/access-key";
-      garage-secret-key.key = "garage/secret-key";
-      postgres-password.key = "postgres/password";
-    };
-  };
   acme' =
     { config, ... }:
     {
