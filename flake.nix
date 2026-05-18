@@ -79,6 +79,9 @@
         pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
       };
 
-      nixosModules.custom = ./modules/custom;
+      nixosModules = {
+        custom = ./modules/custom;
+        sops = ./modules/sops.nix;
+      };
     };
 }
