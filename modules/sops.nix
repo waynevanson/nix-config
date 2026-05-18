@@ -13,7 +13,7 @@
       garage-access-key.key = "garage/access-key";
       garage-secret-key.key = "garage/secret-key";
       postgres-password.key = "postgres/password";
-      forgejo-runner-token.key = "forgejo/runner/token";
+      forgejo-runner-token.key = "forgejo/token";
     };
   };
 }
