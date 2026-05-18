@@ -54,6 +54,7 @@
           specialArgs = { inherit inputs system self; };
         }
       );
+
       createAppScripts = pkgs.lib.mapAttrs (
         scriptName: scriptBody: {
           type = "app";

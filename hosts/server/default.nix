@@ -68,6 +68,7 @@ let
         # todo: this should probably be a file, but with a variable name or not?
         database.passwordFile = config.sops.secrets.postgres-password.path;
         lfs.enable = true;
+        # https://forgejo.org/docs/latest/admin/config-cheat-sheet/
         settings = {
           server = {
             DOMAIN = "git.waynevanson.com";
