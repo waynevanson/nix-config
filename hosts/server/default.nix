@@ -27,7 +27,6 @@ let
           "git.waynevanson.com"
           "atticd.waynevanson.com"
           "s3.garage.waynevanson.com"
-          "web.garage.waynevanson.com"
         ];
         dnsProvider = "spaceship";
         webroot = null;
@@ -201,45 +200,27 @@ let
           api_bind_addr = "[::]:3900";
           s3_region = "garage";
         };
-        s3_web = {
-          bind_addr = "[::]:3902";
-          root_domain = ".web.garage.localhost";
-        };
       };
 
     };
 
-    # Garage needs to have default
     systemd.services.garage.serviceConfig = {
+      # Garage needs to have a known user to read the secrets
       DynamicUser = false;
+      ExecStart = "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
     };
 
-    services.nginx.virtualHosts = {
-      "s3.garage.waynevanson.com" = {
-        useACMEHost = "waynevanson.com";
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:3900";
-          extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-          '';
-        };
-      };
-      "web.garage.waynevanson.com" = {
-        useACMEHost = "waynevanson.com";
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:3902";
-          extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-          '';
-        };
+    services.nginx.virtualHosts."s3.garage.waynevanson.com" = {
+      useACMEHost = "waynevanson.com";
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:3900";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
       };
     };
   };
