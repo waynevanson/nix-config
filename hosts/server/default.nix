@@ -57,6 +57,7 @@ let
     ];
   };
 
+  # todo: fix virtual host
   # todo: allow self to create account and sign in
   forgejo' =
     { config, lib, ... }:
@@ -173,7 +174,7 @@ let
           GARAGE_RPC_SECRET=${config.sops.placeholder.garage-rpc-secret}
           GARAGE_DEFAULT_ACCESS_KEY=${config.sops.placeholder.garage-access-key}
           GARAGE_DEFAULT_SECRET_KEY=${config.sops.placeholder.garage-secret-key}
-          GARAGE_DEFAULT_BUCKEY="default-bucket"
+          GARAGE_DEFAULT_BUCKET="default-bucket"
         '';
         owner = "garage";
       };
@@ -208,8 +209,9 @@ let
 
     };
 
+    # Garage needs to have default
     systemd.services.garage.serviceConfig = {
-      DynamicUser = lib.mkOverride false;
+      DynamicUser = false;
     };
 
     services.nginx.virtualHosts = {
@@ -280,14 +282,14 @@ let
 in
 {
   imports = [
-    # atticd'
+    atticd'
+    garage'
     acme'
     nginx'
     forgejo'
     ssh'
     host'
     facter'
-    # garage'
     ./disko-configuration.nix
   ];
 }
