@@ -54,6 +54,12 @@
           specialArgs = { inherit inputs system self; };
         }
       );
+      createAppScripts = pkgs.lib.mapAttrs (
+        scriptName: scriptBody: {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin scriptName scriptBody}/bin/${scriptName}";
+        }
+      );
 
     in
     {
@@ -67,6 +73,16 @@
           ssh-to-age
           yq
         ];
+      };
+
+      apps.${system} = createAppScripts {
+        server-rebuild = ''
+          nixos-rebuild switch \
+          --flake .#server \
+          --build-host waynevanson@waynevanson.com \
+          --target-host waynevanson@waynevanson.com \
+          --sudo
+        '';
       };
 
       nixosConfigurations = createNixosConfigurations {
