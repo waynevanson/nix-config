@@ -67,6 +67,9 @@ let
           service = {
             DISABLE_REGISTRATION = true;
           };
+          actions = {
+            ENABLED = true;
+          };
         };
       };
 
@@ -93,6 +96,33 @@ let
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
           '';
+        };
+      };
+
+    };
+
+  forgejo-runner' =
+    { pkgs, config, ... }:
+    {
+      sops.templates.forgejo-runner-token-file = {
+        content = ''
+          TOKEN=${config.sops.placeholder.forgejo-runner-token}
+        '';
+        owner = "forgejo";
+      };
+
+      virtualisation.podman.enable = true;
+
+      services.gitea-actions-runner = {
+        package = pkgs.forgejo-runner;
+        instances.default = {
+          enable = true;
+          name = "monolith";
+          url = "https://git.waynevanson.com";
+          tokenFile = config.sops.templates.forgejo-runner-token-file.path;
+          labels = [
+            "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
+          ];
         };
       };
     };
@@ -272,7 +302,7 @@ in
     ssh'
     host'
     facter'
-    # secrets'
+    # forgejo-runner'
     ./disko-configuration.nix
   ];
 }
