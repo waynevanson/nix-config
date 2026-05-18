@@ -70,7 +70,6 @@ let
           actions = {
             ENABLED = true;
           };
-
         };
       };
 
@@ -113,7 +112,7 @@ let
       };
 
       virtualisation.podman.enable = true;
-      # it's hanging here for reasons unknown due to vvirtualisation
+      # it's hanging here for reasons unknown due to virtualisation
       systemd.user.services.dbus-broker.restartIfChanged = false;
 
       services.gitea-actions-runner = {
@@ -125,6 +124,10 @@ let
           tokenFile = config.sops.templates.forgejo-runner-token-file.path;
           labels = [
             "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
+            "ubuntu-latest:docker://node:16-bullseye"
+            "ubuntu-22.04:docker://node:16-bullseye"
+            "ubuntu-20.04:docker://node:16-bullseye"
+            "ubuntu-18.04:docker://node:16-buster"
             "native:host"
           ];
         };
