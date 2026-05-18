@@ -111,7 +111,9 @@ let
         owner = "forgejo";
       };
 
-      # virtualisation.podman.enable = true;
+      virtualisation.podman.enable = true;
+      # it's hanging here for reasons unknown due to vvirtualisation
+      systemd.user.services.dbus-broker.restartIfChanged = false;
 
       services.gitea-actions-runner = {
         package = pkgs.forgejo-runner;
@@ -121,7 +123,7 @@ let
           url = "https://git.waynevanson.com";
           tokenFile = config.sops.templates.forgejo-runner-token-file.path;
           labels = [
-            # "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
+            "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
             "native:host"
           ];
         };
