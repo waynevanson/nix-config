@@ -26,7 +26,10 @@ let
         extraDomainNames = [
           "git.waynevanson.com"
           "atticd.waynevanson.com"
+          # todo: does this serve the default bucket?
           "s3.garage.waynevanson.com"
+          # todo: <bucket>.s3.garage.waynevanson.com
+          "*.s3.garage.waynevanson.com"
         ];
         dnsProvider = "spaceship";
         webroot = null;
@@ -189,7 +192,7 @@ let
 
     services.garage = {
       enable = true;
-      package = config.nixpkgs.pkgs.garage;
+      package = config.nixpkgs.pkgs.garage_2;
       environmentFile = config.sops.templates.garage-environment-file.path;
       settings = {
         replication_factor = 1;
@@ -206,8 +209,8 @@ let
 
     systemd.services.garage.serviceConfig = {
       # Garage needs to have a known user to read the secrets
-      DynamicUser = false;
-      ExecStart = "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
+      DynamicUser = lib.mkForce false;
+      ExecStart = lib.mkForce "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
     };
 
     services.nginx.virtualHosts."s3.garage.waynevanson.com" = {
