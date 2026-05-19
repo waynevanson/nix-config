@@ -105,14 +105,24 @@ let
   forgejo-runner' =
     { pkgs, config, ... }:
     {
-      sops.templates.forgejo-runner-token-file = {
-        content = config.sops.placeholder.forgejo-runner-token;
-        owner = "forgejo";
-      };
-
       virtualisation.podman.enable = true;
       # it's hanging here for reasons unknown due to virtualisation
       systemd.user.services.dbus-broker.restartIfChanged = false;
+
+      users = {
+        groups.gitea-runner = { };
+        users.gitea-runner = {
+          isSystemUser = true;
+          group = "atticd";
+        };
+      };
+      sops.templates.forgejo-runner-token-file = {
+
+        content = ''
+          TOKEN=${config.sops.placeholder.forgejo-runner-token}
+        '';
+        owner = "gitea-runner";
+      };
 
       services.gitea-actions-runner = {
         package = pkgs.forgejo-runner;
@@ -120,7 +130,6 @@ let
           enable = true;
           name = "monolith";
           url = "https://git.waynevanson.com";
-          tokenFile = config.sops.templates.forgejo-runner-token-file.path;
           labels = [
             "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
             "ubuntu-latest:docker://node:16-bullseye"
@@ -129,6 +138,7 @@ let
             "ubuntu-18.04:docker://node:16-buster"
             "native:host"
           ];
+          tokenFile = config.sops.templates.forgejo-runner-token-file.path;
         };
       };
     };
