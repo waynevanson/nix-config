@@ -117,7 +117,6 @@ let
         };
       };
       sops.templates.forgejo-runner-token-file = {
-
         content = ''
           TOKEN=${config.sops.placeholder.forgejo-runner-token}
         '';
