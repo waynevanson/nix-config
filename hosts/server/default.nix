@@ -100,16 +100,13 @@ let
           '';
         };
       };
-
     };
 
   forgejo-runner' =
     { pkgs, config, ... }:
     {
       sops.templates.forgejo-runner-token-file = {
-        content = ''
-          TOKEN=${config.sops.placeholder.forgejo-runner-token}
-        '';
+        content = config.sops.placeholder.forgejo-runner-token;
         owner = "forgejo";
       };
 
@@ -132,17 +129,6 @@ let
             "ubuntu-18.04:docker://node:16-buster"
             "native:host"
           ];
-          settings = {
-            server = {
-              connections = {
-                default = {
-                  url = "https://git.waynevanson.com/";
-                  uuid = "415288f7-359a-4d8b-8b9a-e79fb8c559db";
-                  token = "e3d4dd4a2a33cdbf7db38bcf8881a04b0c10a29d";
-                };
-              };
-            };
-          };
         };
       };
     };
