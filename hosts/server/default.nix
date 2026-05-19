@@ -8,6 +8,7 @@ let
         certs."waynevanson.com" = {
           extraDomainNames = [
             "git.waynevanson.com"
+            "runner.git.waynevanson.com"
             "atticd.waynevanson.com"
             # todo: does this serve the default bucket?
             "s3.garage.waynevanson.com"
@@ -63,6 +64,7 @@ let
             ROOT_URL = "https://git.waynevanson.com/";
             HTTP_PORT = 3098;
             SSH_PORT = lib.head config.services.openssh.ports;
+
           };
           service = {
             DISABLE_REGISTRATION = true;
@@ -130,6 +132,17 @@ let
             "ubuntu-18.04:docker://node:16-buster"
             "native:host"
           ];
+          settings = {
+            server = {
+              connections = {
+                default = {
+                  url = "https://git.waynevanson.com/";
+                  uuid = "415288f7-359a-4d8b-8b9a-e79fb8c559db";
+                  token = "e3d4dd4a2a33cdbf7db38bcf8881a04b0c10a29d";
+                };
+              };
+            };
+          };
         };
       };
     };
