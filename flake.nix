@@ -77,8 +77,9 @@
       };
 
       apps.${system} = createAppScripts {
-        server-rebuild = ''
-          nixos-rebuild switch \
+        server = ''
+          nixos-rebuild \
+          $1 \
           --flake .#server \
           --build-host waynevanson@waynevanson.com \
           --target-host waynevanson@waynevanson.com \
