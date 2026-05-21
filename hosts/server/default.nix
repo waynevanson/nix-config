@@ -43,87 +43,26 @@ let
     ];
   };
 
-  # todo: allow self to create account and sign in
-  forgejo' =
-    { config, lib, ... }:
-    {
-      services.forgejo = {
-        enable = true;
-        database.type = "postgres";
-        database.host = "localhost";
-        database.port = 5432;
-        database.name = "forgejo";
-        database.user = "forgejo";
-        # todo: this should probably be a file, but with a variable name or not?
-        database.passwordFile = config.sops.secrets.postgres-password.path;
-        lfs.enable = true;
-        # https://forgejo.org/docs/latest/admin/config-cheat-sheet/
-        settings = {
-          server = {
-            DOMAIN = "git.waynevanson.com";
-            ROOT_URL = "https://git.waynevanson.com/";
-            HTTP_PORT = 3098;
-            SSH_PORT = lib.head config.services.openssh.ports;
-
-          };
-          service = {
-            DISABLE_REGISTRATION = true;
-          };
-          actions = {
-            ENABLED = true;
-          };
-        };
-      };
-
-      services.postgresql = {
-        enable = true;
-        ensureDatabases = [ "forgejo" ];
-        ensureUsers = [
-          {
-            name = "forgejo";
-            ensureDBOwnership = true;
-          }
-        ];
-      };
-
-      services.nginx.virtualHosts."git.waynevanson.com" = {
-        useACMEHost = "waynevanson.com";
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:3098";
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-          '';
-        };
-      };
-    };
-
   forgejo-runner' =
     { pkgs, config, ... }:
+    let
+      usergroup = "gitea-runner";
+      tokenName = "forgejo-runner-token";
+      tokenFileName = "forgejo-runner-token-file";
+    in
     {
-      virtualisation.podman.enable = true;
-      # it's hanging here for reasons unknown due to virtualisation
-      systemd.user.services.dbus-broker.restartIfChanged = false;
 
-      users = {
-        groups.gitea-runner = { };
-        users.gitea-runner = {
-          isSystemUser = true;
-          group = "atticd";
+      sops = {
+        secrets.${tokenName}.key = "forgejo/token";
+        templates.${tokenFileName} = {
+          content = ''
+            TOKEN="${config.sops.placeholder.${tokenName}}"
+          '';
+          owner = usergroup;
         };
       };
 
-      sops.templates.forgejo-runner-token-file = {
-        content = ''
-          TOKEN="${config.sops.placeholder.forgejo-runner-token}"
-        '';
-        owner = "gitea-runner";
-      };
-
+      # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/continuous-integration/gitea-actions-runner.nix
       services.gitea-actions-runner = {
         package = pkgs.forgejo-runner;
         instances.default = {
@@ -132,17 +71,26 @@ let
           url = "https://git.waynevanson.com";
           labels = [
             "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
-            "ubuntu-latest:docker://node:16-bullseye"
-            "ubuntu-22.04:docker://node:16-bullseye"
-            "ubuntu-20.04:docker://node:16-bullseye"
-            "ubuntu-18.04:docker://node:16-buster"
-            "native:host"
           ];
-          tokenFile = config.sops.templates.forgejo-runner-token-file.path;
+          tokenFile = config.sops.templates.${tokenFileName}.path;
         };
       };
+
+      # it's hanging here for reasons unknown due to virtualisation
+      systemd.user.services.dbus-broker.restartIfChanged = false;
+
+      users = {
+        groups.${usergroup} = { };
+        users.${usergroup} = {
+          isSystemUser = true;
+          group = usergroup;
+        };
+      };
+
+      virtualisation.podman.enable = true;
     };
 
+  # nix binary cache server
   atticd' =
     { config, ... }:
     {
@@ -248,80 +196,75 @@ let
       };
     };
 
-  host' = {
-    networking.hostName = "server";
+  host' =
+    { self, ... }:
+    {
 
-    networking.extraHosts = ''
-      127.0.0.1 git.waynevanson.com
-    '';
+      imports = [ self.nixosModules.sops ];
 
-    boot.loader.grub = {
-      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
-      # devices = [ ];
-      efiSupport = true;
-      efiInstallAsRemovable = true;
+      networking.hostName = "server";
+
+      networking.extraHosts = ''
+        127.0.0.1 git.waynevanson.com
+      '';
+
+      boot.loader.grub = {
+        # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+        # devices = [ ];
+        efiSupport = true;
+        efiInstallAsRemovable = true;
+      };
+
+      # Allows use of `--sudo` without a password when running `nixos-rebuild switch`
+      security.sudo.wheelNeedsPassword = false;
+
+      users.users.waynevanson = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" ];
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
+        ];
+      };
+
+      system.stateVersion = "26.05";
+
+      # Set your time zone.
+      time.timeZone = "Australia/Melbourne";
+
+      # Select internationalisation properties.
+      i18n.defaultLocale = "en_AU.UTF-8";
+
+      i18n.extraLocaleSettings = {
+        LC_ADDRESS = "en_AU.UTF-8";
+        LC_IDENTIFICATION = "en_AU.UTF-8";
+        LC_MEASUREMENT = "en_AU.UTF-8";
+        LC_MONETARY = "en_AU.UTF-8";
+        LC_NAME = "en_AU.UTF-8";
+        LC_NUMERIC = "en_AU.UTF-8";
+        LC_PAPER = "en_AU.UTF-8";
+        LC_TELEPHONE = "en_AU.UTF-8";
+        LC_TIME = "en_AU.UTF-8";
+      };
+
+      sops = {
+        defaultSopsFile = ../../.sops.secrets.yaml;
+        age.sshKeyPaths = [
+          "/etc/ssh/ssh_host_ed25519_key"
+        ];
+      };
+
+      services.sshd.enable = true;
+      hardware.facter.reportPath = ./facter.json;
     };
-
-    # Allows use of `--sudo` without a password when running `nixos-rebuild switch`
-    security.sudo.wheelNeedsPassword = false;
-
-    users.users.waynevanson = {
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
-      ];
-    };
-
-    system.stateVersion = "26.05";
-
-    # Set your time zone.
-    time.timeZone = "Australia/Melbourne";
-
-    # Select internationalisation properties.
-    i18n.defaultLocale = "en_AU.UTF-8";
-
-    i18n.extraLocaleSettings = {
-      LC_ADDRESS = "en_AU.UTF-8";
-      LC_IDENTIFICATION = "en_AU.UTF-8";
-      LC_MEASUREMENT = "en_AU.UTF-8";
-      LC_MONETARY = "en_AU.UTF-8";
-      LC_NAME = "en_AU.UTF-8";
-      LC_NUMERIC = "en_AU.UTF-8";
-      LC_PAPER = "en_AU.UTF-8";
-      LC_TELEPHONE = "en_AU.UTF-8";
-      LC_TIME = "en_AU.UTF-8";
-    };
-    sops.defaultSopsFile = ../../.sops.secrets.yaml;
-  };
-
-  ssh' = {
-    services.sshd = {
-      enable = true;
-    };
-  };
-
-  facter' = {
-    hardware.facter.reportPath = ./facter.json;
-  };
-
 in
 {
   imports = [
-    (
-      { self, ... }:
-      {
-        imports = [ self.nixosModules.sops ];
-      }
-    )
-    atticd'
-    garage'
+    ./forgejo.nix
+    # atticd'
+    # garage'
     acme'
     nginx'
-    forgejo'
-    ssh'
     host'
-    facter'
     forgejo-runner'
     ./disko-configuration.nix
   ];
