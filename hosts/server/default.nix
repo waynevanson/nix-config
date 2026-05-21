@@ -116,9 +116,10 @@ let
           group = "atticd";
         };
       };
+
       sops.templates.forgejo-runner-token-file = {
         content = ''
-          TOKEN=${config.sops.placeholder.forgejo-runner-token}
+          TOKEN="${config.sops.placeholder.forgejo-runner-token}"
         '';
         owner = "gitea-runner";
       };
@@ -127,7 +128,7 @@ let
         package = pkgs.forgejo-runner;
         instances.default = {
           enable = true;
-          name = "monolith";
+          name = "default";
           url = "https://git.waynevanson.com";
           labels = [
             "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
