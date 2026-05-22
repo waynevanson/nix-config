@@ -94,7 +94,6 @@
 
       packages.${system} = {
         bitwig = pkgs.callPackage ./packages/bitwig.nix { };
-        pi-coding-agent = pkgs.callPackage ./packages/pi.nix { };
       };
 
       nixosModules = {

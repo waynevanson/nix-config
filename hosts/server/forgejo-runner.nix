@@ -1,12 +1,9 @@
 {
-  lib,
   pkgs,
   config,
-  utils,
   ...
 }:
 let
-  usergroup = "gitea-runner";
   tokenName = "forgejo-runner-token";
   tokenFileName = "forgejo-runner-token-file";
   instanceName = "default";
@@ -17,9 +14,9 @@ in
     secrets.${tokenName}.key = "forgejo/token";
     templates.${tokenFileName} = {
       content = ''
-        TOKEN="${config.sops.placeholder.${tokenName}}"
+        TOKEN=${config.sops.placeholder.${tokenName}}
       '';
-      group = usergroup;
+
     };
   };
 
@@ -33,24 +30,13 @@ in
       labels = [
         "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
       ];
-      tokenFile = config.sops.templates.${tokenFileName}.path;
+      token = "sup bro";
+      # tokenFile = config.sops.templates.${tokenFileName}.path;
     };
   };
-
-  # repl
-  systemd.services."gitea-runner-${utils.escapeSystemdPath instanceName}".serviceConfig.SupplementaryGroups =
-    lib.mkAfter [ usergroup ];
 
   # it's hanging here for reasons unknown due to virtualisation
   systemd.user.services.dbus-broker.restartIfChanged = false;
-
-  users = {
-    groups.${usergroup} = { };
-    users.${usergroup} = {
-      isSystemUser = true;
-      group = usergroup;
-    };
-  };
 
   virtualisation.podman.enable = true;
 }
