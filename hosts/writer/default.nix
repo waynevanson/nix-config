@@ -75,6 +75,8 @@ let
 
     hardware.facter.reportPath = ./facter.json;
 
+    services.getty.autologinUser = "waynevanson";
+
     services.kmscon = {
       enable = true;
       config = {
