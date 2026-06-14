@@ -63,7 +63,7 @@ let
   };
 
   host' = {
-    system.stateVersion = "25.05";
+    system.stateVersion = "26.05";
 
     networking.hostName = "writer";
     networking.networkmanager.enable = true;
@@ -77,11 +77,14 @@ let
 
     services.kmscon = {
       enable = true;
-      autologinUser = "waynevanson";
-      fonts = [
-        "${pkgs.jetbrains-mono}/share/fonts/truetype/JetBrainsMono-Regular.ttf"
-      ];
+      config = {
+        font-name = "JetBrains Mono";
+      };
     };
+
+    fonts.packages = [
+      pkgs.jetbrains-mono
+    ];
 
     programs.git.enable = true;
 
@@ -95,15 +98,17 @@ let
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
-      plugins = with pkgs.vimPlugins; [
-        catppuccin-nvim
-      ];
-      extraLuaConfig = ''
-        require("catppuccin").setup({
-          flavour = "mocha",
-        })
-        vim.cmd.colorscheme("catppuccin")
-      '';
+      configure = {
+        luaRcContent = ''
+          require("catppuccin").setup({
+            flavour = "mocha",
+          })
+          vim.cmd.colorscheme("catppuccin")
+        '';
+        packages.myPlugins = with pkgs.vimPlugins; {
+          start = [ catppuccin-nvim ];
+        };
+      };
     };
 
     programs.tmux = {
