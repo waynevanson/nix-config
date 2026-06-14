@@ -1,4 +1,7 @@
 {
+
+  hardware.facter.reportPath = ./facter.json;
+
   disko.devices = {
     disk.nvme = {
       type = "disk";
