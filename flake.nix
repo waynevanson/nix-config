@@ -90,6 +90,7 @@
       nixosConfigurations = createNixosConfigurations {
         nixos = ./hosts/desktop;
         server = ./hosts/server;
+        writer = ./hosts/writer;
       };
 
       packages.${system} = {
