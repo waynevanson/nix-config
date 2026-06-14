@@ -116,14 +116,10 @@ let
     programs.tmux = {
       enable = true;
       keyMode = "vi";
-      plugins = with pkgs.tmuxPlugins; [
-        {
-          plugin = catppuccin;
-          extraConfig = ''
-            set -g @catppuccin_flavor "mocha"
-          '';
-        }
-      ];
+      plugins = with pkgs.tmuxPlugins; [ catppuccin ];
+      extraConfig = ''
+        set -g @catppuccin_flavor "mocha"
+      '';
     };
   };
 in
