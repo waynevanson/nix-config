@@ -75,18 +75,48 @@ let
 
     hardware.facter.reportPath = ./facter.json;
 
-    services.kmscon.enable = true;
+    services.kmscon = {
+      enable = true;
+      autologinUser = "waynevanson";
+      fonts = [
+        "${pkgs.jetbrains-mono}/share/fonts/truetype/JetBrainsMono-Regular.ttf"
+      ];
+    };
 
     programs.git.enable = true;
+
+    environment.systemPackages = with pkgs; [
+      networkmanager
+      openssh
+    ];
 
     programs.neovim = {
       enable = true;
       defaultEditor = true;
+      viAlias = true;
+      vimAlias = true;
+      plugins = with pkgs.vimPlugins; [
+        catppuccin-nvim
+      ];
+      extraLuaConfig = ''
+        require("catppuccin").setup({
+          flavour = "mocha",
+        })
+        vim.cmd.colorscheme("catppuccin")
+      '';
     };
 
     programs.tmux = {
       enable = true;
       keyMode = "vi";
+      plugins = with pkgs.tmuxPlugins; [
+        {
+          plugin = catppuccin;
+          extraConfig = ''
+            set -g @catppuccin_flavor "mocha"
+          '';
+        }
+      ];
     };
   };
 in
