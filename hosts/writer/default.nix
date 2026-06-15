@@ -45,6 +45,35 @@ let
 
   };
 
+  brightness = pkgs.writeShellApplication {
+    name = "brightness";
+    runtimeInputs = [ pkgs.brightnessctl ];
+    text = ''
+      direction="$1"
+
+      current=$(brightnessctl get)
+      max=$(brightnessctl max)
+      percent=$(( 100 * current / max ))
+
+      delta=$(( percent / 10 ))
+      if [ "$delta" -lt 1 ]; then
+        delta=1
+      elif [ "$delta" -gt 10 ]; then
+        delta=10
+      fi
+
+      if [ "$direction" = "up" ]; then
+        target=$(( percent + delta ))
+        [ "$target" -gt 100 ] && target=100
+      else
+        target=$(( percent - delta ))
+        [ "$target" -lt 1 ] && target=1
+      fi
+
+      brightnessctl --quiet set "$target%"
+    '';
+  };
+
   system' = {
     time.timeZone = "Australia/Melbourne";
 
@@ -230,9 +259,9 @@ let
         # Show date, battery capacity
         set-window-option -g status-right "#(date +'%Y-%m-%d %R') #(cat /sys/class/power_supply/BAT0/capacity)% "
 
-        # Adjust brightness
-        bind -n F5 run-shell "brightnessctl --quiet set 10%-"
-        bind -n F6 run-shell "brightnessctl --quiet set 10%+"
+        # Adjust brightness with smaller steps near 0%
+        bind -n F5 run-shell "${brightness}/bin/brightness down"
+        bind -n F6 run-shell "${brightness}/bin/brightness up"
       '';
     };
   };
