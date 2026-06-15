@@ -28,6 +28,37 @@ let
     palette-background = "30,30,46";
   };
 
+  optimize-boot = pkgs.writeShellApplication {
+    name = "optimize-boot";
+    runtimeInputs = with pkgs; [
+      coreutils
+      git
+      gnugrep
+      gnused
+      sudo
+      systemd
+      util-linux
+    ];
+
+    text = ''
+      function main(){
+         local DATETIME="$(date -Is)"
+         local LOG_FILE="~/$DATETIME.log"
+
+         function log() {
+             echo "$@" | tee -a "$LOG_FILE" || true
+         }
+
+         systemd-analyze 2>&1 | tee -a "$LOG_FILE" || true
+         systemd-analyze blame 2>&1 | head -20 | tee -a "$LOG_FILE" || true
+         systemd-analyze critical-chain 2>&1 | tee -a "$LOG_FILE" || true
+         dmesg 2>/dev/null | grep -iE "error|fail|timeout" | tee -a "$LOG_FILE" || true
+      }
+
+      main
+    '';
+  };
+
   system' = {
     time.timeZone = "Australia/Melbourne";
 
@@ -122,6 +153,7 @@ let
       networkmanager
       openssh
       brightnessctl
+      optimize-boot
     ];
 
     programs.neovim = {
