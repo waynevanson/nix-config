@@ -43,7 +43,7 @@ let
     text = ''
       function main(){
          local DATETIME="$(date -Is)"
-         local LOG_FILE="~/$DATETIME.log"
+         local LOG_FILE="$HOME/$DATETIME.log"
 
          function log() {
              echo "$@" | tee -a "$LOG_FILE" || true
@@ -168,7 +168,7 @@ let
       keyMode = "vi";
       plugins = with pkgs.tmuxPlugins; [ catppuccin ];
       extraConfigBeforePlugins = ''
-        run-shell 'tmux set -g @catppuccin_flavor "$(cat ~/.config/catppuccin-theme 2>/dev/null || echo mocha)"'
+        run-shell 'tmux set -g @catppuccin_flavor "$(cat $HOME/.config/catppuccin-theme 2>/dev/null || echo mocha)"'
       '';
       extraConfig = ''
         # Move status bar to top from bottom
