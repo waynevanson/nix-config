@@ -231,8 +231,11 @@ let
         # Move status bar to top from bottom
         set -g status-position top
 
+        # Update status bar every second
+        set -g status-interval 1
+
         # Show date, battery capacity
-        set-window-option -g status-right "#(date -I) #(cat /sys/class/power_supply/BAT0/capacity)% "
+        set-window-option -g status-right "#(date +"%Y-%m-%d %R") #(cat /sys/class/power_supply/BAT0/capacity)% "
 
         bind -n F5 run-shell "sudo brightnessctl --quiet set 10%-"
         bind -n F6 run-shell "sudo brightnessctl --quiet set 10%+"
