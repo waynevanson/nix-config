@@ -142,6 +142,7 @@ let
       networkmanager
       openssh
       toggleThemeScript
+      brightnessctl
     ];
 
     programs.neovim = {
@@ -230,6 +231,9 @@ let
 
         # Show battery capacity
         set-window-option -g status-right "#(cat /sys/class/power_supply/BAT0/capacity)%"
+
+        bind -n F5 run-shell "brightnessctl set -10%"
+        bind -n F6 run-shell "brightnessctl set +10%"
 
         # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
         # T is already time
