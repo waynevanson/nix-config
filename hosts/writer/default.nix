@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   ...
 }:
 let
@@ -126,8 +127,28 @@ let
 
       loader = {
         efi.canTouchEfiVariables = true;
-        systemd-boot.enable = true;
+        systemd-boot = {
+          enable = true;
+          editor = false;
+          configurationLimit = 5;
+        };
+        timeout = 0;
       };
+
+      kernelParams = [
+        "quiet"
+        "loglevel=3"
+        "rd.systemd.show_status=false"
+        "rd.udev.log_level=3"
+        "systemd.show_status=auto"
+        "nowatchdog"
+      ];
+
+      consoleLogLevel = 0;
+      initrd.compressor = "zstd";
+      initrd.systemd.enable = true;
+
+      resumeDevice = lib.mkForce "";
     };
 
     services.getty.autologinUser = "waynevanson";
@@ -155,6 +176,12 @@ let
       brightnessctl
       optimize-boot
     ];
+
+    systemd.services.NetworkManager-wait-online.enable = false;
+
+    services.fstrim.enable = true;
+
+    fileSystems."/".options = [ "noatime" ];
 
     programs.neovim = {
       enable = true;
