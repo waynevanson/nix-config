@@ -126,6 +126,7 @@ let
     services.kmscon = {
       enable = true;
       config = {
+        font-size = 24;
         font-name = "JetBrains Mono";
       }
       // catppuccinMocha;
@@ -150,7 +151,8 @@ let
       vimAlias = true;
     };
 
-    environment.etc."xdg/nvim/sysinit.lua".text = ''
+    environment.etc."xdg/nvim/sysinit.vim".text = ''
+      lua << EOF
       local theme_file = vim.fn.expand("${themeFile}")
 
       local function read_theme()
@@ -210,6 +212,7 @@ let
       _G.apply_catppuccin_theme(read_theme())
       vim.fn.serverstart("/tmp/nvim-" .. vim.fn.getpid())
       vim.api.nvim_create_user_command("ToggleCatppuccin", toggle_catppuccin_theme, {})
+      EOF
     '';
 
     environment.etc."xdg/nvim/pack/nix/start/catppuccin-nvim".source = pkgs.vimPlugins.catppuccin-nvim;
@@ -222,7 +225,15 @@ let
         run-shell 'tmux set -g @catppuccin_flavor "$(cat ~/.config/catppuccin-theme 2>/dev/null || echo mocha)"'
       '';
       extraConfig = ''
-        bind T run-shell "toggle-catppuccin-theme"
+        # Move status bar to top from bottom
+        set -g status-position top
+
+        # Show battery capacity
+        set-window-option -g status-right "#(cat /sys/class/power_supply/BAT0/capacity)%"
+
+        # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
+        # T is already time
+        bind K run-shell "toggle-catppuccin-theme"
       '';
     };
   };
