@@ -202,9 +202,12 @@ let
           })
           vim.cmd.colorscheme("catppuccin")
           EOF
+
+          let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': 'md'}]
+          let g:vimwiki_global_ext = 0
         '';
         packages.myplugins = with pkgs.vimPlugins; {
-          start = [ catppuccin-nvim ];
+          start = [ catppuccin-nvim vimwiki ];
         };
       };
     };
