@@ -4,7 +4,6 @@
   ...
 }:
 let
-
   catppuccinMocha = {
     palette = "custom";
 
@@ -29,35 +28,21 @@ let
     palette-background = "30,30,46";
   };
 
-  optimize-boot = pkgs.writeShellApplication {
-    name = "optimize-boot";
+  # run as service
+  wikiwatch = pkgs.writeShellApplication {
+    name = "watchit";
     runtimeInputs = with pkgs; [
-      coreutils
-      git
-      gnugrep
-      gnused
-      sudo
-      systemd
-      util-linux
+      fswatch
     ];
-
     text = ''
-      function main(){
-         DATETIME="$(date -Is)"
-         LOG_FILE="$HOME/$DATETIME.log"
-
-         function log() {
-             echo "$@" | tee -a "$LOG_FILE" || true
-         }
-
-         systemd-analyze 2>&1 | tee -a "$LOG_FILE" || true
-         systemd-analyze blame 2>&1 | head -20 | tee -a "$LOG_FILE" || true
-         systemd-analyze critical-chain 2>&1 | tee -a "$LOG_FILE" || true
-         dmesg 2>/dev/null | grep -iE "error|fail|timeout" | tee -a "$LOG_FILE" || true
+      function main() {
+          # watch for files in the wiki dir
+          # git add .
+          # git commit -m "operation file"
+          # git push
       }
-
-      main
     '';
+
   };
 
   system' = {
@@ -97,6 +82,7 @@ let
       description = "Wayne Van Son";
       extraGroups = [
         "networkmanager"
+        "video"
         "wheel"
       ];
     };
@@ -140,25 +126,12 @@ let
         systemd-boot = {
           enable = true;
           editor = false;
-          configurationLimit = 5;
         };
         timeout = 0;
       };
 
-      kernelParams = [
-        "quiet"
-        "loglevel=3"
-        "rd.systemd.show_status=false"
-        "rd.udev.log_level=3"
-        "systemd.show_status=auto"
-        "nowatchdog"
-      ];
-
-      consoleLogLevel = 0;
       initrd.compressor = "zstd";
       initrd.systemd.enable = true;
-
-      resumeDevice = lib.mkForce "";
     };
 
     services.getty.autologinUser = "waynevanson";
@@ -190,7 +163,6 @@ let
       networkmanager
       openssh
       brightnessctl
-      optimize-boot
     ];
 
     systemd.services.NetworkManager-wait-online.enable = false;
@@ -205,18 +177,27 @@ let
       viAlias = true;
       vimAlias = true;
       configure = {
-        customRC = ''
-          lua << EOF
-          require("catppuccin").setup({
-            flavour = "mocha",
-          })
-          vim.cmd.colorscheme("catppuccin")
-          EOF
+        customRC =
+          let
+            lua = ''
+              require("catppuccin").setup({
+                flavour = "mocha",
+              })
+              vim.cmd.colorscheme("catppuccin")
+            '';
+            vim = ''
+              let g:vimwiki_list = [{'path': '~/code/waynevanson/wiki', 'syntax': 'markdown', 'ext': 'md', 'path_html': '~/code/waynevanson/wiki/'}]
+              let g:vimwiki_global_ext = 0
+              set shm+=I
+            '';
+          in
+          ''
+            lua << EOF
+              ${lua}
+            EOF
 
-          let g:vimwiki_list = [{'path': '~/code/waynevanson/wiki', 'syntax': 'markdown', 'ext': 'md', 'path_html': '~/code/waynevanson/wiki/'}]
-          let g:vimwiki_global_ext = 0
-          set shm+=I
-        '';
+            ${vim}
+          '';
         packages.myplugins = with pkgs.vimPlugins; {
           start = [
             catppuccin-nvim
@@ -247,12 +228,9 @@ let
         # Show date, battery capacity
         set-window-option -g status-right "#(date +'%Y-%m-%d %R') #(cat /sys/class/power_supply/BAT0/capacity)% "
 
-        bind -n F5 run-shell "sudo brightnessctl --quiet set 10%-"
-        bind -n F6 run-shell "sudo brightnessctl --quiet set 10%+"
-
-        # # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
-        # # T is already time
-        # bind -g K run-shell "toggle-catppuccin-theme"
+        # Adjust brightness
+        bind -n F5 run-shell "brightnessctl --quiet set 10%-"
+        bind -n F6 run-shell "brightnessctl --quiet set 10%+"
       '';
     };
   };
