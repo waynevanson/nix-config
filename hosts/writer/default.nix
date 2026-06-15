@@ -174,7 +174,13 @@ let
       pkgs.jetbrains-mono
     ];
 
-    programs.git.enable = true;
+    programs.git = {
+      enable = true;
+      config = {
+        user.email = "waynevanson@gmail.com";
+        user.name = "Wayne Van Son";
+      };
+    };
 
     environment.systemPackages = with pkgs; [
       networkmanager
