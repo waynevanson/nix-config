@@ -205,9 +205,13 @@ let
 
           let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': 'md'}]
           let g:vimwiki_global_ext = 0
+          set shm+=I
         '';
         packages.myplugins = with pkgs.vimPlugins; {
-          start = [ catppuccin-nvim vimwiki ];
+          start = [
+            catppuccin-nvim
+            vimwiki
+          ];
         };
       };
     };
