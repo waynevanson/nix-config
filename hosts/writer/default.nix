@@ -82,6 +82,10 @@ let
     users.defaultUserShell = pkgs.zsh;
     programs.zsh.enable = true;
 
+    programs.zsh.shellAliases = {
+      wiki = "nvim +VimwikiIndex";
+    };
+
     programs.zsh.loginShellInit = ''
       if [ -z "''${TMUX}" ] && [ -z "''${DISPLAY}" ] && [ -z "''${WAYLAND_DISPLAY}" ]; then
         exec tmux new-session -A -s main
