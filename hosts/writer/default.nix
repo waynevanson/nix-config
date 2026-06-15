@@ -42,8 +42,8 @@ let
 
     text = ''
       function main(){
-         local DATETIME="$(date -Is)"
-         local LOG_FILE="$HOME/$DATETIME.log"
+         DATETIME="$(date -Is)"
+         LOG_FILE="$HOME/$DATETIME.log"
 
          function log() {
              echo "$@" | tee -a "$LOG_FILE" || true
