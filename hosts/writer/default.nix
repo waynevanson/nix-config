@@ -203,7 +203,7 @@ let
           vim.cmd.colorscheme("catppuccin")
           EOF
 
-          let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': 'md'}]
+          let g:vimwiki_list = [{'path': '~/code/waynevanson/wiki', 'syntax': 'markdown', 'ext': 'md', 'path_html': '~/code/waynevanson/wiki/'}]
           let g:vimwiki_global_ext = 0
           set shm+=I
         '';
@@ -232,7 +232,7 @@ let
         set -g status-position top
 
         # Update status bar every second
-        set -g status-interval 1
+        set -g status-interval 10
 
         # Show date, battery capacity
         set-window-option -g status-right "#(date +"%Y-%m-%d %R") #(cat /sys/class/power_supply/BAT0/capacity)% "
