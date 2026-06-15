@@ -223,8 +223,8 @@ let
         # Show date, battery capacity
         set-window-option -g status-right "#(date -I) #(cat /sys/class/power_supply/BAT0/capacity)% "
 
-        bind -n F5 run-shell "sudo brightnessctl set 10%-"
-        bind -n F6 run-shell "sudo brightnessctl set 10%+"
+        bind -n F5 run-shell "sudo brightnessctl --quiet set 10%-"
+        bind -n F6 run-shell "sudo brightnessctl --quiet set 10%+"
 
         # # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
         # # T is already time
