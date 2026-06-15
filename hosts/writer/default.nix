@@ -82,11 +82,11 @@ let
     users.defaultUserShell = pkgs.zsh;
     programs.zsh.enable = true;
 
-    # programs.zsh.loginShellInit = ''
-    #   if [ -z "''${TMUX}" ] && [ -z "''${DISPLAY}" ] && [ -z "''${WAYLAND_DISPLAY}" ]; then
-    #     exec tmux new-session -A -s main
-    #   fi
-    # '';
+    programs.zsh.loginShellInit = ''
+      if [ -z "''${TMUX}" ] && [ -z "''${DISPLAY}" ] && [ -z "''${WAYLAND_DISPLAY}" ]; then
+        exec tmux new-session -A -s main
+      fi
+    '';
 
     users.users.waynevanson = {
       isNormalUser = true;
