@@ -210,6 +210,7 @@ let
         packages.myplugins = with pkgs.vimPlugins; {
           start = [
             catppuccin-nvim
+            vim-tmux-navigator
             vimwiki
           ];
         };
@@ -219,7 +220,10 @@ let
     programs.tmux = {
       enable = true;
       keyMode = "vi";
-      plugins = with pkgs.tmuxPlugins; [ catppuccin ];
+      plugins = with pkgs.tmuxPlugins; [
+        catppuccin
+        vim-tmux-navigator
+      ];
       extraConfigBeforePlugins = ''
         run-shell 'tmux set -g @catppuccin_flavor "$(cat $HOME/.config/catppuccin-theme 2>/dev/null || echo mocha)"'
       '';
