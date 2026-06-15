@@ -90,9 +90,13 @@ let
     networking.hostName = "writer";
     networking.networkmanager.enable = true;
 
-    boot.loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
+    boot = {
+      kernelPackages = pkgs.linuxPackages_zen;
+
+      loader = {
+        efi.canTouchEfiVariables = true;
+        systemd-boot.enable = true;
+      };
     };
 
     services.getty.autologinUser = "waynevanson";
@@ -139,15 +143,15 @@ let
         # Move status bar to top from bottom
         set -g status-position top
 
-        # Show battery capacity
-        set-window-option -g status-right "#(cat /sys/class/power_supply/BAT0/capacity)%"
+        # # Show battery capacity
+        # set-window-option -g status-right "#(cat /sys/class/power_supply/BAT0/capacity)%"
 
-        bind -n F5 run-shell "brightnessctl set -10%"
-        bind -n F6 run-shell "brightnessctl set +10%"
+        # bind -n F5 run-shell "brightnessctl set -10%"
+        # bind -n F6 run-shell "brightnessctl set +10%"
 
-        # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
-        # T is already time
-        bind -g K run-shell "toggle-catppuccin-theme"
+        # # Toggle light/dark theme using <prefix>,  K (CTRL + B, K)
+        # # T is already time
+        # bind -g K run-shell "toggle-catppuccin-theme"
       '';
     };
   };
