@@ -121,7 +121,6 @@ let
     environment.systemPackages = with pkgs; [
       networkmanager
       openssh
-      toggleThemeScript
       brightnessctl
     ];
 
