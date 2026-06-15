@@ -165,6 +165,8 @@ let
       brightnessctl
     ];
 
+    services.udev.packages = [ pkgs.brightnessctl ];
+
     systemd.services.NetworkManager-wait-online.enable = false;
 
     services.fstrim.enable = true;
