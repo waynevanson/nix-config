@@ -194,6 +194,18 @@ let
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
+      plugins = with pkgs.vimPlugins; [
+        {
+          plugin = catppuccin-nvim;
+          type = "lua";
+          config = ''
+            require("catppuccin").setup({
+              flavour = "mocha",
+            })
+            vim.cmd.colorscheme("catppuccin")
+          '';
+        }
+      ];
     };
 
     programs.tmux = {
