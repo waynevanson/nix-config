@@ -208,10 +208,10 @@ let
         set -g status-position top
 
         # Update status bar every second
-        set -g status-interval 0.5
+        set -g status-interval 10
 
         # Show date, battery capacity
-        set-window-option -g status-right "#(date +'%Y-%m-%d %H:%M'):#(date +'%S') #(cat /sys/class/power_supply/BAT0/capacity)% "
+        set-window-option -g status-right "#(date +'%Y-%m-%d %H:%M') #(cat /sys/class/power_supply/BAT0/capacity)% "
 
         # Adjust brightness with smaller steps near 0%
         bind -n F5 run-shell "brightnessctl --exponent=8 --quiet set 5%-"
