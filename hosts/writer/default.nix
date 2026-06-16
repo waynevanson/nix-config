@@ -28,52 +28,6 @@ let
     palette-background = "30,30,46";
   };
 
-  # run as service
-  wikiwatch = pkgs.writeShellApplication {
-    name = "watchit";
-    runtimeInputs = with pkgs; [
-      fswatch
-    ];
-    text = ''
-      function main() {
-          # watch for files in the wiki dir
-          # git add .
-          # git commit -m "operation file"
-          # git push
-      }
-    '';
-
-  };
-
-  brightness = pkgs.writeShellApplication {
-    name = "brightness";
-    runtimeInputs = [ pkgs.brightnessctl ];
-    text = ''
-      direction="$1"
-
-      current=$(brightnessctl get)
-      max=$(brightnessctl max)
-      percent=$(( 100 * current / max ))
-
-      delta=$(( percent / 10 ))
-      if [ "$delta" -lt 1 ]; then
-        delta=1
-      elif [ "$delta" -gt 10 ]; then
-        delta=10
-      fi
-
-      if [ "$direction" = "up" ]; then
-        target=$(( percent + delta ))
-        [ "$target" -gt 100 ] && target=100
-      else
-        target=$(( percent - delta ))
-        [ "$target" -lt 1 ] && target=1
-      fi
-
-      brightnessctl --quiet set "$target%"
-    '';
-  };
-
   system' = {
     time.timeZone = "Australia/Melbourne";
 
@@ -260,8 +214,8 @@ let
         set-window-option -g status-right "#(date +'%Y-%m-%d %R') #(cat /sys/class/power_supply/BAT0/capacity)% "
 
         # Adjust brightness with smaller steps near 0%
-        bind -n F5 run-shell "${brightness}/bin/brightness down"
-        bind -n F6 run-shell "${brightness}/bin/brightness up"
+        bind -n F5 run-shell "brightnessctl --exponent=4 set 10%-"
+        bind -n F6 run-shell "brightnessctl --exponent=4 set 10%+"
       '';
     };
   };
