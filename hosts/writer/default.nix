@@ -208,7 +208,7 @@ let
         set -g status-position top
 
         # Update status bar every second
-        set -g status-interval 1
+        set -g status-interval 0.5
 
         # Show date, battery capacity
         set-window-option -g status-right "#(date +'%Y-%m-%d %H:%M'):#(date +'%S') #(cat /sys/class/power_supply/BAT0/capacity)% "
