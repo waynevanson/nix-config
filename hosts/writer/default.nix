@@ -214,8 +214,8 @@ let
         set-window-option -g status-right "#(date +'%Y-%m-%d %R') #(cat /sys/class/power_supply/BAT0/capacity)% "
 
         # Adjust brightness with smaller steps near 0%
-        bind -n F5 run-shell "brightnessctl --exponent=4 set 10%-"
-        bind -n F6 run-shell "brightnessctl --exponent=4 set 10%+"
+        bind -n F5 run-shell "brightnessctl --exponent=8 --quiet set 5%-"
+        bind -n F6 run-shell "brightnessctl --exponent=8 --quiet set 5%+"
       '';
     };
   };
