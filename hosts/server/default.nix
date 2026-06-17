@@ -93,7 +93,7 @@ let
   garage' =
     { config, lib, ... }:
     let
-      group = config.users.groups.garage;
+      group = "garage";
       port = {
         s3 = "3900";
         rpc = "3901";
@@ -110,7 +110,11 @@ let
         owner = group;
       };
 
-      users.groups.garage = { };
+      users.groups.${group} = { };
+      users.users.${group} = {
+        isSystemUser = true;
+        group = group;
+      };
 
       services.garage = {
         enable = true;
@@ -133,8 +137,7 @@ let
         # Override binary since we're using garage@^2
         ExecStart = lib.mkForce "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
 
-        # Use same group as secrets file
-        SupplementaryGroups = lib.mkAfter [ group ];
+        DynamicUser = lib.mkForce false;
       };
 
       services.nginx.virtualHosts."s3.garage.waynevanson.com" = {
@@ -217,7 +220,7 @@ in
     ./forgejo.nix
     # ./forgejo-runner.nix
     # atticd'
-    # garage'
+    garage'
     acme'
     nginx'
     host'
