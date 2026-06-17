@@ -46,10 +46,15 @@ let
   # nix binary cache server
   atticd' =
     { config, ... }:
+    let
+      port = "2884";
+    in
     {
       sops.templates.atticd-environment-file = {
         content = ''
           ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.atticd-secret}
+          AWS_ACCESS_KEY_ID=${config.sops.placeholder.garage-access-key}
+          AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.garage-secret-key}
         '';
         owner = "atticd";
       };
@@ -62,13 +67,18 @@ let
         };
       };
 
-      # todo: point to s3 garage on server
       services.atticd = {
         enable = true;
         environmentFile = config.sops.templates.atticd-environment-file.path;
         settings = {
           jwt = { };
-          listen = "[::]:2884";
+          listen = "[::]:${port}";
+          storage = {
+            type = "s3";
+            region = "garage";
+            bucket = "default-bucket";
+            endpoint = "https://s3.garage.waynevanson.com";
+          };
         };
       };
 
@@ -149,7 +159,10 @@ let
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            # https://garagehq.deuxfleurs.fr/documentation/cookbook/reverse-proxy/#exposing-the-s3-endpoints
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_max_temp_file_size 0;
           '';
         };
       };
@@ -219,7 +232,7 @@ in
   imports = [
     ./forgejo.nix
     # ./forgejo-runner.nix
-    # atticd'
+    atticd'
     garage'
     acme'
     nginx'
