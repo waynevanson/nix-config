@@ -92,6 +92,13 @@ let
   # todo: make accessible for s5cmd
   garage' =
     { config, lib, ... }:
+    let
+      group = config.users.groups.garage;
+      port = {
+        s3 = "3900";
+        rpc = "3901";
+      };
+    in
     {
       sops.templates.garage-environment-file = {
         content = ''
@@ -100,16 +107,10 @@ let
           GARAGE_DEFAULT_SECRET_KEY=${config.sops.placeholder.garage-secret-key}
           GARAGE_DEFAULT_BUCKET="default-bucket"
         '';
-        owner = "garage";
+        owner = group;
       };
 
-      users = {
-        users.garage = {
-          isSystemUser = true;
-          group = "garage";
-        };
-        groups.garage = { };
-      };
+      users.groups.garage = { };
 
       services.garage = {
         enable = true;
@@ -119,9 +120,9 @@ let
           replication_factor = 1;
           consistency_mode = "consistent";
           data_dir = "/var/lib/garage";
-          rpc_bind_addr = "[::]:3901";
+          rpc_bind_addr = "[::]:${port.rpc}";
           s3_api = {
-            api_bind_addr = "[::]:3900";
+            api_bind_addr = "[::]:${port.s3}";
             s3_region = "garage";
           };
         };
@@ -129,16 +130,18 @@ let
       };
 
       systemd.services.garage.serviceConfig = {
-        # Garage needs to have a known user to read the secrets
-        DynamicUser = lib.mkForce false;
+        # Override binary since we're using garage@^2
         ExecStart = lib.mkForce "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
+
+        # Use same group as secrets file
+        SupplementaryGroups = lib.mkAfter [ group ];
       };
 
       services.nginx.virtualHosts."s3.garage.waynevanson.com" = {
         useACMEHost = "waynevanson.com";
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://localhost:3900";
+          proxyPass = "http://localhost:${port.s3}";
           extraConfig = ''
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -207,13 +210,12 @@ let
       };
 
       services.sshd.enable = true;
-      hardware.facter.reportPath = ./facter.json;
     };
 in
 {
   imports = [
     ./forgejo.nix
-    ./forgejo-runner.nix
+    # ./forgejo-runner.nix
     # atticd'
     # garage'
     acme'

@@ -1,4 +1,6 @@
 {
+  hardware.facter.reportPath = ./facter.json;
+
   disko.devices = {
     disk.disk1 = {
       device = "/dev/disk/by-id/ata-CT240BX500SSD1_1906E1720EA1";
