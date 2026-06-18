@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 let
   host = "waynevanson.com";
+  stateDir = "/var/lib/wordpress/${host}";
+  wpContent = "${config.services.wordpress.sites.${host}.finalPackage}/share/wordpress/wp-content";
+  contentDir = "${stateDir}/wp-content";
 in
 {
   sops.secrets.digitalocean-token = {
@@ -27,8 +30,6 @@ in
         WP_SITEURL = "https://${host}";
         FORCE_SSL_ADMIN = true;
         FS_METHOD = "direct";
-        WP_PLUGIN_DIR = "/var/lib/wordpress/${host}/plugins";
-        WP_PLUGIN_URL = "https://${host}/wp-content/plugins";
       };
     };
   };
@@ -52,14 +53,40 @@ in
     extraConfig = ''
       client_max_body_size 64m;
     '';
-    locations."^~ /wp-content/plugins/" = {
-      alias = "/var/lib/wordpress/${host}/plugins/";
-    };
   };
 
-  systemd.tmpfiles.rules = [
-    "d /var/lib/wordpress/${host}/plugins 0750 wordpress nginx -"
-  ];
+  systemd.services."wordpress-${host}-content" = {
+    description = "Populate writable WordPress wp-content";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "wordpress";
+      Group = "nginx";
+    };
+    wantedBy = [ "multi-user.target" ];
+    before = [ "phpfpm-wordpress-${host}.service" ];
+    after = [ "systemd-tmpfiles-setup.service" ];
+    script = ''
+      if [ ! -e "${contentDir}/index.php" ]; then
+        mkdir -p "${contentDir}"
+        cp -r "${wpContent}"/. "${contentDir}"/
+        mkdir -p "${contentDir}/upgrade"
+        mkdir -p "${contentDir}/languages"
+      fi
+    '';
+  };
+
+  systemd.mounts = [{
+    description = "Writable WordPress wp-content";
+    what = contentDir;
+    where = wpContent;
+    type = "none";
+    options = "bind";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "phpfpm-wordpress-${host}.service" ];
+    requires = [ "wordpress-${host}-content.service" ];
+    after = [ "wordpress-${host}-content.service" ];
+  }];
 
   networking.extraHosts = ''
     127.0.0.1 ${host}
