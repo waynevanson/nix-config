@@ -1,3 +1,4 @@
+{ self, ... }:
 let
   acme' =
     { config, ... }:
@@ -6,6 +7,7 @@ let
         acceptTerms = true;
         defaults.email = "waynevanson@gmail.com";
         certs."waynevanson.com" = {
+          group = "nginx";
           extraDomainNames = [
             "git.waynevanson.com"
             "runner.git.waynevanson.com"
@@ -29,12 +31,7 @@ let
   nginx' = {
     services.nginx = {
       enable = true;
-      virtualHosts = {
-        "waynevanson.com" = {
-          enableACME = true;
-          forceSSL = true;
-        };
-      };
+      virtualHosts = { };
     };
 
     networking.firewall.allowedTCPPorts = [
@@ -235,6 +232,7 @@ let
 in
 {
   imports = [
+    self.nixosModules.custom
     ./forgejo.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
