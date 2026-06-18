@@ -26,6 +26,9 @@ in
         WP_HOME = "https://${host}";
         WP_SITEURL = "https://${host}";
         FORCE_SSL_ADMIN = true;
+        FS_METHOD = "direct";
+        WP_PLUGIN_DIR = "/var/lib/wordpress/${host}/plugins";
+        WP_PLUGIN_URL = "https://${host}/wp-content/plugins";
       };
     };
   };
@@ -49,7 +52,14 @@ in
     extraConfig = ''
       client_max_body_size 64m;
     '';
+    locations."^~ /wp-content/plugins/" = {
+      alias = "/var/lib/wordpress/${host}/plugins/";
+    };
   };
+
+  systemd.tmpfiles.rules = [
+    "d /var/lib/wordpress/${host}/plugins 0750 wordpress nginx -"
+  ];
 
   networking.extraHosts = ''
     127.0.0.1 ${host}
