@@ -236,7 +236,8 @@ in
 {
   imports = [
     ./forgejo.nix
-    # ./wordpress.nix
+    # ./wordpress-lx.nix
+    ./wordpress-wayne.nix
     # ./forgejo-runner.nix
     atticd'
     garage'
