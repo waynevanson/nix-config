@@ -13,6 +13,7 @@
       garage-rpc-secret.key = "garage/rpc-secret";
       garage-access-key.key = "garage/access-key";
       garage-secret-key.key = "garage/secret-key";
+      digitalocean-token.key = "digitalocean/token";
     };
   };
 }
