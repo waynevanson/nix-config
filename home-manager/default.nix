@@ -15,6 +15,8 @@
   ];
 
   home.packages = with pkgs; [
+    attic-client
+    inputs.self.packages.${system}.bitwig
     curl
     discord
     fd
@@ -26,18 +28,16 @@
     nil
     nixd
     openscad
+    opencode
+    openssl
     prusa-slicer
     ripgrep
+    s5cmd
     unzip
     wget
     xz
     zed-editor.fhs
     zip
-    claude-code
-    opencode
-    inputs.self.packages.${system}.bitwig
-    s5cmd
-    openssl
   ];
 
   programs = {
