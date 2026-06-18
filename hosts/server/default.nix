@@ -178,8 +178,11 @@ let
 
       networking.hostName = "server";
 
+      # todo: all config.nginx.virtualHosts.* here because server doesn't support hairpinning
       networking.extraHosts = ''
         127.0.0.1 git.waynevanson.com
+        127.0.0.1 s3.garage.waynevanson.com
+        127.0.0.1 atticd.waynevanson.com
       '';
 
       boot.loader.grub = {
