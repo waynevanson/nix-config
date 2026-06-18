@@ -86,13 +86,15 @@ let
         useACMEHost = "waynevanson.com";
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://localhost:2884";
+          proxyPass = "http://localhost:${port}";
           proxyWebsockets = true;
           extraConfig = ''
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_max_temp_file_size 0;
+            client_max_body_size 0;
           '';
         };
       };
@@ -140,7 +142,6 @@ let
             s3_region = "garage";
           };
         };
-
       };
 
       systemd.services.garage.serviceConfig = {
@@ -163,6 +164,7 @@ let
             # https://garagehq.deuxfleurs.fr/documentation/cookbook/reverse-proxy/#exposing-the-s3-endpoints
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_max_temp_file_size 0;
+            client_max_body_size 0;
           '';
         };
       };

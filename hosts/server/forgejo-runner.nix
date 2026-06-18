@@ -30,8 +30,7 @@ in
       labels = [
         "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
       ];
-      token = "sup bro";
-      # tokenFile = config.sops.templates.${tokenFileName}.path;
+      tokenFile = config.sops.templates.${tokenFileName}.path;
     };
   };
 
