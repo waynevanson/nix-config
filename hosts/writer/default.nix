@@ -72,28 +72,6 @@ let
     security.sudo.wheelNeedsPassword = false;
   };
 
-  nix' = {
-    nix.settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-
-      substituters = [
-        "https://nix-community.cachix.org"
-      ];
-
-      trusted-public-keys = [
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
-
-      trusted-users = [
-        "@wheel"
-        "waynevanson"
-      ];
-    };
-  };
-
   host' = {
     system.stateVersion = "26.05";
 
@@ -224,7 +202,6 @@ in
     ./disko-configuration.nix
     ../../modules
     host'
-    nix'
     system'
     user'
   ];
