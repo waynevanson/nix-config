@@ -3,7 +3,9 @@
 	"instructions": ["instructions/*"],
 	"permission": {
 		"read": {
-			"~/.cargo/registry/cache": "allow"
+			"~/.cargo/registry/cache": "allow",
+			"/nix/store/**": "allow",
+			"**/target/**": "allow"
 		}
 	},
 	"provider": {
