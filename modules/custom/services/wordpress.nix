@@ -5,6 +5,19 @@ with lib;
 let
   cfg = config.custom.services.wordpress;
 
+  wordpress = pkgs.stdenvNoCC.mkDerivation {
+    pname = "wordpress-with-themes";
+    version = pkgs.wordpress.version;
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out
+      cp -r ${pkgs.wordpress}/* $out/
+      chmod -R u+w $out/share/wordpress/wp-content
+      mkdir -p $out/share/wordpress/wp-content/themes
+      cp -r ${pkgs.wordpressPackages.themes.twentytwentyfive} $out/share/wordpress/wp-content/themes/twentytwentyfive
+    '';
+  };
+
   userFor = domain: "wordpress-${replaceStrings ["."] ["-"] domain}";
   dbFor = domain: "wordpress_${replaceStrings ["."] ["_"] domain}";
 
@@ -83,6 +96,53 @@ in
     };
     services.nginx.enable = true;
 
+    services.fail2ban = {
+      enable = true;
+      jails = {
+        wordpress-wplogin = {
+          settings = {
+            backend = "auto";
+            logpath = "/var/log/nginx/access.log";
+            port = "http,https";
+            maxretry = 10;
+            findtime = 300;
+            bantime = 3600;
+          };
+          filter = {
+            Definition = {
+              failregex = ''^<HOST> .* "POST /wp-login\.php HTTP/[0-9.]+"'';
+            };
+          };
+        };
+        wordpress-xmlrpc = {
+          settings = {
+            backend = "auto";
+            logpath = "/var/log/nginx/access.log";
+            port = "http,https";
+            maxretry = 10;
+            findtime = 300;
+            bantime = 3600;
+          };
+          filter = {
+            Definition = {
+              failregex = ''^<HOST> .* "POST /xmlrpc\.php HTTP/[0-9.]+"'';
+            };
+          };
+        };
+        nginx-badbots = {
+          settings = {
+            backend = "auto";
+            filter = "apache-badbots";
+            logpath = "/var/log/nginx/access.log";
+            port = "http,https";
+            maxretry = 2;
+            findtime = 60;
+            bantime = 86400;
+          };
+        };
+      };
+    };
+
     environment.systemPackages = [ pkgs.wp-cli ];
 
     users.users = listToAttrs (map (
@@ -124,7 +184,7 @@ in
           "mysql.service"
         ];
         script = ''
-          store="${pkgs.wordpress}/share/wordpress"
+          store="${wordpress}/share/wordpress"
           root="${instance.root}"
           secretKeys="${instance.secretKeys}"
 
@@ -147,6 +207,12 @@ in
           # Seed wp-content on first install.
           if [ ! -e "$root/wp-content" ]; then
             cp -r "$store/wp-content" "$root/wp-content"
+          fi
+
+          # Seed default theme if none present.
+          if [ ! -d "$root/wp-content/themes/twentytwentyfive" ]; then
+            mkdir -p "$root/wp-content/themes"
+            cp -r "$store/wp-content/themes/twentytwentyfive" "$root/wp-content/themes/"
           fi
 
           mkdir -p "$root/wp-content/upgrade" "$root/wp-content/uploads"
