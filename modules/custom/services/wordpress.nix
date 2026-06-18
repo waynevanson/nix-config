@@ -92,6 +92,7 @@ in
         group = config.services.nginx.group;
         home = "/var/lib/wordpress/${instance.domain}";
         createHome = true;
+        homeMode = "750";
       }
     ) instances);
 
