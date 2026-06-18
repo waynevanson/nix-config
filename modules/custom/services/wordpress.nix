@@ -40,7 +40,7 @@ let
         define('FS_METHOD', 'direct');
 
         if ( !defined('ABSPATH') )
-          define('ABSPATH', dirname(__FILE__) . '/');
+          define('ABSPATH', '${root}/');
 
         require_once(ABSPATH . 'wp-settings.php');
         ?>
