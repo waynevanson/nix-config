@@ -27,7 +27,7 @@ let
         define('DB_USER', '${user}');
         define('DB_PASSWORD', ''');
         define('DB_HOST', 'localhost:/run/mysqld/mysqld.sock');
-        define('DB_CHARSET', 'utf8');
+        define('DB_CHARSET', 'utf8mb4');
         define('DB_COLLATE', ''');
 
         $table_prefix = 'wp_';
@@ -119,17 +119,38 @@ in
         };
         wantedBy = [ "multi-user.target" ];
         before = [ "phpfpm-wordpress-${instance.domain}.service" ];
-        after = [ "systemd-tmpfiles-setup.service" ];
+        after = [
+          "systemd-tmpfiles-setup.service"
+          "mysql.service"
+        ];
         script = ''
           store="${pkgs.wordpress}/share/wordpress"
           root="${instance.root}"
           secretKeys="${instance.secretKeys}"
 
-          if [ ! -e "$root/index.php" ]; then
-            mkdir -p "$root"
-            cp -r "$store"/. "$root"/
-            mkdir -p "$root/wp-content/upgrade"
+          mkdir -p "$root"
+
+          # Copy/update WordPress core, preserving mutable wp-content.
+          for item in "$store"/*; do
+            name=$(basename "$item")
+            if [ "$name" = "wp-content" ]; then
+              continue
+            fi
+            if [ -d "$item" ]; then
+              rm -rf "$root/$name"
+              cp -r "$item" "$root/$name"
+            else
+              cp -f "$item" "$root/$name"
+            fi
+          done
+
+          # Seed wp-content on first install.
+          if [ ! -e "$root/wp-content" ]; then
+            cp -r "$store/wp-content" "$root/wp-content"
           fi
+
+          mkdir -p "$root/wp-content/upgrade" "$root/wp-content/uploads"
+          chmod -R u+w "$root/wp-content"
 
           if [ ! -e "$secretKeys" ]; then
             umask 0177
@@ -141,7 +162,8 @@ in
             chmod 440 "$secretKeys"
           fi
 
-          ln -sf "${instance.wpConfig}" "$root/wp-config.php"
+          rm -f "$root/wp-config.php"
+          cp -f "${instance.wpConfig}" "$root/wp-config.php"
 
           chown -R ${instance.user}:${config.services.nginx.group} "$root"
           chown ${instance.user}:${config.services.nginx.group} "$secretKeys"
@@ -164,7 +186,7 @@ in
           opcache.interned_strings_buffer = 16
           opcache.max_accelerated_files = 10000
           opcache.revalidate_freq = 60
-          open_basedir = "${instance.root}:/tmp:/run/mysqld"
+          open_basedir = "${instance.root}:/var/lib/wordpress/${instance.domain}:/tmp:/run/mysqld"
         '';
         settings = {
           "listen.owner" = config.services.nginx.user;
