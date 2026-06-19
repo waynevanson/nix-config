@@ -37,11 +37,6 @@ in
       description = "Hostname for the OpenCode server to bind to.";
     };
 
-    passwordFile = mkOption {
-      type = types.path;
-      description = "Path to a file containing OPENCODE_SERVER_PASSWORD.";
-    };
-
     mdns = mkOption {
       type = types.bool;
       default = false;
@@ -77,6 +72,13 @@ in
       home = "/var/lib/opencode";
     };
 
+    sops.templates.opencode-environment-file = {
+      content = ''
+        OPENCODE_SERVER_PASSWORD=${config.sops.placeholder.opencode-server-password}
+      '';
+      owner = "opencode";
+    };
+
     systemd.services.opencode-server = {
       description = "OpenCode server";
       wantedBy = [ "multi-user.target" ];
@@ -88,7 +90,7 @@ in
         Group = "opencode";
         StateDirectory = "opencode";
         WorkingDirectory = "/var/lib/opencode";
-        EnvironmentFile = cfg.passwordFile;
+        EnvironmentFile = config.sops.templates.opencode-environment-file.path;
         Environment = [ "HOME=/var/lib/opencode" ];
         ExecStart = "${cfg.package}/bin/opencode ${escapeShellArgs args}";
         Restart = "on-failure";
