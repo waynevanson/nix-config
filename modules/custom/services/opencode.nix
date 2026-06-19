@@ -71,6 +71,14 @@ in
       mode = "0400";
     };
 
+    sops.templates.opencode-server-environment = {
+      content = ''
+        OPENCODE_SERVER_PASSWORD=${config.sops.placeholder.opencode-server-password}
+      '';
+      owner = "opencode";
+      group = "opencode";
+    };
+
     users.groups.opencode = { };
     users.users.opencode = {
       isSystemUser = true;
@@ -90,6 +98,7 @@ in
         StateDirectory = "opencode";
         WorkingDirectory = "/var/lib/opencode";
         Environment = [ "HOME=/var/lib/opencode" ];
+        EnvironmentFile = config.sops.templates.opencode-server-environment.path;
         ExecStartPre = pkgs.writeShellScript "opencode-password-setup" ''
           install -d -m 700 /var/lib/opencode/.local/state/opencode
           ${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.opencode-server-password.path} \
