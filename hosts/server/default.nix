@@ -170,10 +170,22 @@ let
     };
 
   host' =
-    { self, ... }:
+    { pkgs, self, ... }:
     {
 
       imports = [ self.nixosModules.sops ];
+
+      environment.systemPackages = with pkgs; [
+        git
+        nerd-fonts.jetbrains-mono
+      ];
+
+      programs.direnv = {
+        enable = true;
+        silent = true;
+      };
+
+      programs.zsh.enable = true;
 
       networking.hostName = "server";
 

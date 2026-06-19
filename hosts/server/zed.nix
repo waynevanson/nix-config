@@ -7,13 +7,15 @@
   users.groups = {
     zed = { };
     developers = {
-      members = [ "waynevanson" "zed" ];
+      members = [
+        "waynevanson"
+        "zed"
+      ];
     };
   };
 
   users.users.zed = {
     isNormalUser = true;
-    home = "/var/lib/zed";
     group = "zed";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVwuz7O5uHh6blzTrfETNz5omxutdgiPTrl+PKNcgSa waynevanson@nixos"
