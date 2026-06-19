@@ -65,6 +65,12 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops.secrets.opencode-server-password = {
+      owner = "opencode";
+      group = "opencode";
+      mode = "0400";
+    };
+
     users.groups.opencode = { };
     users.users.opencode = {
       isSystemUser = true;
