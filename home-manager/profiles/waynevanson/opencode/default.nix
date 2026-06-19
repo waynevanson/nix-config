@@ -12,6 +12,7 @@
   xdg.configFile."opencode/instructions".source = ./instructions;
 
   home.packages = [
+    pkgs.opencode
     (pkgs.writeShellApplication {
       name = "opencode-remote";
       runtimeInputs = [ pkgs.opencode ];

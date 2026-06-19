@@ -64,6 +64,24 @@
         }
       );
 
+      createHomeConfigurations = pkgs.lib.mapAttrs (
+        username: profileModule:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit inputs system;
+          };
+          modules = [
+            profileModule
+            {
+              home.username = username;
+              home.homeDirectory = "/home/${username}";
+              home.stateVersion = "25.05";
+            }
+          ];
+        }
+      );
+
     in
     {
 
@@ -93,6 +111,15 @@
         nixos = ./hosts/desktop;
         server = ./hosts/server;
         writer = ./hosts/writer;
+      };
+
+      homeModules = {
+        waynevanson = ./home-manager/profiles/waynevanson;
+        zed = ./home-manager/profiles/zed;
+      };
+
+      homeConfigurations = createHomeConfigurations {
+        inherit (self.homeModules) waynevanson zed;
       };
 
       packages.${system} = {

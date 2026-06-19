@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   system,
+  self,
   ...
 }:
 let
@@ -24,15 +25,15 @@ let
       useGlobalPkgs = true;
       useUserPackages = true;
       extraSpecialArgs = {
-        inherit inputs system;
+        inherit inputs system self;
       };
     };
 
     # Configuration for regular user
     home-manager.users.waynevanson =
-      { ... }:
+      { self, ... }:
       {
-        imports = [ ../../home-manager ];
+        imports = [ self.homeModules.waynevanson ];
 
         home = {
           username = "waynevanson";

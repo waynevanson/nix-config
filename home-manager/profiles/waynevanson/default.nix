@@ -8,16 +8,16 @@
 {
   imports = [
     inputs.sops-nix.homeManagerModules.sops
-    ./alacritty.nix
-    ./direnv.nix
-    ./oh-my-posh
+    ../../modules/alacritty.nix
+    ../../modules/direnv.nix
+    ../../modules/oh-my-posh
     ./opencode
-    ./tmux.nix
-    ./zsh.nix
+    ../../modules/tmux.nix
+    ../../modules/zsh.nix
   ];
 
   sops = {
-    defaultSopsFile = ../.sops.secrets.yaml;
+    defaultSopsFile = ../../../.sops.secrets.yaml;
     age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
   };
 
