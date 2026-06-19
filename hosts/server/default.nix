@@ -13,6 +13,7 @@ let
             "runner.git.waynevanson.com"
             "atticd.waynevanson.com"
             "opencode.waynevanson.com"
+            "zed.waynevanson.com"
             # todo: does this serve the default bucket?
             "s3.garage.waynevanson.com"
             # todo: <bucket>.s3.garage.waynevanson.com
@@ -237,6 +238,7 @@ in
     self.nixosModules.custom
     ./forgejo.nix
     ./opencode.nix
+    ./zed.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
     # ./forgejo-runner.nix

@@ -16,7 +16,7 @@
       name = "opencode-remote";
       runtimeInputs = [ pkgs.opencode ];
       text = ''
-        OPENCODE_SERVER_PASSWORD="$(cat ${config.sops.secrets.opencode-server-password.path})"
+        OPENCODE_SERVER_PASSWORD="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.opencode-server-password.path})"
         export OPENCODE_SERVER_PASSWORD
         OPENCODE_SERVER_USERNAME=opencode
         export OPENCODE_SERVER_USERNAME
