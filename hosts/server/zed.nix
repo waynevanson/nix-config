@@ -22,7 +22,7 @@
 
   systemd.tmpfiles.rules = [
     "d /var/lib/zed 0755 zed zed -"
-    "d /src/code 2770 waynevanson developers -"
+    "d /srv/code 2770 waynevanson developers -"
   ];
 
   programs.nix-ld.enable = true;
