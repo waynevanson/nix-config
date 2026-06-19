@@ -12,6 +12,7 @@ let
             "git.waynevanson.com"
             "runner.git.waynevanson.com"
             "atticd.waynevanson.com"
+            "opencode.waynevanson.com"
             # todo: does this serve the default bucket?
             "s3.garage.waynevanson.com"
             # todo: <bucket>.s3.garage.waynevanson.com
@@ -180,6 +181,7 @@ let
         127.0.0.1 git.waynevanson.com
         127.0.0.1 s3.garage.waynevanson.com
         127.0.0.1 atticd.waynevanson.com
+        127.0.0.1 opencode.waynevanson.com
       '';
 
       boot.loader.grub = {
@@ -234,6 +236,7 @@ in
   imports = [
     self.nixosModules.custom
     ./forgejo.nix
+    ./opencode.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
     # ./forgejo-runner.nix
