@@ -2,6 +2,7 @@ import type { Plugin } from "@opencode-ai/plugin";
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, basename } from "node:path";
+import { fileURLToPath } from "node:url";
 
 type WorktreeStatus =
   | "implementing"
@@ -148,20 +149,31 @@ function isWorktreeCommand(input: unknown): boolean {
   return false;
 }
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const skillPath = join(__dirname, "skills");
+
 export default (async ({ directory }) => {
   const cwd = directory || process.cwd();
   const projectRoot = findProjectRoot(cwd);
 
   return {
     async config(cfg: Record<string, unknown>) {
+      const skills = ((cfg.skills as Record<string, unknown>) ??= {});
+      const paths = ((skills.paths as string[]) ??= []);
+      if (!paths.includes(skillPath)) {
+        paths.push(skillPath);
+      }
+
       const commands = ((cfg.command as Record<string, unknown>) ??= {});
-      (
-        commands as Record<string, { description: string; prompt: string }>
-      ).worktree = {
-        description: "Implement a saved plan in a git worktree",
-        prompt:
-          "You are running the worktree implementation workflow. Read the plan path from the user's command, then follow the instructions in the worktree skill to implement the plan in the prepared worktree, run verification, ask for acceptance, commit, remove the plan, merge back, and clean up.",
-      };
+      if (!commands.worktree) {
+        (
+          commands as Record<string, { description: string; prompt: string }>
+        ).worktree = {
+          description: "Implement a saved plan in a git worktree",
+          prompt:
+            "You are running the worktree implementation workflow. Read the plan path from the user's command, then follow the instructions in the worktree skill to implement the plan in the prepared worktree, run verification, ask for acceptance, commit, remove the plan, merge back, and clean up.",
+        };
+      }
     },
     "command.execute.before": async (
       input: unknown,

@@ -1,16 +1,11 @@
 {
 	"$schema": "https://opencode.ai/config.json",
 	"instructions": ["instructions/*"],
-	"skills": {
-		"paths": ["./skills"]
-	},
-	"plugin": [
-		"./plugins/worktree/index.ts"
-	],
+	"plugin": ["./plugins/worktree/index.ts"],
 	"command": {
 		"worktree": {
 			"description": "Implement a saved plan in a git worktree",
-			"prompt": "You are running the worktree implementation workflow. Read the plan path from the user's command, then follow the instructions in the worktree skill to implement the plan in the prepared worktree, run verification, ask for acceptance, commit, remove the plan, merge back, and clean up."
+			"template": "You are running the worktree implementation workflow. Read the plan path from the user's command, then follow the instructions in the worktree skill to implement the plan in the prepared worktree, run verification, ask for acceptance, commit, remove the plan, merge back, and clean up."
 		}
 	},
 	"permission": {
@@ -18,22 +13,6 @@
 			"~/.cargo/registry/cache": "allow",
 			"/nix/store/**": "allow",
 			"**/target/**": "allow"
-		}
-	},
-	"provider": {
-		"llama": {
-			"npm": "@ai-sdk/openai-compatible",
-			"options": {
-				"baseURL": "http://localhost:11434/v1",
-				"apiKey": " "
-			},
-			"models": {
-				"hf.co/unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_M": {
-					"name": "(Local) Qwen 3 Coder Next",
-					"tool_call": true,
-					"reasoning": false
-				}
-			}
 		}
 	}
 }
