@@ -97,6 +97,7 @@
           age
           biome
           nixos-anywhere.packages.${system}.default
+          disko.packages.${system}.default
           sops
           ssh-to-age
           yq

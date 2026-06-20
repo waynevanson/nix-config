@@ -40,7 +40,7 @@
         gamemode = 0;
         difficulty = 3;
         max-players = 20;
-        motd = "Waynevanson Minecraft Server";
+        motd = "Hugh G. Wang";
         "white-list" = false;
         "online-mode" = true;
         "enable-rcon" = true;

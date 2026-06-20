@@ -227,6 +227,19 @@ let
         efiInstallAsRemovable = true;
       };
 
+      networking.hostId = "0331c65f";
+
+      boot.supportedFilesystems = [ "zfs" ];
+      boot.zfs.forceImportRoot = false;
+
+      services.zfs.autoScrub.enable = true;
+
+      fileSystems."/srv/data" = {
+        device = "tank";
+        fsType = "zfs";
+        options = [ "zfsutil" ];
+      };
+
       # Allows use of `--sudo` without a password when running `nixos-rebuild switch`
       security.sudo.wheelNeedsPassword = false;
 
