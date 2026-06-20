@@ -231,6 +231,8 @@ let
         efiInstallAsRemovable = true;
       };
 
+      boot.zfs.forceImportRoot = false;
+
       networking.hostId = "0331c65f";
 
       services.zfs.autoScrub.enable = true;
