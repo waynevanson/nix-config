@@ -31,6 +31,7 @@
     # todo: modularise
     git
     gnutar
+    lunar-client
     nerd-fonts.jetbrains-mono
     nil
     nixd
