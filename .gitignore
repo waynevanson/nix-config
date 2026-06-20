@@ -7,3 +7,6 @@ node_modules/
 
 # opencode worktree workflow
 /.worktrees/
+
+# Minecraft world import archive
+/min2.tar.xz

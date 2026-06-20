@@ -30,7 +30,9 @@
       openFirewall = true;
       enableReload = true;
 
-      package = pkgs.paperServers.paper-1_21_11;
+      # Matches the version of the imported world (paper-1.21.7-17.jar).
+      # Can be upgraded after the world is confirmed working.
+      package = pkgs.paperServers.paper-1_21_7-build_17;
       jvmOpts = "-Xmx8192M";
 
       serverProperties = {
@@ -39,7 +41,7 @@
         difficulty = 3;
         max-players = 20;
         motd = "Waynevanson Minecraft Server";
-        "white-list" = true;
+        "white-list" = false;
         "online-mode" = true;
         "enable-rcon" = true;
         "rcon.port" = 25575;
@@ -47,7 +49,6 @@
         "broadcast-rcon-to-ops" = false;
       };
 
-      whitelist = { };
       operators = { };
     };
   };
