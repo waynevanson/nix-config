@@ -1,4 +1,9 @@
-{ self, inputs, system, ... }:
+{
+  self,
+  inputs,
+  system,
+  ...
+}:
 let
   acme' =
     { config, ... }:
@@ -15,7 +20,6 @@ let
             "opencode.waynevanson.com"
             "zed.waynevanson.com"
             "minecraft.waynevanson.com"
-            # todo: does this serve the default bucket?
             "s3.garage.waynevanson.com"
             # todo: <bucket>.s3.garage.waynevanson.com
             "*.s3.garage.waynevanson.com"

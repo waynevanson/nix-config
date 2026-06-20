@@ -1,6 +1,6 @@
 {
   imports = [
     ./os.nix
-    ./zfs.nix
+    # ./zfs.nix
   ];
 }
