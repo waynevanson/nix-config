@@ -293,6 +293,6 @@ in
     nginx'
     homeManager'
     host'
-    ./disko-configuration.nix
+    ./disko-configuration
   ];
 }
