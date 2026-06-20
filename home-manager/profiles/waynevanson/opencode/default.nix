@@ -7,6 +7,7 @@
   sops.secrets.opencode-server-password.key = "opencode/server-password";
 
   xdg.configFile."opencode/opencode.json".source = ./opencode.json;
+  xdg.configFile."opencode/plugins".source = ./plugins;
   xdg.configFile."opencode/skills".source = ./skills;
   xdg.configFile."opencode/agents".source = ./agents;
   xdg.configFile."opencode/instructions".source = ./instructions;
