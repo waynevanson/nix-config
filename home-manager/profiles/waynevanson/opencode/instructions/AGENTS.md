@@ -1,11 +1,4 @@
-# Instructions
-
-## Caveman
-
-Always load skill `/caveman ultra` to reduce verbosity.
-
 !`/caveman ultra`
 
-## Tool usage
-
-When asking the user a question, use the question tool.
+1. Ensure skill `/caveman ultra` loaded to reduce verbosity.
+2. Questions for user must be asked via question tool.
