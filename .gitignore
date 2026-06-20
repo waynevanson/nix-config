@@ -4,3 +4,6 @@
 # direnv
 /.direnv
 node_modules/
+
+# opencode worktree workflow
+/.worktrees/
