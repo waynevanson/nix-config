@@ -14,6 +14,7 @@ let
             "atticd.waynevanson.com"
             "opencode.waynevanson.com"
             "zed.waynevanson.com"
+            "minecraft.waynevanson.com"
             # todo: does this serve the default bucket?
             "s3.garage.waynevanson.com"
             # todo: <bucket>.s3.garage.waynevanson.com
@@ -216,6 +217,7 @@ let
         127.0.0.1 s3.garage.waynevanson.com
         127.0.0.1 atticd.waynevanson.com
         127.0.0.1 opencode.waynevanson.com
+        127.0.0.1 minecraft.waynevanson.com
       '';
 
       boot.loader.grub = {
@@ -269,9 +271,11 @@ in
 {
   imports = [
     self.nixosModules.custom
+    inputs.nix-minecraft.nixosModules.minecraft-servers
     ./forgejo.nix
     ./opencode.nix
     ./zed.nix
+    ./minecraft.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
     # ./forgejo-runner.nix

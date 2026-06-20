@@ -23,12 +23,18 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       disko,
       home-manager,
+      nix-minecraft,
       nixos-anywhere,
       nixpkgs,
       self,
@@ -41,6 +47,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [ nix-minecraft.overlay ];
       };
 
       createNixosConfigurations = pkgs.lib.mapAttrs (
