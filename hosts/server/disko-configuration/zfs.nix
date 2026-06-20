@@ -1,4 +1,6 @@
 {
+  hardware.facter.reportPath = ./facter.json;
+
   disko.devices = {
     disk = {
       wdc1 = {
