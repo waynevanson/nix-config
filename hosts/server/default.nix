@@ -139,7 +139,7 @@ let
         settings = {
           replication_factor = 1;
           consistency_mode = "consistent";
-          data_dir = "/var/lib/garage";
+          data_dir = "/srv/tank/garage";
           rpc_bind_addr = "[::]:${port.rpc}";
           s3_api = {
             api_bind_addr = "[::]:${port.s3}";
@@ -147,6 +147,10 @@ let
           };
         };
       };
+
+      systemd.tmpfiles.rules = [
+        "d /srv/tank/garage 0750 ${group} ${group} -"
+      ];
 
       systemd.services.garage.serviceConfig = {
         # Override binary since we're using garage@^2

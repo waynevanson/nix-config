@@ -60,7 +60,7 @@
           compression = "zstd";
           atime = "off";
         };
-        mountpoint = "/srv/data";
+        mountpoint = "/srv/tank";
       };
     };
   };
