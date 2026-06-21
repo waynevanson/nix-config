@@ -24,6 +24,7 @@
   home.packages = with pkgs; [
     attic-client
     inputs.self.packages.${system}.bitwig
+    inputs.self.packages.${system}.pi-coding-agent
     curl
     discord
     fd
