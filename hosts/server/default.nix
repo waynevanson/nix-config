@@ -80,7 +80,7 @@ let
           storage = {
             type = "s3";
             region = "garage";
-            bucket = "default-bucket";
+            bucket = "attic";
             endpoint = "https://s3.garage.waynevanson.com";
           };
         };
@@ -205,6 +205,8 @@ let
 
       imports = [ self.nixosModules.sops ];
 
+      custom.services.attic-client.enable = true;
+
       environment.systemPackages = with pkgs; [
         git
         nerd-fonts.jetbrains-mono
@@ -272,13 +274,6 @@ let
         LC_PAPER = "en_AU.UTF-8";
         LC_TELEPHONE = "en_AU.UTF-8";
         LC_TIME = "en_AU.UTF-8";
-      };
-
-      sops = {
-        defaultSopsFile = ../../.sops.secrets.yaml;
-        age.sshKeyPaths = [
-          "/etc/ssh/ssh_host_ed25519_key"
-        ];
       };
 
       services.sshd.enable = true;

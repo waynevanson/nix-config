@@ -14,6 +14,7 @@ let
     custom = {
       # virtualisation.docker.enable = true;
       virtualisation.containerd.enable = true;
+      services.attic-client.enable = true;
       services.cosmic.enable = true;
     };
   };
@@ -110,6 +111,7 @@ in
     #./disk-configuration.nix
     ./hardware-configuration.nix
     ../../modules
+    self.nixosModules.sops
     hardware'
     host'
     system'
