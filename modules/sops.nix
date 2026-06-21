@@ -6,10 +6,14 @@
 
   sops = {
     defaultSopsFile = ../.sops.secrets.yaml;
+    age.sshKeyPaths = [
+      "/etc/ssh/ssh_host_ed25519_key"
+    ];
     secrets = {
       spaceship-client-id.key = "spaceship/client-id";
       spaceship-client-secret.key = "spaceship/client-secret";
       atticd-secret.key = "atticd/secret";
+      attic-client-token.key = "attic-client/token";
       garage-rpc-secret.key = "garage/rpc-secret";
       garage-access-key.key = "garage/access-key";
       garage-secret-key.key = "garage/secret-key";
