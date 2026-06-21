@@ -8,11 +8,6 @@
     defaults.email = "waynevanson@gmail.com";
     certs."waynevanson.com" = {
       group = "nginx";
-      extraDomainNames = [
-        "runner.git.waynevanson.com"
-        "zed.waynevanson.com"
-        "minecraft.waynevanson.com"
-      ];
       dnsProvider = "spaceship";
       webroot = null;
 
