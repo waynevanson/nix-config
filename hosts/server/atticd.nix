@@ -7,6 +7,8 @@ let
   port = "2884";
 in
 {
+  security.acme.certs."waynevanson.com".extraDomainNames = [ "atticd.waynevanson.com" ];
+
   sops.templates.atticd-environment-file = {
     content = ''
       ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.atticd-secret}

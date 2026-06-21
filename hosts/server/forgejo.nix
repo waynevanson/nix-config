@@ -1,5 +1,6 @@
 { config, lib, ... }:
 {
+  security.acme.certs."waynevanson.com".extraDomainNames = [ "git.waynevanson.com" ];
 
   sops.secrets.postgres-password.key = "postgres/password";
 

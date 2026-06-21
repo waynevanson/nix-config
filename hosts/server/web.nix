@@ -9,15 +9,9 @@
     certs."waynevanson.com" = {
       group = "nginx";
       extraDomainNames = [
-        "git.waynevanson.com"
         "runner.git.waynevanson.com"
-        "atticd.waynevanson.com"
-        "opencode.waynevanson.com"
         "zed.waynevanson.com"
         "minecraft.waynevanson.com"
-        "s3.garage.waynevanson.com"
-        # todo: <bucket>.s3.garage.waynevanson.com
-        "*.s3.garage.waynevanson.com"
       ];
       dnsProvider = "spaceship";
       webroot = null;

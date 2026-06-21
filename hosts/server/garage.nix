@@ -13,6 +13,11 @@ let
   };
 in
 {
+  security.acme.certs."waynevanson.com".extraDomainNames = [
+    "s3.garage.waynevanson.com"
+    "*.s3.garage.waynevanson.com"
+  ];
+
   sops.templates.garage-environment-file = {
     content = ''
       GARAGE_RPC_SECRET=${config.sops.placeholder.garage-rpc-secret}
