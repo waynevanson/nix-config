@@ -55,6 +55,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops.templates.attic-client-environment = {
+      content = ''
+        ATTIC_TOKEN=${config.sops.placeholder.${cfg.tokenSecret}}
+        ATTIC_SERVER=${cfg.server.endpoint}
+      '';
+    };
+
     systemd.services.attic-client = {
       description = "Attic client watch-store service";
       wantedBy = [ "multi-user.target" ];
@@ -74,6 +81,7 @@ in
           "HOME=/var/lib/attic-client"
           "XDG_CONFIG_HOME=/var/lib/attic-client/.config"
         ];
+        EnvironmentFile = config.sops.templates.attic-client-environment.path;
         ExecStartPre = pkgs.writeShellScript "attic-client-config" ''
           install -d -m 700 /var/lib/attic-client/.config/attic
           install -m 600 ${configFile} /var/lib/attic-client/.config/attic/config.toml
