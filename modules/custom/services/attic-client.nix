@@ -14,7 +14,7 @@ let
 
     [servers.${cfg.server.name}]
     endpoint = "${cfg.server.endpoint}"
-    token-file = "/run/credentials/attic-client/token"
+    token-file = "${config.sops.secrets.${cfg.tokenSecret}.path}"
   '';
 in
 {
@@ -73,9 +73,6 @@ in
         Environment = [
           "HOME=/var/lib/attic-client"
           "XDG_CONFIG_HOME=/var/lib/attic-client/.config"
-        ];
-        LoadCredential = [
-          "token:${config.sops.secrets.${cfg.tokenSecret}.path}"
         ];
         ExecStartPre = pkgs.writeShellScript "attic-client-config" ''
           install -d -m 700 /var/lib/attic-client/.config/attic
