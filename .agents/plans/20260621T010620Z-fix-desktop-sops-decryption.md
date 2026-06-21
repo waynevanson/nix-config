@@ -6,77 +6,30 @@ Make `nixos-rebuild switch` succeed on the desktop host by ensuring sops-nix can
 
 ## Context
 
-The failure is:
+The failure was:
 
 ```text
 sops-install-secrets: failed to decrypt '/nix/store/...-.sops.secrets.yaml': Error getting data key: 0 successful groups required, got 0
 ```
 
-- `modules/sops.nix` is shared by both `server` and `desktop` and configures:
-  - `age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];`
-- On the desktop, sops-install-secrets converted that host key to the age public key `age10h32a9e4nxmqzgtrp44wjzyw9gz6zlkzgdye97asj2j3nk2zmewsn9gu77`.
-- `.sops.yaml` currently only lists these age recipients:
-  - `admin_waynevanson` (`age1qssg5g2jkt9n68lq4hyjmr56uucnanckkvseecyanzflmyalpu3s2ss4g9`)
-  - `server_homelab` (`age1kq8slysaa6pndupg3z4gkypt9ul94lmdpg2q5ky28swms6jhuakq2qfjfy`)
-- Because the desktop's host key is not a recipient, decryption fails during activation.
-- The admin age secret key exists locally at `/home/waynevanson/.config/sops/age/keys.txt`, so we can re-encrypt the secrets file after adding the new recipient.
+- Commit `d4610fa` (`feat(attic-client): add watch-store module and enable on desktop/server`) made the desktop start using the shared `self.nixosModules.sops` module and the `attic-client-token` system secret.
+- That shared module configured `age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];`, which is only appropriate for the server.
+- The desktop does not have its SSH host key in `.sops.yaml`, so it could not decrypt.
+- The server decrypts with its SSH host key (`server_homelab`), and the desktop user/Home Manager already decrypts with the admin age key at `/home/waynevanson/.config/sops/age/keys.txt`.
 
-## Tasks
+## Implemented fix
 
-- [ ] 1. Confirm the desktop's host age recipient
-  - On the desktop run:
-    ```bash
-    ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub
-    ```
-  - It should match `age10h32a9e4nxmqzgtrp44wjzyw9gz6zlkzgdye97asj2j3nk2zmewsn9gu77` from the error output.
+- `modules/sops.nix`: removed the shared `age.sshKeyPaths` setting.
+- `hosts/server/default.nix`: added `sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];` back as a server-only setting.
+- `hosts/desktop/default.nix`: added `sops.age.keyFile = "/home/waynevanson/.config/sops/age/keys.txt";` so desktop system activation uses the existing admin/user age key.
 
-- [ ] 2. Add the desktop key to `.sops.yaml`
-  - Add a new alias under `keys`, e.g. `desktop_nixos`.
-  - Include that alias in the `key_groups` for the `^.sops.secrets.yaml$` creation rule.
-  - Example diff shape:
-    ```yaml
-    keys:
-      - &admin_waynevanson age1qssg5g2jkt9n68lq4hyjmr56uucnanckkvseecyanzflmyalpu3s2ss4g9
-      - &server_homelab age1kq8slysaa6pndupg3z4gkypt9ul94lmdpg2q5ky28swms6jhuakq2qfjfy
-      - &desktop_nixos age10h32a9e4nxmqzgtrp44wjzyw9gz6zlkzgdye97asj2j3nk2zmewsn9gu77
-    creation_rules:
-      - path_regexp: ^.sops.secrets.yaml$
-        key_groups:
-          - age:
-              - *admin_waynevanson
-              - *server_homelab
-              - *desktop_nixos
-    ```
+## Verification
 
-- [ ] 3. Re-encrypt `.sops.secrets.yaml`
-  - Use the existing admin age key to update the data-key encryption:
-    ```bash
-    SOPS_AGE_KEY_FILE=/home/waynevanson/.config/sops/age/keys.txt \
-      sops updatekeys -y .sops.secrets.yaml
-    ```
-  - This should add a new `sops.age` recipient entry for `desktop_nixos` without changing any plaintext secrets.
+- [x] `nixos-rebuild build --flake .#nixos` succeeds.
+- [x] `nixos-rebuild build --flake .#server` succeeds.
+- [ ] `sudo nixos-rebuild switch --flake .` on the desktop (could not run inside this sandbox because `sudo` is blocked).
 
-- [ ] 4. Verify the diff
-  - Check `git diff .sops.yaml .sops.secrets.yaml`.
-  - Expect only:
-    - the new key alias and recipient entry,
-    - updated `lastmodified` / `mac` metadata.
-  - No plaintext secrets should change.
+## Notes
 
-- [ ] 5. Test the fix
-  - Run a rebuild to confirm activation no longer fails:
-    ```bash
-    sudo nixos-rebuild test --flake .
-    ```
-  - If successful, run the real switch:
-    ```bash
-    sudo nixos-rebuild switch --flake .
-    ```
-
-- [ ] 6. Commit the changes
-  - Commit the updated `.sops.yaml` and `.sops.secrets.yaml`.
-
-## Pending questions
-
-1. **Host-key vs. admin-key binding:** Adding the desktop's SSH host-derived age key keeps the same model already used for `server_homelab`. This means a host reinstall/regenerated SSH key would require re-encrypting secrets. Are you happy with that, or would you prefer the desktop system secrets to use your existing admin/user age key file instead?
-2. **Public key confirmation:** Is the age public key `age10h32a9e4nxmqzgtrp44wjzyw9gz6zlkzgdye97asj2j3nk2zmewsn9gu77` from the switch output the correct one for this desktop, or has the host key changed since that error?
+- No changes to `.sops.yaml` or `.sops.secrets.yaml` were needed.
+- The desktop system activation now reads the same age key file that Home Manager already uses.

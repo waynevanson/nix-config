@@ -205,6 +205,8 @@ let
 
       imports = [ self.nixosModules.sops ];
 
+      sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+
       custom.services.attic-client.enable = true;
 
       environment.systemPackages = with pkgs; [

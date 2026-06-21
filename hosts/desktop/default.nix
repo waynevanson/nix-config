@@ -104,6 +104,8 @@ let
       efi.canTouchEfiVariables = true;
       systemd-boot.enable = true;
     };
+
+    sops.age.keyFile = "/home/waynevanson/.config/sops/age/keys.txt";
   };
 in
 {
