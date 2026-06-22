@@ -132,6 +132,7 @@
 
       packages.${system} = {
         bitwig = pkgs.callPackage ./packages/bitwig.nix { };
+        pi-catppuccin-themes = pkgs.callPackage ./packages/pi-catppuccin-themes { };
         pi-coding-agent = pkgs.callPackage ./packages/pi-coding-agent { };
       };
 

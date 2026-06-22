@@ -11,6 +11,7 @@
     ../../modules/alacritty.nix
     ../../modules/direnv.nix
     ../../modules/oh-my-posh
+    ../../modules/pi-coding-agent.nix
     ./opencode
     ../../modules/tmux.nix
     ../../modules/zsh.nix
@@ -24,7 +25,6 @@
   home.packages = with pkgs; [
     attic-client
     inputs.self.packages.${system}.bitwig
-    inputs.self.packages.${system}.pi-coding-agent
     curl
     discord
     fd
