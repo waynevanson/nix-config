@@ -10,6 +10,7 @@
     inputs.nix-openclaw.nixosModules.openclaw-gateway
     ../../modules/tmux.nix
     ./forgejo.nix
+    ./headscale.nix
     ./openclaw.nix
     ./zed.nix
     ./minecraft.nix
