@@ -7,6 +7,7 @@
   imports = [
     self.nixosModules.custom
     inputs.nix-minecraft.nixosModules.minecraft-servers
+    ../../modules/tmux.nix
     ./forgejo.nix
     ./opencode.nix
     ./zed.nix

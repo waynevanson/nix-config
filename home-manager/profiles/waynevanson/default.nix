@@ -9,10 +9,8 @@
     ./packages.nix
     ./pi-coding-agent.nix
     ./sops.nix
-    ./tmux.nix
     ./vim.nix
     ./zsh.nix
-    ./opencode
   ];
 
   programs.home-manager.enable = true;

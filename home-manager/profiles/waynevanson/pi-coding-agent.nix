@@ -5,6 +5,10 @@
   system,
   ...
 }:
+let
+  cfg = config.programs.pi-coding-agent;
+  configDir = cfg.configDir;
+in
 {
   programs.pi-coding-agent = {
     enable = true;
@@ -16,17 +20,34 @@
       bun
     ];
 
+    context = ./pi/AGENTS.md;
+
     settings = {
       theme = "catppuccin-mocha";
-      themes = [ "${config.programs.pi-coding-agent.configDir}/themes" ];
+      themes = [ "${configDir}/themes" ];
+      skills = [ "${configDir}/skills" ];
+      extensions = [ "${configDir}/extensions" ];
+      prompts = [ "${configDir}/prompts" ];
     };
   };
 
   home.file = {
-    "${config.programs.pi-coding-agent.configDir}/themes/catppuccin-mocha.json".source =
+    "${configDir}/themes/catppuccin-mocha.json".source =
       "${inputs.self.packages.${system}.pi-catppuccin-themes}/share/pi/themes/catppuccin-mocha.json";
 
-    "${config.programs.pi-coding-agent.configDir}/themes/catppuccin-latte.json".source =
+    "${configDir}/themes/catppuccin-latte.json".source =
       "${inputs.self.packages.${system}.pi-catppuccin-themes}/share/pi/themes/catppuccin-latte.json";
+
+    # Skills
+    "${configDir}/skills/grill/SKILL.md".source = ./pi/skills/grill/SKILL.md;
+    "${configDir}/skills/planner/SKILL.md".source = ./pi/skills/planner/SKILL.md;
+    "${configDir}/skills/caveman/SKILL.md".source = ./pi/skills/caveman/SKILL.md;
+    "${configDir}/skills/worktree/SKILL.md".source = ./pi/skills/worktree/SKILL.md;
+
+    # Extension
+    "${configDir}/extensions/worktree.ts".source = ./pi/extensions/worktree.ts;
+
+    # Prompts
+    "${configDir}/prompts/plan.md".source = ./pi/prompts/plan.md;
   };
 }
