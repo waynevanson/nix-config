@@ -1,0 +1,32 @@
+{
+  pkgs,
+  inputs,
+  system,
+  ...
+}:
+{
+  home.packages = with pkgs; [
+    attic-client
+    inputs.self.packages.${system}.bitwig
+    curl
+    discord
+    fd
+    fzf
+    gnutar
+    lunar-client
+    nerd-fonts.jetbrains-mono
+    nil
+    nixd
+    openscad
+    opencode
+    openssl
+    prusa-slicer
+    ripgrep
+    s5cmd
+    unzip
+    wget
+    xz
+    zed-editor.fhs
+    zip
+  ];
+}
