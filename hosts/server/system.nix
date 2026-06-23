@@ -32,7 +32,6 @@
     127.0.0.1 git.waynevanson.com
     127.0.0.1 s3.garage.waynevanson.com
     127.0.0.1 atticd.waynevanson.com
-    127.0.0.1 opencode.waynevanson.com
     127.0.0.1 minecraft.waynevanson.com
   '';
 

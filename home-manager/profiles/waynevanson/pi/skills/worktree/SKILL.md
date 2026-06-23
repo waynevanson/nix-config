@@ -16,8 +16,8 @@ The worktree extension prepares the worktree and records state before you start.
 Given the plan path (e.g. `.agents/plans/20260619T120000Z-add-login.md`):
 
 - `slug`: filename without timestamp prefix and without `.md`. For the example above, slug is `add-login`.
-- `featureBranch`: `opencode-worktree/<slug>`
-- `worktreePath`: `.worktrees/opencode-worktree/<slug>` relative to the original project root.
+- `featureBranch`: `pi-worktree/<slug>`
+- `worktreePath`: `.worktrees/pi-worktree/<slug>` relative to the original project root.
 - `projectRoot`: the original git repository root. If running inside the worktree, use `dirname $(git rev-parse --git-common-dir)`. Otherwise use `git rev-parse --show-toplevel`.
 - `baseBranch`: the branch current when `/worktree` was invoked, read from `.worktrees/.config.json` or from `git branch --show-current` in `projectRoot`.
 
@@ -44,7 +44,7 @@ Given the plan path (e.g. `.agents/plans/20260619T120000Z-add-login.md`):
 4. Commit the removal.
 5. Switch to `projectRoot`.
 6. Merge `featureBranch` into `baseBranch` with `--no-ff`:
-   `git merge <featureBranch> --no-ff -m "merge(opencode-worktree): <slug>"`
+   `git merge <featureBranch> --no-ff -m "merge(pi-worktree): <slug>"`
 7. Delete the worktree:
    `git worktree remove <worktreePath>`
 8. Delete the feature branch:

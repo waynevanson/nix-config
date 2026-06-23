@@ -78,7 +78,7 @@ async function ensureWorktree(
 ): Promise<WorktreeEntry> {
   const slug = getSlug(planPath);
   const baseBranch = getBaseBranch(projectRoot);
-  const featureBranch = `opencode-worktree/${slug}`;
+  const featureBranch = `pi-worktree/${slug}`;
   const worktreePath = join(".worktrees", featureBranch);
   const absoluteWorktreePath = join(projectRoot, worktreePath);
 

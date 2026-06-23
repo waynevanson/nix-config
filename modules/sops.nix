@@ -16,7 +16,6 @@
       garage-access-key.key = "garage/access-key";
       garage-secret-key.key = "garage/secret-key";
       digitalocean-token.key = "digitalocean/token";
-      opencode-server-password.key = "opencode/server-password";
     };
   };
 }

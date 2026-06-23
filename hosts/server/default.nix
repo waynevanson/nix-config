@@ -11,7 +11,6 @@
     ../../modules/tmux.nix
     ./forgejo.nix
     ./openclaw.nix
-    ./opencode.nix
     ./zed.nix
     ./minecraft.nix
     # ./wordpress-lx.nix

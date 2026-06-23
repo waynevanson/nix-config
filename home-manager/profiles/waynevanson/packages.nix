@@ -18,7 +18,6 @@
     nil
     nixd
     openscad
-    opencode
     openssl
     prusa-slicer
     ripgrep

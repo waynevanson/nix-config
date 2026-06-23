@@ -5,7 +5,7 @@
 /.direnv
 node_modules/
 
-# opencode worktree workflow
+# pi worktree workflow
 /.worktrees/
 
 # Minecraft world import archive
