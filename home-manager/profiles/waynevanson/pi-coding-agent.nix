@@ -23,7 +23,10 @@ in
     context = ./pi/AGENTS.md;
 
     settings = {
-      theme = "catppuccin-mocha";
+      defaultProvider = "moonshotai";
+      defaultModel = "kimi-k2.7-code";
+      theme = "catppuccin-latte/catppuccin-mocha";
+      editorPaddingX = 1;
       themes = [ "${configDir}/themes" ];
       skills = [ "${configDir}/skills" ];
       extensions = [ "${configDir}/extensions" ];
