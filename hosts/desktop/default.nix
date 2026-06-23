@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   system,
@@ -8,6 +9,15 @@
 let
   hardware' = {
     hardware.facter.reportPath = ./facter.json;
+  };
+
+  pi-wrapped = pkgs.writeShellApplication {
+    name = "pi";
+    text = ''
+      MOONSHOT_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.moonshotai-api-key.path})"
+      export MOONSHOT_API_KEY
+      exec ${pkgs.lib.getExe inputs.self.packages.${system}.pi-coding-agent} "$@"
+    '';
   };
 
   custom' = {
@@ -32,9 +42,11 @@ let
 
     # Configuration for regular user
     home-manager.users.waynevanson =
-      { self, ... }:
+      { self, lib, ... }:
       {
         imports = [ self.homeModules.waynevanson ];
+
+        programs.pi-coding-agent.package = lib.mkForce pi-wrapped;
 
         home = {
           username = "waynevanson";
@@ -106,6 +118,12 @@ let
     };
 
     sops.age.keyFile = "/home/waynevanson/.config/sops/age/keys.txt";
+
+    sops.secrets.moonshotai-api-key = {
+      key = "moonshotai/api-key";
+      owner = "waynevanson";
+      mode = "0400";
+    };
   };
 in
 {
