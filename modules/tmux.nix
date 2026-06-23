@@ -13,6 +13,7 @@
     extraConfig = ''
       # Enable extended keys for applications like Neovim
       set -g extended-keys on
+      set -g extended-keys-format csi-u
       set -sag terminal-features 'xterm*:extkeys'
 
       # Move status bar to top from bottom

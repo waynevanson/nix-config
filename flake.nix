@@ -28,6 +28,11 @@
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -35,6 +40,7 @@
       disko,
       home-manager,
       nix-minecraft,
+      nix-openclaw,
       nixos-anywhere,
       nixpkgs,
       self,
@@ -46,8 +52,13 @@
 
       pkgs = import nixpkgs {
         inherit system;
-        config.allowUnfree = true;
-        overlays = [ nix-minecraft.overlay ];
+        config = {
+          allowUnfree = true;
+        };
+        overlays = [
+          nix-minecraft.overlay
+          nix-openclaw.overlays.default
+        ];
       };
 
       createNixosConfigurations = pkgs.lib.mapAttrs (
