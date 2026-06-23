@@ -3,7 +3,7 @@
     enable = true;
     enableCompletion = true;
 
-    initExtra = ''
+    initContent = ''
       if [[ -z "$TMUX" && "$TTY" == /dev/tty* ]]; then
         exec tmux new-session -A -s main
       fi
