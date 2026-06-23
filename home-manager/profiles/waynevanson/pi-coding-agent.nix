@@ -45,10 +45,6 @@ in
     "${configDir}/skills/grill/SKILL.md".source = ./pi/skills/grill/SKILL.md;
     "${configDir}/skills/planner/SKILL.md".source = ./pi/skills/planner/SKILL.md;
     "${configDir}/skills/caveman/SKILL.md".source = ./pi/skills/caveman/SKILL.md;
-    "${configDir}/skills/worktree/SKILL.md".source = ./pi/skills/worktree/SKILL.md;
-
-    # Extension
-    "${configDir}/extensions/worktree.ts".source = ./pi/extensions/worktree.ts;
 
     # Prompts
     "${configDir}/prompts/plan.md".source = ./pi/prompts/plan.md;

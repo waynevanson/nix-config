@@ -5,8 +5,5 @@
 /.direnv
 node_modules/
 
-# pi worktree workflow
-/.worktrees/
-
 # Minecraft world import archive
 /min2.tar.xz

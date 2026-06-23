@@ -14,4 +14,4 @@ If user ask question that applies no change, answer question without writing a p
 Save plans as flat Markdown files at `.agents/plans/<timestamp>-<slug>.md`.
 Use a UTC timestamp prefix and a short kebab-case slug, e.g. `.agents/plans/20260619T120000Z-add-login.md`.
 The file should include Goal, Context, Tasks (with checkboxes), and Pending Questions sections.
-After saving the plan, tell the user to commit it before starting implementation with `/worktree <plan-path>` in a new session.
+After saving the plan, tell the user to commit it before starting implementation.
