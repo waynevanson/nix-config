@@ -7,3 +7,4 @@ node_modules/
 
 # Minecraft world import archive
 /min2.tar.xz
+target/

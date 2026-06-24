@@ -1,6 +1,5 @@
 {
   hardware.facter.reportPath = ./facter.json;
-
   disko.devices = {
     disk = {
       disk1 = {
@@ -36,7 +35,6 @@
         };
       };
     };
-
     lvm_vg = {
       pool = {
         type = "lvm_vg";
@@ -55,6 +53,5 @@
         };
       };
     };
-
   };
 }

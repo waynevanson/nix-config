@@ -9,17 +9,14 @@ let
   instanceName = "default";
 in
 {
-
   sops = {
     secrets.${tokenName}.key = "forgejo/token";
     templates.${tokenFileName} = {
       content = ''
         TOKEN=${config.sops.placeholder.${tokenName}}
       '';
-
     };
   };
-
   # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/continuous-integration/gitea-actions-runner.nix
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
@@ -33,9 +30,7 @@ in
       tokenFile = config.sops.templates.${tokenFileName}.path;
     };
   };
-
   # it's hanging here for reasons unknown due to virtualisation
   systemd.user.services.dbus-broker.restartIfChanged = false;
-
   virtualisation.podman.enable = true;
 }

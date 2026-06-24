@@ -10,19 +10,17 @@
       group = "nginx";
       dnsProvider = "spaceship";
       webroot = null;
-
       credentialFiles = {
         "SPACESHIP_API_KEY_FILE" = config.sops.secrets.spaceship-client-id.path;
         "SPACESHIP_API_SECRET_FILE" = config.sops.secrets.spaceship-client-secret.path;
       };
     };
   };
-
   services.nginx = {
     enable = true;
-    virtualHosts = { };
+    virtualHosts = {
+    };
   };
-
   networking.firewall.allowedTCPPorts = [
     80
     443

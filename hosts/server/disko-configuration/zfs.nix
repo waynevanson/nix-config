@@ -1,6 +1,5 @@
 {
   hardware.facter.reportPath = ./facter.json;
-
   disko.devices = {
     disk = {
       wdc1 = {
@@ -17,7 +16,6 @@
           };
         };
       };
-
       wdc2 = {
         type = "disk";
         device = "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M2KFNKPE";
@@ -32,7 +30,6 @@
           };
         };
       };
-
       wdc3 = {
         type = "disk";
         device = "/dev/disk/by-id/ata-WDC_WD20EZRZ-22Z5HB0_WD-WCC4M3XHJ9TJ";
@@ -48,7 +45,6 @@
         };
       };
     };
-
     zpool = {
       tank = {
         type = "zpool";

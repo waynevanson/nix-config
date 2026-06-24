@@ -3,7 +3,6 @@
 { lib, ... }:
 {
   services.openssh.enable = true;
-
   sops = {
     defaultSopsFile = ../.sops.secrets.yaml;
     age.sshKeyPaths = lib.mkDefault [ ];

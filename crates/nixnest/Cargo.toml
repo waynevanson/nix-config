@@ -1,0 +1,8 @@
+[package]
+name = "nixnest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rowan = "0.16.1"
+rnix = "0.14.0"

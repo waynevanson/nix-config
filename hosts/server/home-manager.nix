@@ -11,7 +11,6 @@
     extraSpecialArgs = {
       inherit inputs system self;
     };
-
     users.zed =
       { self, ... }:
       {

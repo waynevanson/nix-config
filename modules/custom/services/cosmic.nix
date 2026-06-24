@@ -2,34 +2,27 @@
   config,
   lib,
   ...
-}: let
-   config' = config.custom.services.cosmic;
-in {
+}:
+let
+  config' = config.custom.services.cosmic;
+in
+{
   options.custom.services.cosmic = {
-    enable = lib.mkEnableOption {};
+    enable = lib.mkEnableOption {
+    };
   };
-
-  config =
-    lib.mkIf config'.enable
-    {
-      services.desktopManager.cosmic.enable = true;
-      services.displayManager.cosmic-greeter.enable = true;
-      services.system76-scheduler.enable = true;
-
-      # clipboard - security bypass
-      environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
-
-      programs.firefox.preferences = {
-        # disable libadwaita theming for Firefox
-        "widget.gtk.libadwaita-colors.enabled" = false;
-      };
-
-      services.pulseaudio.enable = false;
-      security.rtkit.enable = true;
-      services.pipewire = {
+  config = lib.mkIf config'.enable {
+    services = {
+      desktopManager.cosmic.enable = true;
+      displayManager.cosmic-greeter.enable = true;
+      system76-scheduler.enable = true;
+      pulseaudio.enable = false;
+      pipewire = {
         enable = true;
-        alsa.enable = true;
-        alsa.support32Bit = true;
+        alsa = {
+          enable = true;
+          support32Bit = true;
+        };
         pulse.enable = true;
         # If you want to use JACK applications, uncomment this
         #jack.enable = true;
@@ -38,10 +31,16 @@ in {
         # no need to redefine it in your config for now)
         #media-session.enable = true;
       };
-
       # Enable touchpad support (enabled default in most desktopManager).
-      services.libinput.enable = true;
-
-      fonts.fontconfig.enable = true;
+      libinput.enable = true;
     };
+    # clipboard - security bypass
+    environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
+    programs.firefox.preferences = {
+      # disable libadwaita theming for Firefox
+      "widget.gtk.libadwaita-colors.enabled" = false;
+    };
+    security.rtkit.enable = true;
+    fonts.fontconfig.enable = true;
+  };
 }
