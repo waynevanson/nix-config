@@ -7,11 +7,11 @@
 }:
 
 let
-  version = "0.79.9";
+  version = "0.80.2";
 
   upstream = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-    hash = "sha512-8TZ796Zn0NE4vmhxG9hv4ZtJDGJzhqMjlmFg8ZkUKxfqB7LJa4ums2jSJKtnyAZfAamN6VzqzN0A82RNDqv8Ag==";
+    hash = "sha256-nKsYZhU0XzzCqx0199bxOTBqMSKgMKRffCRUifc0kIU=";
   };
 
   src = runCommand "pi-coding-agent-${version}-patched.tar.gz"
@@ -37,7 +37,7 @@ buildNpmPackage {
   sourceRoot = "package";
 
   npmDepsFetcherVersion = 2;
-  npmDepsHash = "sha256-d8EGQ4F6ZYGpVSNlPgsGR/XuddbnVQSEpiH5MM4TT3Y=";
+  npmDepsHash = "sha256-LmnQRKb6HTYPnnS30x9vrqwTWtXw+kNpuX4oZkaxWHk=";
 
   dontNpmBuild = true;
 
