@@ -29,8 +29,6 @@ in
       editorPaddingX = 1;
       themes = [ "${configDir}/themes" ];
       skills = [ "${configDir}/skills" ];
-      extensions = [ "${configDir}/extensions" ];
-      prompts = [ "${configDir}/prompts" ];
     };
   };
 
@@ -43,10 +41,6 @@ in
 
     # Skills
     "${configDir}/skills/grill/SKILL.md".source = ./pi/skills/grill/SKILL.md;
-    "${configDir}/skills/planner/SKILL.md".source = ./pi/skills/planner/SKILL.md;
     "${configDir}/skills/caveman/SKILL.md".source = ./pi/skills/caveman/SKILL.md;
-
-    # Prompts
-    "${configDir}/prompts/plan.md".source = ./pi/prompts/plan.md;
   };
 }

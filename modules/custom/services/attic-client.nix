@@ -55,6 +55,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops.secrets.${cfg.tokenSecret}.restartUnits = [ "attic-client.service" ];
+
+    systemd.tmpfiles.rules = [
+      "d /root/.config/attic 0700 root root -"
+      "L+ /root/.config/attic/config.toml - root root - ${configFile}"
+    ];
+
     sops.templates.attic-client-environment = {
       content = ''
         ATTIC_TOKEN=${config.sops.placeholder.${cfg.tokenSecret}}

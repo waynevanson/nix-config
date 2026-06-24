@@ -3,6 +3,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -23,7 +24,7 @@ in
       GARAGE_RPC_SECRET=${config.sops.placeholder.garage-rpc-secret}
       GARAGE_DEFAULT_ACCESS_KEY=${config.sops.placeholder.garage-access-key}
       GARAGE_DEFAULT_SECRET_KEY=${config.sops.placeholder.garage-secret-key}
-      GARAGE_DEFAULT_BUCKET="default-bucket"
+      GARAGE_DEFAULT_BUCKET="attic"
     '';
     owner = group;
   };
@@ -59,6 +60,30 @@ in
     ExecStart = lib.mkForce "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
 
     DynamicUser = lib.mkForce false;
+  };
+
+  systemd.services.garage-create-attic-bucket = {
+    description = "Create the Attic S3 bucket in Garage";
+    after = [ "garage.service" ];
+    requires = [ "garage.service" ];
+    before = [ "atticd.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = group;
+      Group = group;
+      EnvironmentFile = config.sops.templates.garage-environment-file.path;
+      ExecStart = pkgs.writeShellScript "garage-create-attic-bucket" ''
+        set -euo pipefail
+        export PATH="${lib.makeBinPath [ config.services.garage.package ]}:$PATH"
+        if ! garage bucket info attic >/dev/null 2>&1; then
+          garage bucket create attic
+          garage bucket allow --read --write --key "$GARAGE_DEFAULT_ACCESS_KEY" attic
+        fi
+      '';
+    };
   };
 
   services.nginx.virtualHosts."s3.garage.waynevanson.com" = {

@@ -14,6 +14,7 @@
   custom.services.attic-client.enable = true;
 
   environment.systemPackages = with pkgs; [
+    attic-client
     git
     nerd-fonts.jetbrains-mono
   ];
