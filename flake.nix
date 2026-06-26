@@ -52,20 +52,23 @@
         config = {
           allowUnfree = true;
         };
-        overlays = [
-          nix-minecraft.overlay
-          nix-openclaw.overlays.default
-        ];
       };
       rustToolchain = fenix.packages.${system}.fromToolchainFile {
         file = ./rust-toolchain.toml;
         sha256 = "sha256-gh/xTkxKHL4eiRXzWv8KP7vfjSk61Iq48x47BEDFgfk=";
       };
-      createNixosConfigurations = pkgs.lib.mapAttrs (
+      createNixosConfigurations = nixpkgs.lib.mapAttrs (
         _hostname: hostModule:
         nixpkgs.lib.nixosSystem {
-          inherit system pkgs;
+          inherit system;
           modules = [
+            {
+              nixpkgs.config.allowUnfree = true;
+              nixpkgs.overlays = [
+                nix-minecraft.overlay
+                nix-openclaw.overlays.default
+              ];
+            }
             disko.nixosModules.default
             home-manager.nixosModules.default
             sops-nix.nixosModules.sops

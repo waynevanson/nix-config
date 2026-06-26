@@ -38,7 +38,7 @@ in
   services = {
     garage = {
       enable = true;
-      package = config.nixpkgs.pkgs.garage_2;
+      package = pkgs.garage_2;
       environmentFile = config.sops.templates.garage-environment-file.path;
       settings = {
         replication_factor = 1;
