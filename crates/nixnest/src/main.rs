@@ -10,12 +10,21 @@ fn main() {
         std::process::exit(1);
     }
     let src = std::fs::read_to_string(&args[1]).unwrap();
-    let parsed = rnix::Root::parse(&src);
-    if !parsed.errors().is_empty() {
-        eprintln!("parse errors: {:?}", parsed.errors());
-        std::process::exit(1);
+    match format(&src) {
+        Ok(out) => print!("{}", out),
+        Err(e) => {
+            eprintln!("{}", e);
+            std::process::exit(1);
+        }
     }
-    print!("{}", render_node(&parsed.syntax(), "", &src));
+}
+
+pub fn format(src: &str) -> Result<String, String> {
+    let parsed = rnix::Root::parse(src);
+    if !parsed.errors().is_empty() {
+        return Err(format!("parse errors: {:?}", parsed.errors()));
+    }
+    Ok(render_node(&parsed.syntax(), "", src))
 }
 
 fn render_node(node: &SyntaxNode, indent: &str, src: &str) -> String {
@@ -213,7 +222,7 @@ fn render_items(items: &[Item], indent: &str, src: &str) -> String {
         let is_attrset_value = item
             .value
             .as_ref()
-            .map_or(false, |v| ast::AttrSet::cast(v.clone()).is_some());
+            .is_some_and(|v| ast::AttrSet::cast(v.clone()).is_some());
         if item.key_path.len() == 1 && !is_attrset_value {
             continue;
         }
@@ -279,7 +288,7 @@ fn render_items(items: &[Item], indent: &str, src: &str) -> String {
                     }
                 } else {
                     let rest = &m.attrpath_text[m.first_key.len()..];
-                    let remaining = if rest.starts_with('.') { &rest[1..] } else { rest };
+                    let remaining = rest.strip_prefix('.').unwrap_or(rest);
                     child_items.push(Item {
                         key_path: m.key_path[1..].to_vec(),
                         first_key: m.key_path.get(1).cloned().unwrap_or_default(),
@@ -361,4 +370,85 @@ fn extract_comments(raw: &str) -> String {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::format;
+
+    type Fixture = (&'static str, &'static str, &'static str);
+
+    const FIXTURES: &[Fixture] = &[
+        ("empty_attrset", "{}", "{\n}"),
+        ("simple_attr", "{ a = 1; }", "{\n  a = 1;\n}"),
+        ("nested_attrset", "{ a = { b = 1; }; }", "{\n  a = {\n    b = 1;\n  };\n}"),
+        (
+            "merge_shared_prefix",
+            "{ a.b = 1; a.c = 2; }",
+            "{\n  a = {\n    b = 1;\n    c = 2;\n  };\n}",
+        ),
+        (
+            "merge_with_base_attrset",
+            "{ a = { b = 1; }; a.c = 2; }",
+            "{\n  a = {\n    b = 1;\n    c = 2;\n  };\n}",
+        ),
+        (
+            "recursive_base_not_merged",
+            "{ a = rec { b = 1; }; a.c = 2; }",
+            "{\n  a = rec {\n    b = 1;\n  };\n  a.c = 2;\n}",
+        ),
+        (
+            "nested_merge_three_levels",
+            "{ a.b.c = 1; a.b.d = 2; }",
+            "{\n  a = {\n    b = {\n      c = 1;\n      d = 2;\n    };\n  };\n}",
+        ),
+        (
+            "let_in_identity",
+            "let x = 1; y = 2; in x + y",
+            "let\n  x = 1;\n  y = 2;\nin x + y",
+        ),
+        (
+            "let_in_merge",
+            "let a.b = 1; a.c = 2; in a",
+            "let\n  a = {\n    b = 1;\n    c = 2;\n  };\nin a",
+        ),
+        (
+            "inherit_preserved",
+            "{ inherit x y; a = 1; }",
+            "{\n  inherit x y;\n  a = 1;\n}",
+        ),
+        (
+            "comments_preserved",
+            "# leading\n{ a = 1; }",
+            "# leading\n{\n  a = 1;\n}",
+        ),
+        (
+            "trailing_comment",
+            "{ a = 1; # side\n  b = 2;\n}",
+            "{\n  a = 1; # side\n  b = 2;\n}",
+        ),
+        (
+            "blank_lines_collapsed",
+            "{\n\n  a = 1;\n\n  b = 2;\n}",
+            "{\n  a = 1;\n  b = 2;\n}",
+        ),
+        (
+            "legacy_let",
+            "let { x = 1; body = x; }",
+            "{\n  x = 1;\n  body = x;\n}",
+        ),
+        (
+            "single_key_attrset_value_no_merge",
+            "{ a = { b = 1; }; }",
+            "{\n  a = {\n    b = 1;\n  };\n}",
+        ),
+    ];
+
+    #[test]
+    fn fixtures() {
+        for (name, input, expected) in FIXTURES {
+            let actual = format(input).unwrap_or_else(|e| panic!("{name}: parse error: {e}"));
+            assert_eq!(actual, *expected, "fixture {name} failed");
+        }
+    }
 }

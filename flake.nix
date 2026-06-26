@@ -27,10 +27,15 @@
       url = "github:openclaw/nix-openclaw";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     {
       disko,
+      fenix,
       home-manager,
       nix-minecraft,
       nix-openclaw,
@@ -51,6 +56,10 @@
           nix-minecraft.overlay
           nix-openclaw.overlays.default
         ];
+      };
+      rustToolchain = fenix.packages.${system}.fromToolchainFile {
+        file = ./rust-toolchain.toml;
+        sha256 = "sha256-gh/xTkxKHL4eiRXzWv8KP7vfjSk61Iq48x47BEDFgfk=";
       };
       createNixosConfigurations = pkgs.lib.mapAttrs (
         _hostname: hostModule:
@@ -92,6 +101,7 @@
           ];
         }
       );
+      createPackages = pkgs.lib.mapAttrs (packageName: modulePath: pkgs.callPackage modulePath { });
     in
     {
       devShells.${system}.default = pkgs.mkShell {
@@ -100,6 +110,7 @@
           biome
           nixos-anywhere.packages.${system}.default
           disko.packages.${system}.default
+          rustToolchain
           sops
           ssh-to-age
           yq
@@ -127,15 +138,11 @@
       homeConfigurations = createHomeConfigurations {
         inherit (self.homeModules) waynevanson zed;
       };
-      packages.${system} = {
-        bitwig = pkgs.callPackage ./packages/bitwig.nix {
-        };
-        codelens = pkgs.callPackage ./packages/codelens {
-        };
-        pi-catppuccin-themes = pkgs.callPackage ./packages/pi-catppuccin-themes {
-        };
-        pi-coding-agent = pkgs.callPackage ./packages/pi-coding-agent {
-        };
+      packages.${system} = createPackages {
+        bitwig = ./packages/bitwig.nix;
+        codelens = ./packages/codelens;
+        pi-catppuccin-themes = ./packages/pi-catppuccin-themes;
+        pi-coding-agent = ./packages/pi-coding-agent;
       };
       nixosModules = {
         custom = ./modules/custom;
