@@ -3,6 +3,9 @@
     nixpkgs = {
       url = "github:nixos/nixpkgs/nixos-unstable";
     };
+    nixpkgs-forgejo-runner = {
+      url = "github:nixos/nixpkgs/ebbed83ea980369df17fef7c6820c8f5d26fc1e5";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";

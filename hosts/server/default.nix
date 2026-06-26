@@ -16,12 +16,13 @@
     ./minecraft.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
-    # ./forgejo-runner.nix
+    ./forgejo-runner.nix
     ./atticd.nix
     ./garage.nix
     ./web.nix
     ./home-manager.nix
     ./system.nix
+    "${inputs.nixpkgs-forgejo-runner}/nixos/modules/services/continuous-integration/forgejo-runner.nix"
     ./disko-configuration
   ];
 }
