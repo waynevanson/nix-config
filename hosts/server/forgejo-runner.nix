@@ -28,7 +28,7 @@ in
       ];
       settings.server.connections.default.url = "https://git.waynevanson.com";
       # FIXME: replace with real UUID from Forgejo registration or /var/lib/gitea-runner/default/.runner
-      settings.server.connections.default.uuid = "e6763dcc-f974-49f7-8321-9881df0b3c68";
+      settings.server.connections.default.uuid = "415288f7-359a-4d8b-8b9a-e79fb8c559db";
       secrets.server.connections.default.token_url = config.sops.templates.${tokenFileName}.path;
     };
   };
