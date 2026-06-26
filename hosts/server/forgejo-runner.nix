@@ -30,6 +30,11 @@ in
       settings.server.connections.default.url = "https://git.waynevanson.com";
       # FIXME: replace with real UUID from Forgejo registration or /var/lib/gitea-runner/default/.runner
       settings.server.connections.default.uuid = "415288f7-359a-4d8b-8b9a-e79fb8c559db";
+      # Runner containers need to reach Forgejo at git.waynevanson.com.
+      # /etc/hosts maps that to 127.0.0.1, so containers must share the host network namespace
+      # and also carry that host entry themselves for DNS resolution.
+      settings.container.network = "host";
+      settings.container.options = "--add-host git.waynevanson.com:127.0.0.1";
       secrets.server.connections.default.token_url = config.sops.templates.${tokenFileName}.path;
     };
   };
