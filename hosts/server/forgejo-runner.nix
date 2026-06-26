@@ -25,6 +25,7 @@ in
       enable = true;
       settings.runner.labels = [
         "nixos:docker://nixos/nix@sha256:72a13b0f42e3cc515945aa4250b772381d93c96d4bf93aa950b5c68defdab1dd"
+        "ubuntu-latest:docker://node@sha256:725aeba2364a9b16beae49e180d83bd597dbd0b15c47f1f28875c290bfd255b9"
       ];
       settings.server.connections.default.url = "https://git.waynevanson.com";
       # FIXME: replace with real UUID from Forgejo registration or /var/lib/gitea-runner/default/.runner
