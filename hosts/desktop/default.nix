@@ -25,6 +25,11 @@ let
       services = {
         attic-client.enable = true;
         cosmic.enable = true;
+        rclone-mount = {
+          # enable = true;
+          bucket = "files";
+          mountpoint = "/home/waynevanson/cloud";
+        };
       };
     };
   };
@@ -94,14 +99,14 @@ let
       };
     };
   };
-  ollama' =
-    { pkgs, ... }:
-    {
-      services.ollama = {
-        enable = true;
-        package = pkgs.ollama-cuda;
-      };
-    };
+  # ollama' =
+  #   { pkgs, ... }:
+  #   {
+  #     services.ollama = {
+  #       enable = false;
+  #       package = pkgs.ollama-cuda;
+  #     };
+  #   };
   host' = {
     system.stateVersion = "25.05";
     networking.hostName = "nixos"; # Define your hostname.
@@ -131,6 +136,6 @@ in
     user'
     homeManager'
     custom'
-    ollama'
+    # ollama'
   ];
 }
