@@ -1,6 +1,6 @@
 {
   services.openclaw-gateway = {
-    enable = true;
+    enable = false;
     config = {
       plugins.enabled = false;
     };
