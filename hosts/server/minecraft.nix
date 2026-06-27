@@ -4,18 +4,7 @@
   # The nix-minecraft module creates the minecraft user/group automatically.
   # Ensure the admin user can manage files and attach to the console.
   users.users.waynevanson.extraGroups = [ "minecraft" ];
-  sops = {
-    secrets.minecraft-rcon-password = {
-      key = "minecraft/rcon-password";
-      owner = "minecraft";
-    };
-    templates.minecraft-environment-file = {
-      content = ''
-        RCON_PASSWORD=${config.sops.placeholder.minecraft-rcon-password}
-      '';
-      owner = "minecraft";
-    };
-  };
+
   services.minecraft-servers = {
     enable = true;
     eula = true;
@@ -39,10 +28,6 @@
         motd = "Hugh G. Wang";
         "white-list" = false;
         "online-mode" = true;
-        "enable-rcon" = true;
-        "rcon.port" = 25575;
-        "rcon.password" = "@RCON_PASSWORD@";
-        "broadcast-rcon-to-ops" = false;
       };
       operators = {
       };
