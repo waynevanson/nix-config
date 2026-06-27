@@ -17,6 +17,7 @@
     nerd-fonts.jetbrains-mono
     nil
     nixd
+    nixos-container
     openscad
     openssl
     prusa-slicer
