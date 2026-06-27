@@ -2,11 +2,14 @@
   lib,
   stdenvNoCC,
   fetchFromGitHub,
-  deno,
-  jq,
+  fetchurl,
+  dart-sass,
 }:
 
-let
+stdenvNoCC.mkDerivation rec {
+  pname = "catppuccin-forgejo-themes";
+  version = "unstable-2026-06-27";
+
   src = fetchFromGitHub {
     owner = "rdcsq";
     repo = "catppuccin-forgejo";
@@ -14,64 +17,43 @@ let
     hash = "sha256-EPcU9G36WjWgrW7DtPQGDZtIbYI3+1eTGG2CPIratcY=";
   };
 
-  denoDeps = stdenvNoCC.mkDerivation {
-    name = "catppuccin-forgejo-deno-deps";
-    inherit src;
-
-    nativeBuildInputs = [
-      deno
-      jq
-    ];
-
-    dontFixup = true;
-
-    buildPhase = ''
-      runHook preBuild
-
-      cat deno.json | jq '.vendor = true' > deno.json.new
-      mv deno.json.new deno.json
-
-      export DENO_DIR=$TMPDIR/deno_dir
-      deno cache build.ts
-
-      mkdir -p $out/deno_dir
-      cp -r $DENO_DIR/npm $out/deno_dir/npm
-      cp -r vendor $out/vendor
-
-      runHook postBuild
-    '';
-
-    outputHashMode = "recursive";
-    outputHashAlgo = "sha256";
-    outputHash = "sha256-2d2gjG1KOxsh/q20RB9OIlsA0mAXzlkBohHnE8tTeZc=";
+  palette = fetchurl {
+    url = "https://registry.npmjs.org/@catppuccin/palette/-/palette-1.8.0.tgz";
+    hash = "sha512-qXhwKiLzQomUygUJYB36YAFgs+dET5bIocfkiaFIatQF5Pwc7L112TlF9P8J5Oqs3x3XTjYSucG0ncHXSCuk7Q==";
   };
-in
 
-stdenvNoCC.mkDerivation rec {
-  pname = "catppuccin-forgejo-themes";
-  version = "unstable-2026-06-27";
-
-  inherit src;
-
-  nativeBuildInputs = [
-    deno
-    jq
-  ];
+  nativeBuildInputs = [ dart-sass ];
 
   buildPhase = ''
     runHook preBuild
 
-    cat deno.json | jq '.vendor = true' > deno.json.new
-    mv deno.json.new deno.json
+    mkdir -p node_modules/@catppuccin
+    tar -xzf ${palette} -C node_modules/@catppuccin
+    mv node_modules/@catppuccin/package node_modules/@catppuccin/palette
 
-    mkdir -p $TMPDIR/deno_dir
-    cp -r ${denoDeps}/deno_dir/npm $TMPDIR/deno_dir/npm
-    chmod -R +w $TMPDIR/deno_dir
-    export DENO_DIR=$TMPDIR/deno_dir
+    mkdir -p dist
 
-    ln -s ${denoDeps}/vendor vendor
+    for flavor in latte frappe macchiato mocha; do
+      isDark=true
+      [ "$flavor" = "latte" ] && isDark=false
+      for accent in rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender; do
+        scss="dist/build-$flavor-$accent.scss"
+        cat > "$scss" <<EOF
+@import "@catppuccin/palette/scss/$flavor";
+\$accent: \$$accent;
+\$isDark: $isDark;
+@import "theme";
+EOF
+        sass --load-path=src --load-path=node_modules --no-source-map "$scss" "dist/theme-catppuccin-$flavor-$accent.css"
+      done
+    done
 
-    deno run -A --cached-only build.ts
+    for accent in rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender; do
+      cat > "dist/theme-catppuccin-$accent-auto.css" <<EOF
+@import "./theme-catppuccin-latte-$accent.css" (prefers-color-scheme: light);
+@import "./theme-catppuccin-mocha-$accent.css" (prefers-color-scheme: dark);
+EOF
+    done
 
     runHook postBuild
   '';
