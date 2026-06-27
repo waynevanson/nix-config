@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # The nix-minecraft module creates the minecraft user/group automatically.
@@ -9,7 +9,6 @@
     enable = true;
     eula = true;
     group = "minecraft";
-    environmentFile = config.sops.templates.minecraft-environment-file.path;
     servers.main = {
       enable = true;
       autoStart = true;
