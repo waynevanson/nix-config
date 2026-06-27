@@ -20,6 +20,7 @@
     ./atticd.nix
     ./garage.nix
     ./web.nix
+    ./procurare.nix
     ./home-manager.nix
     ./system.nix
     "${inputs.nixpkgs-forgejo-runner}/nixos/modules/services/continuous-integration/forgejo-runner.nix"

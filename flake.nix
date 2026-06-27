@@ -146,6 +146,7 @@
       };
       packages.${system} = createPackages {
         bitwig = ./packages/bitwig.nix;
+        catppuccin-forgejo-themes = ./packages/catppuccin-forgejo-themes;
         codelens = ./packages/codelens;
         pi-catppuccin-themes = ./packages/pi-catppuccin-themes;
         pi-coding-agent = ./packages/pi-coding-agent;

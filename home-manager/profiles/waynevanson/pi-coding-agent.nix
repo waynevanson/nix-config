@@ -38,10 +38,12 @@ in
     # Skills
     "${configDir}/skills/grill/SKILL.md".source = ./pi/skills/grill/SKILL.md;
     "${configDir}/skills/caveman/SKILL.md".source = ./pi/skills/caveman/SKILL.md;
+
     # Extensions
-    "${configDir}/extensions/codelens.ts".source = "${
-      inputs.self.packages.${system}.codelens
-    }/lib/node_modules/@fodx/codelens/adapters/pi/codelens.extension.ts";
+    # "${configDir}/extensions/codelens.ts".source = "${
+    #   inputs.self.packages.${system}.codelens
+    # }/lib/node_modules/@fodx/codelens/adapters/pi/codelens.extension.ts";
+
     "${configDir}/extensions/qna.ts".source = "${
       inputs.self.packages.${system}.pi-coding-agent
     }/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/qna.ts";

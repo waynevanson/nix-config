@@ -1,4 +1,7 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, self, ... }:
+let
+  catppuccinThemes = self.packages.${pkgs.stdenv.hostPlatform.system}.catppuccin-forgejo-themes;
+in
 {
   security.acme.certs."waynevanson.com".extraDomainNames = [ "git.waynevanson.com" ];
   sops.secrets.postgres-password.key = "postgres/password";
@@ -28,6 +31,10 @@
         actions = {
           ENABLED = true;
         };
+        ui = {
+          THEMES = "catppuccin-latte-mauve,catppuccin-mocha-mauve,catppuccin-mauve-auto,forgejo-auto,forgejo-light,forgejo-dark";
+          DEFAULT_THEME = "catppuccin-mauve-auto";
+        };
       };
     };
     postgresql = {
@@ -56,4 +63,8 @@
       };
     };
   };
+
+  systemd.tmpfiles.rules = lib.mkAfter [
+    "L+ ${config.services.forgejo.customDir}/public/assets/css 0750 ${config.services.forgejo.user} ${config.services.forgejo.group} - ${catppuccinThemes}/share/forgejo/public/assets/css"
+  ];
 }
