@@ -64,7 +64,11 @@ in
     };
   };
 
-  systemd.tmpfiles.rules = lib.mkAfter [
-    "L+ ${config.services.forgejo.customDir}/public/assets/css 0750 ${config.services.forgejo.user} ${config.services.forgejo.group} - ${catppuccinThemes}/share/forgejo/public/assets/css"
-  ];
+  systemd.tmpfiles.rules = lib.mkAfter (map (name:
+    "L+ ${config.services.forgejo.customDir}/public/assets/css/${name} 0644 ${config.services.forgejo.user} ${config.services.forgejo.group} - ${catppuccinThemes}/share/forgejo/public/assets/css/${name}"
+  ) [
+    "theme-catppuccin-latte-mauve.css"
+    "theme-catppuccin-mocha-mauve.css"
+    "theme-catppuccin-mauve-auto.css"
+  ]);
 }
