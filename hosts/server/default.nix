@@ -24,6 +24,6 @@
     ./system.nix
     "${inputs.nixpkgs-forgejo-runner}/nixos/modules/services/continuous-integration/forgejo-runner.nix"
     ./disko-configuration
-    ./containers
+    ./containers.nix
   ];
 }
