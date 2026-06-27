@@ -1,9 +1,9 @@
 keys:
   - &admin_waynevanson age1qssg5g2jkt9n68lq4hyjmr56uucnanckkvseecyanzflmyalpu3s2ss4g9
-  - &server_homelab age1kq8slysaa6pndupg3z4gkypt9ul94lmdpg2q5ky28swms6jhuakq2qfjfy
+  - &server_homelab_ssh age1env698f3f905xc8zrzpt09sfsq6fffe2rdzke0j8wjm095xt3yks9fuhg7
 creation_rules:
   - path_regexp: ^.sops.secrets.yaml$
     key_groups:
       - age:
           - *admin_waynevanson
-          - *server_homelab
+          - *server_homelab_ssh
