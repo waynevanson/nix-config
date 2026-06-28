@@ -6,9 +6,12 @@
 {
   imports = [ self.nixosModules.sops ];
   sops.age.sshKeyPaths = [
-    "/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/id_ed25519_server"
   ];
-  custom.services.attic-client.enable = true;
+  custom.services.attic-client = {
+    enable = true;
+    server.endpoint = "http://localhost:2884";
+  };
   environment.systemPackages = with pkgs; [
     attic-client
     git

@@ -69,8 +69,9 @@ in
         after = [
           "network-online.target"
           "nix-daemon.service"
-        ];
-        wants = [ "network-online.target" ];
+        ]
+        ++ lib.optional config.services.atticd.enable "atticd.service";
+        wants = [ "network-online.target" ] ++ lib.optional config.services.atticd.enable "atticd.service";
         serviceConfig = {
           Type = "simple";
           User = "root";

@@ -43,6 +43,7 @@ in
       settings = {
         replication_factor = 1;
         consistency_mode = "consistent";
+        metadata_dir = "/srv/tank/garage/meta";
         data_dir = "/srv/tank/garage";
         rpc_bind_addr = "[::]:${port.rpc}";
         s3_api = {
@@ -78,6 +79,8 @@ in
         # Override binary since we're using garage@^2
         ExecStart = lib.mkForce "${config.services.garage.package}/bin/garage server --single-node --default-bucket";
         DynamicUser = lib.mkForce false;
+        User = group;
+        Group = group;
       };
       garage-create-attic-bucket = {
         description = "Create the Attic S3 bucket in Garage";
@@ -94,6 +97,15 @@ in
           ExecStart = pkgs.writeShellScript "garage-create-attic-bucket" ''
             set -euo pipefail
             export PATH="${lib.makeBinPath [ config.services.garage.package ]}:$PATH"
+            # Wait for garage node to finish initializing and write its node key
+            for i in $(seq 1 30); do
+              if garage node id >/dev/null 2>&1; then
+                break
+              fi
+              sleep 1
+            done
+            # Ensure we can talk to the node before proceeding
+            garage node id >/dev/null
             if ! garage bucket info attic >/dev/null 2>&1; then
               garage bucket create attic
               garage bucket allow --read --write --key "$GARAGE_DEFAULT_ACCESS_KEY" attic
