@@ -64,11 +64,17 @@ in
     };
   };
 
-  systemd.tmpfiles.rules = lib.mkAfter (map (name:
-    "L+ ${config.services.forgejo.customDir}/public/assets/css/${name} 0644 ${config.services.forgejo.user} ${config.services.forgejo.group} - ${catppuccinThemes}/share/forgejo/public/assets/css/${name}"
-  ) [
-    "theme-catppuccin-latte-mauve.css"
-    "theme-catppuccin-mocha-mauve.css"
-    "theme-catppuccin-mauve-auto.css"
-  ]);
+  system.activationScripts.forgejo-themes = lib.stringAfter [ "users" "groups" ] ''
+    mkdir -p ${config.services.forgejo.customDir}/public/assets/css
+    chown ${config.services.forgejo.user}:${config.services.forgejo.group} \
+      ${config.services.forgejo.customDir}/public \
+      ${config.services.forgejo.customDir}/public/assets \
+      ${config.services.forgejo.customDir}/public/assets/css
+    ln -sf ${catppuccinThemes}/share/forgejo/public/assets/css/theme-catppuccin-latte-mauve.css \
+      ${config.services.forgejo.customDir}/public/assets/css/theme-catppuccin-latte-mauve.css
+    ln -sf ${catppuccinThemes}/share/forgejo/public/assets/css/theme-catppuccin-mocha-mauve.css \
+      ${config.services.forgejo.customDir}/public/assets/css/theme-catppuccin-mocha-mauve.css
+    ln -sf ${catppuccinThemes}/share/forgejo/public/assets/css/theme-catppuccin-mauve-auto.css \
+      ${config.services.forgejo.customDir}/public/assets/css/theme-catppuccin-mauve-auto.css
+  '';
 }
