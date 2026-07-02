@@ -1,4 +1,10 @@
-{ config, lib, pkgs, self, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  self,
+  ...
+}:
 let
   catppuccinThemes = self.packages.${pkgs.stdenv.hostPlatform.system}.catppuccin-forgejo-themes;
 in
