@@ -20,6 +20,7 @@
       dnsProvider = "digitalocean";
       webroot = null;
       reloadServices = [ "nginx.service" ];
+      extraLegoFlags = [ "--dns.propagation-disable-ans" ];
       credentialFiles = {
         "DO_AUTH_TOKEN_FILE" = config.sops.secrets.digitalocean-token.path;
       };
