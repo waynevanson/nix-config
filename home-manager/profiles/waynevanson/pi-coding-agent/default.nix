@@ -17,7 +17,7 @@ in
       nodejs
       bun
     ];
-    context = ./pi/AGENTS.md;
+    context = ./AGENTS.md;
     settings = {
       defaultProvider = "moonshotai";
       defaultModel = "kimi-k2.7-code";
@@ -28,7 +28,11 @@ in
       extensions = [ "${configDir}/extensions" ];
     };
   };
+
+  # todo: abstract out better
+  # todo: create our own qna and questionairre tools becuase there are some bugs.
   home.file = {
+    # todo: rename themes to `pi-coding-agent`
     "${configDir}/themes/catppuccin-mocha.json".source = "${
       inputs.self.packages.${system}.pi-catppuccin-themes
     }/share/pi/themes/catppuccin-mocha.json";
@@ -36,13 +40,13 @@ in
       inputs.self.packages.${system}.pi-catppuccin-themes
     }/share/pi/themes/catppuccin-latte.json";
     # Skills
-    "${configDir}/skills/grill/SKILL.md".source = ./pi/skills/grill/SKILL.md;
-    "${configDir}/skills/caveman/SKILL.md".source = ./pi/skills/caveman/SKILL.md;
+    "${configDir}/skills/grill/SKILL.md".source = ./skills/grill/SKILL.md;
+    "${configDir}/skills/caveman/SKILL.md".source = ./skills/caveman/SKILL.md;
 
     # Extensions
-    # "${configDir}/extensions/codelens.ts".source = "${
-    #   inputs.self.packages.${system}.codelens
-    # }/lib/node_modules/@fodx/codelens/adapters/pi/codelens.extension.ts";
+    "${configDir}/extensions/codelens.ts".source = "${
+      inputs.self.packages.${system}.codelens
+    }/lib/node_modules/@fodx/codelens/adapters/pi/codelens.extension.ts";
 
     "${configDir}/extensions/qna.ts".source = "${
       inputs.self.packages.${system}.pi-coding-agent

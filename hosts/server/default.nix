@@ -7,12 +7,9 @@
   imports = [
     self.nixosModules.custom
     inputs.nix-minecraft.nixosModules.minecraft-servers
-    inputs.nix-openclaw.nixosModules.openclaw-gateway
     ../../modules/tmux.nix
     ./forgejo.nix
     ./headscale.nix
-    ./openclaw.nix
-    ./zed.nix
     ./minecraft.nix
     # ./wordpress-lx.nix
     ./wordpress-wayne.nix
@@ -21,7 +18,6 @@
     ./garage.nix
     ./web.nix
     ./procurare.nix
-    ./home-manager.nix
     ./system.nix
     "${inputs.nixpkgs-forgejo-runner}/nixos/modules/services/continuous-integration/forgejo-runner.nix"
     ./disko-configuration

@@ -12,6 +12,7 @@
     enable = true;
     server.endpoint = "http://localhost:2884";
   };
+
   environment.systemPackages = with pkgs; [
     attic-client
     git
@@ -44,15 +45,22 @@
       efiInstallAsRemovable = true;
     };
     supportedFilesystems = [ "zfs" ];
-    zfs.forceImportRoot = false;
+    zfs.forceImportRoot = true;
+    zfs.forceImportAll = true;
   };
   services = {
     zfs.autoScrub.enable = true;
     sshd.enable = true;
   };
-  #
+
   # Allows use of `--sudo` without a password when running `nixos-rebuild switch`
   security.sudo.wheelNeedsPassword = false;
+
+  # root password only when attached to local
+  services.openssh.settings.PermitRootLogin = "prohibit-password";
+
+  # 1
+  users.users.root.initialHashedPassword = "$y$j9T$5IMWxJIAFBEzXBlXMSA1./$ru5GH0wRDa1C5btmcAqTXPTd7YrtsHOSakS5hXqVbd0";
   users.users.waynevanson = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];

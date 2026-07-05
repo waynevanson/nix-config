@@ -1,10 +1,7 @@
-## TODO
+## Todo
 
-1. Generate a private server key here as extra file and add into sops.
-2. add repos to git.waynevanson.com
-3. add this in a container!
-4. add jellyfin via containers!
-5. find where to mount all this stuff on the system (kind of like truenas)
+1. Use stable nixos release instead of unstable.
+2. Add jelllyfin.
 
 ## USB
 

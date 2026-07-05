@@ -1,6 +1,11 @@
+# We should stay on stable nixos-versions, so we don't break our server between updates.
+# How to use separate for profiles?
 {
   inputs = {
     nixpkgs = {
+      url = "github:nixos/nixpkgs/nixos-26.05";
+    };
+    nixpkgs-unstable = {
       url = "github:nixos/nixpkgs/nixos-unstable";
     };
     nixpkgs-forgejo-runner = {
@@ -19,15 +24,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
+      # todo: 26.05 doesn't contain pi agent.
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-openclaw = {
-      url = "github:openclaw/nix-openclaw";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fenix = {
@@ -35,14 +37,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   outputs =
     {
       disko,
       fenix,
       home-manager,
       nix-minecraft,
-      nix-openclaw,
       nixos-anywhere,
+      nixpkgs-unstable,
       nixpkgs,
       self,
       sops-nix,
@@ -69,7 +72,6 @@
               nixpkgs.config.allowUnfree = true;
               nixpkgs.overlays = [
                 nix-minecraft.overlay
-                nix-openclaw.overlays.default
               ];
             }
             disko.nixosModules.default
@@ -91,19 +93,23 @@
       createHomeConfigurations = pkgs.lib.mapAttrs (
         username: profileModule:
         home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
+          pkgs = import nixpkgs-unstable { inherit system; };
+          inputs = inputs // {
+            nixpkgs = nixpkgs-unstable;
+          };
           extraSpecialArgs = {
             inherit inputs system;
           };
           modules = [
-            profileModule
             {
               home = {
                 username = username;
                 homeDirectory = "/home/${username}";
                 stateVersion = "25.05";
+                enableNixpkgsReleaseCheck = false;
               };
             }
+            profileModule
           ];
         }
       );
@@ -135,11 +141,10 @@
       nixosConfigurations = createNixosConfigurations {
         nixos = ./hosts/desktop;
         server = ./hosts/server;
-        writer = ./hosts/writer;
+        # writer = ./hosts/writer;
       };
       homeModules = {
         waynevanson = ./home-manager/profiles/waynevanson;
-        zed = ./home-manager/profiles/zed;
       };
       homeConfigurations = createHomeConfigurations {
         inherit (self.homeModules) waynevanson zed;
