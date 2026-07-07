@@ -9,7 +9,7 @@
     "/etc/ssh/id_ed25519_server"
   ];
   custom.services.attic-client = {
-    enable = true;
+    enable = false;
     server.endpoint = "http://localhost:2884";
   };
 

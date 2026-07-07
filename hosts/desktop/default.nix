@@ -23,7 +23,7 @@ let
       # virtualisation.docker.enable = true;
       virtualisation.containerd.enable = true;
       services = {
-        attic-client.enable = true;
+        attic-client.enable = false;
         cosmic.enable = true;
         rclone-mount = {
           # enable = true;

@@ -1,4 +1,6 @@
 # nix binary cache server
+# todo: wait for garage service
+# todo: ensure garage has the bucket "attic"
 {
   config,
   ...
