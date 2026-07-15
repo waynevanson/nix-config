@@ -16,6 +16,7 @@ in
     extraPackages = with pkgs; [
       nodejs
       bun
+      inputs.self.packages.${system}.codelens
     ];
     context = ./AGENTS.md;
     settings = {

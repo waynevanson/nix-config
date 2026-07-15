@@ -15,6 +15,7 @@ let
     text = ''
       MOONSHOT_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.moonshotai-api-key.path})"
       export MOONSHOT_API_KEY
+      export CODELENS_SERVER="${inputs.self.packages.${system}.codelens}/lib/node_modules/@fodx/codelens/build/src/server.js"
       exec ${pkgs.lib.getExe inputs.self.packages.${system}.pi-coding-agent} "$@"
     '';
   };
