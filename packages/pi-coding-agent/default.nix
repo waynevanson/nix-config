@@ -7,10 +7,10 @@
 }:
 
 let
-  version = "0.80.2";
+  version = "0.83.0";
   upstream = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-    hash = "sha256-nKsYZhU0XzzCqx0199bxOTBqMSKgMKRffCRUifc0kIU=";
+    hash = "sha256-cJf+Szh2Ldp+x4AB57kEMMhJ+69xcyW/6BCXROMiVeY=";
   };
   src =
     runCommand "pi-coding-agent-${version}-patched.tar.gz"
@@ -33,7 +33,7 @@ buildNpmPackage {
   inherit version src;
   sourceRoot = "package";
   npmDepsFetcherVersion = 2;
-  npmDepsHash = "sha256-LmnQRKb6HTYPnnS30x9vrqwTWtXw+kNpuX4oZkaxWHk=";
+  npmDepsHash = "sha256-PacnvKj6XeLxlhevNMr7uu6Sgl5vD5cgfp1uc7mVLo0=";
   dontNpmBuild = true;
   meta = {
     description = "Coding agent CLI with read, bash, edit, write tools and session management";
