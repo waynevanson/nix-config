@@ -17,6 +17,8 @@ let
       export MOONSHOT_API_KEY
       KIMI_API_KEY="$MOONSHOT_API_KEY"
       export KIMI_API_KEY
+      DEEPSEEK_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.deepseek-token.path})"
+      export DEEPSEEK_API_KEY
       # export CODELENS_SERVER="${
         inputs.self.packages.${system}.codelens
       }/lib/node_modules/@fodx/codelens/build/src/server.js"
@@ -123,6 +125,11 @@ let
       age.keyFile = "/home/waynevanson/.config/sops/age/keys.txt";
       secrets.moonshotai-api-key = {
         key = "moonshotai/api-key";
+        owner = "waynevanson";
+        mode = "0400";
+      };
+      secrets.deepseek-token = {
+        key = "deepseek/token";
         owner = "waynevanson";
         mode = "0400";
       };

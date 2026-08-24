@@ -8,11 +8,21 @@
 let
   cfg = config.programs.pi-coding-agent;
   configDir = cfg.configDir;
+  deepseek-secret = config.sops.secrets.deepseek-token.path;
+  pi-wrapped = pkgs.writeShellApplication {
+    name = "pi";
+    runtimeInputs = [ pkgs.coreutils ];
+    text = ''
+      DEEPSEEK_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${deepseek-secret})"
+      export DEEPSEEK_API_KEY
+      exec ${inputs.self.packages.${system}.pi-coding-agent}/bin/pi "$@"
+    '';
+  };
 in
 {
   programs.pi-coding-agent = {
     enable = true;
-    package = inputs.self.packages.${system}.pi-coding-agent;
+    package = pi-wrapped;
     extraPackages = with pkgs; [
       nodejs
       bun
@@ -29,6 +39,8 @@ in
       extensions = [ "${configDir}/extensions" ];
     };
   };
+
+  sops.secrets.deepseek-token.key = "deepseek/token";
 
   # todo: abstract out better
   # todo: create our own qna and questionairre tools becuase there are some bugs.
