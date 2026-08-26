@@ -35,8 +35,8 @@ in
     ];
     context = ./AGENTS.md;
     settings = {
-      defaultProvider = "moonshotai";
-      defaultModel = "kimi-k2.7-code";
+      defaultProvider = "deepseek";
+      defaultModel = "deepseek-v4-pro";
       theme = "catppuccin-latte/catppuccin-mocha";
       editorPaddingX = 1;
       themes = [ "${configDir}/themes" ];
