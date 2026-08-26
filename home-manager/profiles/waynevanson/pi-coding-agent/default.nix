@@ -8,11 +8,16 @@
 let
   cfg = config.programs.pi-coding-agent;
   configDir = cfg.configDir;
+  moonshot-secret = config.sops.secrets.moonshotai-api-key.path;
   deepseek-secret = config.sops.secrets.deepseek-token.path;
   pi-wrapped = pkgs.writeShellApplication {
     name = "pi";
     runtimeInputs = [ pkgs.coreutils ];
     text = ''
+      MOONSHOT_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${moonshot-secret})"
+      export MOONSHOT_API_KEY
+      KIMI_API_KEY="$MOONSHOT_API_KEY"
+      export KIMI_API_KEY
       DEEPSEEK_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${deepseek-secret})"
       export DEEPSEEK_API_KEY
       exec ${inputs.self.packages.${system}.pi-coding-agent}/bin/pi "$@"
@@ -40,6 +45,7 @@ in
     };
   };
 
+  sops.secrets.moonshotai-api-key.key = "moonshotai/api-key";
   sops.secrets.deepseek-token.key = "deepseek/token";
 
   # todo: abstract out better

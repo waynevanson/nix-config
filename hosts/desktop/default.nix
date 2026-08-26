@@ -10,21 +10,6 @@ let
   hardware' = {
     hardware.facter.reportPath = ./facter.json;
   };
-  pi-wrapped = pkgs.writeShellApplication {
-    name = "pi";
-    text = ''
-      MOONSHOT_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.moonshotai-api-key.path})"
-      export MOONSHOT_API_KEY
-      KIMI_API_KEY="$MOONSHOT_API_KEY"
-      export KIMI_API_KEY
-      DEEPSEEK_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${config.sops.secrets.deepseek-token.path})"
-      export DEEPSEEK_API_KEY
-      # export CODELENS_SERVER="${
-        inputs.self.packages.${system}.codelens
-      }/lib/node_modules/@fodx/codelens/build/src/server.js"
-      exec ${pkgs.lib.getExe inputs.self.packages.${system}.pi-coding-agent} "$@"
-    '';
-  };
   custom' = {
     custom = {
       # virtualisation.docker.enable = true;
@@ -54,7 +39,6 @@ let
         { self, lib, ... }:
         {
           imports = [ self.homeModules.waynevanson ];
-          programs.pi-coding-agent.package = lib.mkForce pi-wrapped;
           home = {
             username = "waynevanson";
             homeDirectory = "/home/waynevanson";
@@ -123,16 +107,6 @@ let
     };
     sops = {
       age.keyFile = "/home/waynevanson/.config/sops/age/keys.txt";
-      secrets.moonshotai-api-key = {
-        key = "moonshotai/api-key";
-        owner = "waynevanson";
-        mode = "0400";
-      };
-      secrets.deepseek-token = {
-        key = "deepseek/token";
-        owner = "waynevanson";
-        mode = "0400";
-      };
     };
   };
 in
