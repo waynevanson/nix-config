@@ -42,6 +42,10 @@ in
       themes = [ "${configDir}/themes" ];
       skills = [ "${configDir}/skills" ];
       extensions = [ "${configDir}/extensions" ];
+      packages = [
+        "git:git@github.com:amosblomqvist/pi-observational-memory.git"
+        "git:git@github.com:HazAT/pi-interactive-subagents.git"
+      ];
     };
   };
 

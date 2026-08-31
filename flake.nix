@@ -94,11 +94,11 @@
         username: profileModule:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs-unstable { inherit system; };
-          inputs = inputs // {
-            nixpkgs = nixpkgs-unstable;
-          };
           extraSpecialArgs = {
-            inherit inputs system;
+            inherit system;
+            inputs = inputs // {
+              nixpkgs = nixpkgs-unstable;
+            };
           };
           modules = [
             {
