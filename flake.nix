@@ -155,6 +155,7 @@
         codelens = ./packages/codelens;
         pi-catppuccin-themes = ./packages/pi-catppuccin-themes;
         pi-coding-agent = ./packages/pi-coding-agent;
+        pi-config-extensions = ./packages/pi-config-extensions;
       };
       nixosModules = {
         custom = ./modules/custom;

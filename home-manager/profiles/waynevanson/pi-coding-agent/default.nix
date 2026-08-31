@@ -45,6 +45,7 @@ in
       packages = [
         "git:git@github.com:amosblomqvist/pi-observational-memory.git"
         "git:git@github.com:HazAT/pi-interactive-subagents.git"
+        "git:git@github.com:amosblomqvist/learn.git"
       ];
     };
   };
@@ -77,5 +78,12 @@ in
     "${configDir}/extensions/questionnaire.ts".source = "${
       inputs.self.packages.${system}.pi-coding-agent
     }/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/questionnaire.ts";
+
+    # amosblomqvist/pi-config extensions
+    "${configDir}/extensions/browser".source = "${inputs.self.packages.${system}.pi-config-extensions}/browser";
+    "${configDir}/extensions/web-fetch".source = "${inputs.self.packages.${system}.pi-config-extensions}/web-fetch";
+    "${configDir}/extensions/web-search".source = "${inputs.self.packages.${system}.pi-config-extensions}/web-search";
+    "${configDir}/extensions/prompt-snippets".source = "${inputs.self.packages.${system}.pi-config-extensions}/prompt-snippets";
+    "${configDir}/extensions/ask-user-question.ts".source = "${inputs.self.packages.${system}.pi-config-extensions}/ask-user-question.ts";
   };
 }
