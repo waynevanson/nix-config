@@ -24,6 +24,7 @@
     ripgrep
     s5cmd
     unzip
+    vscode-fhs
     wget
     xz
     zed-editor.fhs
