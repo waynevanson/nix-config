@@ -38,7 +38,7 @@ in
     ];
     settings = {
       defaultProvider = "deepseek";
-      defaultModel = "deepseek-v4-pro";
+      defaultModel = "deepseek-flash";
       theme = "catppuccin-latte/catppuccin-mocha";
       editorPaddingX = 1;
       themes = [ "${configDir}/themes" ];
