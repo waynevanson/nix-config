@@ -51,6 +51,14 @@ let
     # todo: move this somewhere so it's consumed by everything
     # Set your time zone.
     time.timeZone = "Australia/Melbourne";
+    # Closing the lid keeps the machine awake. All three are set explicitly
+    # because the *ExternalPower*/*Docked* variants fall back to
+    # HandleLidSwitch, but behaved as "suspend" when unset before systemd 256.
+    services.logind.settings.Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
+      HandleLidSwitchDocked = "ignore";
+    };
     # Select internationalisation properties.
     i18n = {
       # Select internationalisation properties.
@@ -88,6 +96,7 @@ let
         enable = true;
         # libraries = [];
       };
+      steam.enable = true;
     };
   };
   # ollama' =
