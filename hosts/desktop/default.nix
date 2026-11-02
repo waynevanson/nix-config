@@ -17,11 +17,6 @@ let
       services = {
         attic-client.enable = false;
         cosmic.enable = true;
-        rclone-mount = {
-          # enable = true;
-          bucket = "files";
-          mountpoint = "/home/waynevanson/cloud";
-        };
       };
     };
   };
@@ -116,6 +111,7 @@ in
     #./disk-configuration.nix
     ./hardware-configuration.nix
     ../../modules
+    inputs.home-manager.nixosModules.default
     self.nixosModules.sops
     hardware'
     host'

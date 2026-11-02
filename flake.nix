@@ -28,10 +28,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    nix-minecraft = {
-      url = "github:Infinidoge/nix-minecraft";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -43,7 +39,6 @@
       disko,
       fenix,
       home-manager,
-      nix-minecraft,
       nixos-anywhere,
       nixpkgs-unstable,
       nixpkgs,
@@ -70,12 +65,8 @@
           modules = [
             {
               nixpkgs.config.allowUnfree = true;
-              nixpkgs.overlays = [
-                nix-minecraft.overlay
-              ];
             }
             disko.nixosModules.default
-            home-manager.nixosModules.default
             sops-nix.nixosModules.sops
             hostModule
           ];
@@ -140,6 +131,7 @@
       };
       nixosConfigurations = createNixosConfigurations {
         nixos = ./hosts/desktop;
+        server = ./hosts/server;
       };
       homeModules = {
         waynevanson = ./home-manager/profiles/waynevanson;
