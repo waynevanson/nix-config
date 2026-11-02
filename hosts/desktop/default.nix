@@ -99,14 +99,6 @@ let
       steam.enable = true;
     };
   };
-  # ollama' =
-  #   { pkgs, ... }:
-  #   {
-  #     services.ollama = {
-  #       enable = false;
-  #       package = pkgs.ollama-cuda;
-  #     };
-  #   };
   host' = {
     system.stateVersion = "25.05";
     networking.hostName = "nixos"; # Define your hostname.
@@ -131,6 +123,5 @@ in
     user'
     homeManager'
     custom'
-    # ollama'
   ];
 }

@@ -140,8 +140,6 @@
       };
       nixosConfigurations = createNixosConfigurations {
         nixos = ./hosts/desktop;
-        server = ./hosts/server;
-        # writer = ./hosts/writer;
       };
       homeModules = {
         waynevanson = ./home-manager/profiles/waynevanson;
