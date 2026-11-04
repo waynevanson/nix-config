@@ -137,7 +137,7 @@
         waynevanson = ./home-manager/profiles/waynevanson;
       };
       homeConfigurations = createHomeConfigurations {
-        inherit (self.homeModules) waynevanson zed;
+        inherit (self.homeModules) waynevanson;
       };
       packages.${system} = createPackages {
         bitwig = ./packages/bitwig.nix;
