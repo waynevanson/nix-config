@@ -72,11 +72,65 @@ in
     };
   };
 
+  # Key material for the desktop's bucket-scoped S3 key lives in sops, so it can
+  # be provisioned here in advance (see garage-client-key below) instead of being
+  # created by hand once the host is up. The server's own default key is not used
+  # by clients.
+  sops.secrets.garage-desktop-access-key.key = "garage/desktop-access-key";
+  sops.secrets.garage-desktop-secret-key.key = "garage/desktop-secret-key";
+
   systemd = {
     tmpfiles.rules = [
       "d /srv/data/garage 0750 ${group} ${group} -"
       "d /srv/data/garage/meta 0750 ${group} ${group} -"
     ];
+
+    # Import the desktop key (idempotent) and grant it read/write on the default
+    # bucket only. Garage 2.x's CLI talks to the local node over RPC, so this
+    # needs no Admin API or admin token - just the RPC secret the daemon already
+    # gets from sops.
+    services.garage-client-key = {
+      description = "Import the desktop's bucket-scoped Garage key";
+      wantedBy = [ "multi-user.target" ];
+      wants = [ "garage.service" ];
+      after = [ "garage.service" ];
+      path = [
+        config.services.garage.package
+        pkgs.coreutils
+      ];
+      environment = {
+        GARAGE_DESKTOP_KEY_NAME = "desktop-files";
+      };
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        EnvironmentFile = config.sops.templates.garage-environment-file.path;
+        ExecStart = pkgs.writeShellScript "garage-client-key" ''
+          set -eu
+
+          # Wait for the daemon, then for the default bucket to exist.
+          for _ in $(seq 60); do
+            garage bucket info ${defaultBucket} >/dev/null 2>&1 && break
+            sleep 2
+          done
+
+          if ! garage bucket info ${defaultBucket} >/dev/null 2>&1; then
+            echo "bucket ${defaultBucket} did not appear, giving up" >&2
+            exit 1
+          fi
+
+          if ! garage key info "$GARAGE_DESKTOP_KEY_NAME" >/dev/null 2>&1; then
+            garage key import \
+              "$(cat ${config.sops.secrets.garage-desktop-access-key.path})" \
+              "$(cat ${config.sops.secrets.garage-desktop-secret-key.path})" \
+              --yes -n "$GARAGE_DESKTOP_KEY_NAME"
+          fi
+
+          garage bucket allow --read --write ${defaultBucket} \
+            --key "$GARAGE_DESKTOP_KEY_NAME"
+        '';
+      };
+    };
 
     services.garage = {
       unitConfig.RequiresMountsFor = [ "/srv/data" ];

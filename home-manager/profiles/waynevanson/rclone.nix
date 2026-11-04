@@ -36,10 +36,18 @@ let
   endpoint = "https://s3.waynevanson.com";
 in
 {
-  # Same keys the server itself uses (see modules/sops.nix), read from
-  # .sops.secrets.yaml's `garage` section.
-  sops.secrets.garage-access-key.key = "garage/access-key";
-  sops.secrets.garage-secret-key.key = "garage/secret-key";
+  # Bucket-scoped key, NOT the server's default (cluster-wide) key.
+  #
+  # Create it on the server once it is up:
+  #   garage key create desktop-files
+  #   garage bucket allow --read --write files --key desktop-files
+  #   garage key info --show-secret desktop-files
+  # then add the two values to sops under `garage/desktop-access-key` and
+  # `garage/desktop-secret-key`. Until they exist, sops-install-secrets fails at
+  # activation and the mount stays down - deliberately, so this mount can never
+  # fall back to the server's cluster-wide key.
+  sops.secrets.garage-desktop-access-key.key = "garage/desktop-access-key";
+  sops.secrets.garage-desktop-secret-key.key = "garage/desktop-secret-key";
 
   programs.rclone = {
     enable = true;
@@ -54,8 +62,8 @@ in
       # Paths to the sops-rendered files; injected into rclone.conf at
       # activation time so the credentials never hit the nix store.
       secrets = {
-        access_key_id = config.sops.secrets.garage-access-key.path;
-        secret_access_key = config.sops.secrets.garage-secret-key.path;
+        access_key_id = config.sops.secrets.garage-desktop-access-key.path;
+        secret_access_key = config.sops.secrets.garage-desktop-secret-key.path;
       };
 
       mounts.${bucket} = {
