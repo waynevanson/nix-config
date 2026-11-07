@@ -124,8 +124,7 @@
           nixos-rebuild \
           $1 \
           --flake .#server \
-          --build-host waynevanson@waynevanson.com \
-          --target-host waynevanson@waynevanson.com \
+          --target-host 192.168.68.55 \
           --sudo
         '';
       };
@@ -147,9 +146,7 @@
         pi-catppuccin-themes = ./packages/pi-catppuccin-themes;
         pi-coding-agent = ./packages/pi-coding-agent;
         pi-config-extensions = ./packages/pi-config-extensions;
-      }) // {
-        bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
-      };
+      });
       nixosModules = {
         custom = ./modules/custom;
         sops = ./modules/sops.nix;
