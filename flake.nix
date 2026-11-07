@@ -130,6 +130,7 @@
         '';
       };
       nixosConfigurations = createNixosConfigurations {
+        bootable = ./hosts/bootable;
         nixos = ./hosts/desktop;
         server = ./hosts/server;
       };
@@ -139,13 +140,15 @@
       homeConfigurations = createHomeConfigurations {
         inherit (self.homeModules) waynevanson;
       };
-      packages.${system} = createPackages {
+      packages.${system} = (createPackages {
         bitwig = ./packages/bitwig.nix;
         catppuccin-forgejo-themes = ./packages/catppuccin-forgejo-themes;
         codelens = ./packages/codelens;
         pi-catppuccin-themes = ./packages/pi-catppuccin-themes;
         pi-coding-agent = ./packages/pi-coding-agent;
         pi-config-extensions = ./packages/pi-config-extensions;
+      }) // {
+        bootable = self.nixosConfigurations.bootable.config.system.build.isoImage;
       };
       nixosModules = {
         custom = ./modules/custom;

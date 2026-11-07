@@ -19,6 +19,8 @@
     ];
   };
 
+  boot.zfs.forceImportRoot = false;
+
   services.openssh = {
     enable = true;
     settings.PermitRootLogin = lib.mkForce "prohibit-password";
