@@ -1,8 +1,9 @@
 { pkgs, ... }:
 {
-  # The existing .sops.yaml recipient is tied to this key. Re-key the secrets
-  # if the new server uses a different host key.
-  sops.age.sshKeyPaths = [ "/etc/ssh/id_ed25519_server" ];
+  # .sops.yaml encrypts to this host key's age recipient. Preserve it across
+  # reinstalls with `nixos-anywhere --copy-host-keys`, otherwise NixOS will
+  # generate a new key and sops secrets will no longer decrypt.
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
   environment.systemPackages = with pkgs; [
     git
