@@ -72,12 +72,13 @@ in
         mountPoint = "${config.home.homeDirectory}/mnt/files";
         logLevel = "INFO";
         options = {
-          vfs-cache-mode = "writes";
+          vfs-cache-mode = "minimal";
+          vfs-cache-min-free-space = "20G";
+          vfs-cache-poll-interval = "1m";
           vfs-cache-max-age = "24h";
-          vfs-cache-max-size = "10G";
-          vfs-cache-poll-interval = "5m";
-          vfs-write-back = "5s";
-          dir-cache-time = "1m";
+          vfs-read-chunk-size = "64M";
+          vfs-read-chunk-streams = 4;
+          dir-cache-time = "10s";
           attr-timeout = "1m";
           umask = "0022";
         };
