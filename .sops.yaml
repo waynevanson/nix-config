@@ -1,8 +1,9 @@
 keys:
   - &admin_waynevanson age1qssg5g2jkt9n68lq4hyjmr56uucnanckkvseecyanzflmyalpu3s2ss4g9
-  # server's /etc/ssh/ssh_host_ed25519_key age recipient. Preserve this key
-  # across reinstalls with `nixos-anywhere --copy-host-keys`.
-  - &server_homelab_ssh age1kjlmaswpcsezmpp258fc6eazua82v3fyfdg9cnh7takef8feng4qdunrk9
+  # server's /etc/ssh/ssh_host_ed25519_key age recipient. `nix run .#server-overwrite`
+  # generates this key locally (in the gitignored .secrets/server directory) and
+  # reuses it for future reinstalls.
+  - &server_homelab_ssh age1lde5wklexzzezua3r62vy49r5jd2ldtdq45ntzammjvygfldyu0qy9pcpd
 creation_rules:
   - path_regexp: ^.sops.secrets.yaml$
     key_groups:

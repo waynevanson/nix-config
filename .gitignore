@@ -5,6 +5,9 @@
 /.direnv
 node_modules/
 
+# locally generated server host keys (used by nixos-anywhere)
+/.secrets/
+
 # Minecraft world import archive
 /min2.tar.xz
 target/

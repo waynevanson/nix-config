@@ -44,6 +44,22 @@ ip -4 addr show scope global
 ssh -i ~/.ssh/id_ed25519 root@<TARGET_IP> true
 ```
 
+## Overwrite an existing server from USB
+
+Use this when the target has been booted from the USB image and you want to
+wipe and reinstall it. It generates (or reuses) a server host key in the
+gitignored `.secrets/server/` directory, updates the sops recipient, re-encrypts
+the secrets, and runs `nixos-anywhere` with the host key included in the new
+root filesystem.
+
+```sh
+nix run .#server-overwrite -- root@<TARGET_IP>
+```
+
+The optional second argument is the SSH identity used to connect to the USB
+installer (defaults to `~/.ssh/id_ed25519`). Do not delete `.secrets/server/`
+unless you intend to rotate the server host key and sops recipients.
+
 ## Install via `nixos-anywhere`
 
 1. Install the server configuration over SSH. This partitions the target disks
