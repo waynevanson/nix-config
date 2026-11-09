@@ -16,7 +16,8 @@ let
       virtualisation.containerd.enable = true;
       services = {
         attic-client.enable = false;
-        cosmic.enable = true;
+        cosmic.enable = false;
+        gnome.enable = true;
       };
     };
   };

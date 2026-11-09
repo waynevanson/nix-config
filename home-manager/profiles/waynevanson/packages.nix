@@ -7,7 +7,6 @@
 {
   home.packages = with pkgs; [
     ast-grep
-    attic-client
     inputs.self.packages.${system}.bitwig
     curl
     discord
