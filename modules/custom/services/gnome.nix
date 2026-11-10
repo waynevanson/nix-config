@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -38,5 +39,10 @@ in
     };
     security.rtkit.enable = true;
     fonts.fontconfig.enable = true;
+    environment.systemPackages = with pkgs; [
+      gnome-tweaks
+      # Installed system-wide; enable it in GNOME Tweaks or the Extensions app.
+      gnomeExtensions.just-perfection
+    ];
   };
 }
