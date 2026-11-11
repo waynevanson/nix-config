@@ -93,6 +93,19 @@ in
       read = true;
       write = true;
     };
+
+    # JuiceFS stores a volume as its own content-addressed object layout plus
+    # metadata backups, so it gets a dedicated bucket instead of sharing `files`
+    # with arbitrary objects. The desktop's mount runs `juicefs format` on first
+    # boot, so the bucket must exist before the desktop switches (the key has no
+    # CreateBucket right).
+    buckets.juicefs = {
+      create = true;
+      keys.desktop-files = {
+        read = true;
+        write = true;
+      };
+    };
   };
 
   systemd = {

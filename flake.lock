@@ -83,6 +83,26 @@
         "type": "github"
       }
     },
+    "juicefs-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781348913,
+        "narHash": "sha256-YLAMbZBsSsKnLapZtEgG7+EC1ZE/g2Ox7lR0H2SF80I=",
+        "owner": "abdulrahman1s",
+        "repo": "juicefs-nix",
+        "rev": "022493a29187b3f338951787717bc82fb3651c65",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abdulrahman1s",
+        "repo": "juicefs-nix",
+        "type": "github"
+      }
+    },
     "nix-vm-test": {
       "inputs": {
         "nixpkgs": [
@@ -223,6 +243,7 @@
         "disko": "disko",
         "fenix": "fenix",
         "home-manager": "home-manager",
+        "juicefs-nix": "juicefs-nix",
         "nixos-anywhere": "nixos-anywhere",
         "nixpkgs": "nixpkgs",
         "nixpkgs-forgejo-runner": "nixpkgs-forgejo-runner",

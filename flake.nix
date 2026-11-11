@@ -32,6 +32,11 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    juicefs-nix = {
+      url = "github:abdulrahman1s/juicefs-nix";
+      # Reuse our nixpkgs instead of pulling a second copy.
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -39,6 +44,7 @@
       disko,
       fenix,
       home-manager,
+      juicefs-nix,
       nixos-anywhere,
       nixpkgs-unstable,
       nixpkgs,

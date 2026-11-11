@@ -111,8 +111,12 @@ in
   imports = [
     #./disk-configuration.nix
     ./hardware-configuration.nix
+    # JuiceFS volume backed by the Garage S3 bucket (replaces the old
+    # user-scoped rclone mount of the `files` bucket).
+    ./juicefs.nix
     ../../modules
     inputs.home-manager.nixosModules.default
+    inputs.juicefs-nix.nixosModules.default
     self.nixosModules.sops
     hardware'
     host'
