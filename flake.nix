@@ -130,7 +130,7 @@
           nixos-rebuild \
           $1 \
           --flake .#server \
-          --target-host 192.168.68.55 \
+          --target-host 115.186.205.123 \
           --sudo
         '';
         "server-overwrite" = ''

@@ -29,13 +29,10 @@ let
   envTemplate = "juicefs-${volume}-env";
 in
 {
-  # s3.waynevanson.com currently resolves only to the server's Tailscale address
-  # (100.81.98.3) and tailscaled is not running on either host, so the desktop
-  # cannot reach the endpoint. Pin the public name to the server's LAN address
-  # instead. Remove this once Tailscale is running on this laptop again (then the
-  # name works from anywhere, which the LAN pin does not).
+  # Pin s3.waynevanson.com to the server's public address so the mount does not
+  # depend on the desktop's DNS/Tailscale setup.
   networking.extraHosts = ''
-    192.168.68.55 s3.waynevanson.com
+    115.186.205.123 s3.waynevanson.com
   '';
 
   # JuiceFS does not create the directory holding the SQLite database, and SQLite
