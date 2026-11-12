@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "blog": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794455592,
+        "narHash": "sha256-LEvemw8ln9Da8pedCzv3ZnIALfgu48M4SIwk57y3SMI=",
+        "owner": "waynevanson",
+        "repo": "blog",
+        "rev": "21d6938b465b6e833269f6e6433cae5aed70ab1d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "waynevanson",
+        "repo": "blog",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -240,6 +260,7 @@
     },
     "root": {
       "inputs": {
+        "blog": "blog",
         "disko": "disko",
         "fenix": "fenix",
         "home-manager": "home-manager",

@@ -8,6 +8,7 @@
     self.nixosModules.sops
     ./disko-configuration
     ./garage.nix
+    ./blog.nix
     ./system.nix
     ./web.nix
   ];

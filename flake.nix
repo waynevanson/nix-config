@@ -37,10 +37,15 @@
       # Reuse our nixpkgs instead of pulling a second copy.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    blog = {
+      url = "github:waynevanson/blog";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
+      blog,
       disko,
       fenix,
       home-manager,
