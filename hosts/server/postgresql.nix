@@ -24,8 +24,11 @@
     settings = {
       max_connections = 100;
       ssl = "on";
-      ssl_cert_file = "${config.security.acme.certs."postgres.waynevanson.com".directory}/fullchain.pem";
-      ssl_key_file = "${config.security.acme.certs."postgres.waynevanson.com".directory}/key.pem";
+      # Postgres refuses to use a key that is not owned by the database user or
+      # root (ACME always chowns certs to acme:<group>), so the pre-start hook
+      # below copies them into a postgres-owned directory first.
+      ssl_cert_file = "/var/lib/postgresql/ssl/fullchain.pem";
+      ssl_key_file = "/var/lib/postgresql/ssl/key.pem";
       ssl_min_protocol_version = "TLSv1.2";
       password_encryption = "scram-sha-256";
     };
@@ -43,6 +46,22 @@
       { name = "juicefs"; ensureDBOwnership = true; }
     ];
   };
+
+  # Postgres refuses to use a key that is not owned by the database user or
+  # root. ACME always chowns certs to `acme:<group>`, so the pre-start hook
+  # below copies them into a postgres-owned directory first. tmpfiles creates
+  # that directory before acme/postgres start (and it is the path acme's
+  # order-renew unit must be allowed to write to).
+  systemd.tmpfiles.rules = [
+    "d /var/lib/postgresql 0750 postgres postgres - -"
+    "d /var/lib/postgresql/ssl 0700 postgres postgres - -"
+  ];
+
+  # ACME's order-renew service runs under ProtectSystem=strict; allow it to
+  # write the copy that `postRun` installs. The parent always exists, whereas a
+  # ReadWritePaths= entry for a not-yet-created directory makes the unit fail.
+  systemd.services."acme-order-renew-postgres.waynevanson.com".serviceConfig.ReadWritePaths =
+    lib.mkAfter [ "/var/lib/postgresql" ];
 
   # ensureUsers creates LOGIN roles but no passwords; apply them from sops on
   # every boot. `postgresql-setup` is what creates the roles/databases.
@@ -84,8 +103,30 @@
       "SPACESHIP_API_KEY_FILE" = config.sops.secrets.spaceship-client-id.path;
       "SPACESHIP_API_SECRET_FILE" = config.sops.secrets.spaceship-client-secret.path;
     };
+    # Copy must happen before the reload below. `postRun` only runs when lego
+    # actually renewed the certificate; the boot path is handled by
+    # `postgresql`'s pre-start hook further down.
+    postRun = ''
+      ${pkgs.coreutils}/bin/install -d -o postgres -g postgres -m 0700 /var/lib/postgresql/ssl
+      ${pkgs.coreutils}/bin/install -o postgres -g postgres -m 0600 \
+        /var/lib/acme/postgres.waynevanson.com/key.pem /var/lib/postgresql/ssl/key.pem
+      ${pkgs.coreutils}/bin/install -o postgres -g postgres -m 0644 \
+        /var/lib/acme/postgres.waynevanson.com/fullchain.pem /var/lib/postgresql/ssl/fullchain.pem
+    '';
     reloadServices = [ "postgresql.service" ];
   };
+
+  # Runs as the postgres user. The ACME key/cert are group-readable (the cert is
+  # issued with `group = "postgres"`), and the copy is owned by postgres with
+  # 0600, which is what Postgres' key permission check requires. Kept in
+  # `preStart` (not `postRun`) so a reboot without a renewal still refreshes it.
+  systemd.services.postgresql.preStart = lib.mkAfter ''
+    ${pkgs.coreutils}/bin/install -d -m 0700 /var/lib/postgresql/ssl
+    ${pkgs.coreutils}/bin/install -m 0600 /var/lib/acme/postgres.waynevanson.com/key.pem \
+      /var/lib/postgresql/ssl/key.pem
+    ${pkgs.coreutils}/bin/install -m 0644 /var/lib/acme/postgres.waynevanson.com/fullchain.pem \
+      /var/lib/postgresql/ssl/fullchain.pem
+  '';
 
   # Public :2345 -> loopback Postgres. A dedicated port needs no SNI or protocol
   # demux; nginx only pipes bytes, and Postgres still does end-to-end TLS.
