@@ -9,6 +9,7 @@
     ./disko-configuration
     ./garage.nix
     ./blog.nix
+    ./postgresql.nix
     ./system.nix
     ./web.nix
   ];

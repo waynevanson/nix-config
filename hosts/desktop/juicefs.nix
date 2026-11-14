@@ -1,16 +1,11 @@
 # System-level JuiceFS volume backed by the Garage S3 bucket `juicefs`.
 #
-# This replaces the old user-scoped `programs.rclone` mount of the Garage
-# `files` bucket. JuiceFS is *not* an S3 passthrough like rclone: it is a real
-# POSIX filesystem with its own on-disk format (a metadata engine plus
-# content-addressed chunk objects). Objects already sitting in `files` are
-# therefore not visible in this mount - they stay in Garage and can be copied in
-# once (see "Migrating the old bucket" at the bottom).
-#
 # Layout:
-#   * metadata engine: SQLite at /var/lib/juicefs/files.db. One client, no extra
-#     daemon to run. The metadata is backed up into the object store every hour,
-#     so a lost laptop disk can be recovered with `juicefs restore`.
+#   * metadata engine: PostgreSQL on the server (`hosts/server/postgresql.nix`),
+#     reached through nginx's TCP stream proxy on :2345 and authenticated with
+#     the dedicated `postgres.waynevanson.com` certificate. The previous SQLite
+#     database at /var/lib/juicefs/files.db is kept as a pre-migration rollback
+#     snapshot and is no longer mounted.
 #   * object storage: https://s3.waynevanson.com/juicefs (Garage, provisioned
 #     server-side by hosts/server/garage.nix).
 #   * mount: /home/waynevanson/mnt/files, owned by waynevanson. The service runs
@@ -24,21 +19,22 @@ let
   user = "waynevanson";
   group = "users";
   volume = "files";
-  bucket = "juicefs";
+  metaDb = "juicefs";
   metaDir = "/var/lib/juicefs";
   envTemplate = "juicefs-${volume}-env";
 in
 {
-  # Pin s3.waynevanson.com to the server's public address so the mount does not
-  # depend on the desktop's DNS/Tailscale setup.
+  # Pin server hostnames to the public address so the mount does not depend on
+  # the desktop's DNS setup.
   networking.extraHosts = ''
     115.186.205.123 s3.waynevanson.com
+    115.186.205.123 postgres.waynevanson.com
   '';
 
-  # JuiceFS does not create the directory holding the SQLite database, and SQLite
-  # also writes -wal/-shm files next to it, so it must be writable by the mount
-  # user. The `mnt` parent is also owned by the user so tmpfiles does not leave a
-  # root-owned directory in the home directory.
+  # /var/lib/juicefs still holds the pre-Postgres SQLite database (plus its
+  # -wal/-shm files), kept for rollback; the mount no longer uses it. The `mnt`
+  # parent is owned by the user so tmpfiles does not leave a root-owned
+  # directory in the home directory.
   systemd.tmpfiles.rules = [
     "d /home/${user}/mnt 0755 ${user} ${group} - -"
     "d ${metaDir} 0750 ${user} ${group} - -"
@@ -49,8 +45,17 @@ in
   sops.secrets.garage-desktop-access-key.key = "garage/desktop-access-key";
   sops.secrets.garage-desktop-secret-key.key = "garage/desktop-secret-key";
 
-  # systemd EnvironmentFile read by both `juicefs format` (ExecStartPre) and
-  # `juicefs mount`. JuiceFS' S3 client picks up ACCESS_KEY/SECRET_KEY from it.
+  # Read directly by the mount wrapper (META_PASSWORD) and rendered into the
+  # environment file (PGPASSWORD), so it must be readable by the mount user.
+  sops.secrets.postgres-juicefs-password = {
+    owner = user;
+    mode = "0400";
+  };
+
+  # systemd EnvironmentFile read by `juicefs mount`. ACCESS_KEY/SECRET_KEY are
+  # for the S3 client; PGPASSWORD is read by JuiceFS' pgx driver for the
+  # metadata engine. The meta URL itself lives in the world-readable store, so
+  # the password must stay here.
   sops.templates.${envTemplate} = {
     content = ''
       ACCESS_KEY=${config.sops.placeholder.garage-desktop-access-key}
@@ -58,6 +63,7 @@ in
       # Matches s3_region in hosts/server/garage.nix so request signing and the
       # server agree.
       AWS_REGION=garage
+      PGPASSWORD=${config.sops.placeholder.postgres-juicefs-password}
     '';
     owner = user;
     group = group;
@@ -66,36 +72,30 @@ in
   };
 
   services.juicefs.mounts.${volume} = {
-    # `_sync=FULL`: JuiceFS opens SQLite in WAL mode with synchronous=NORMAL by
-    # default (see pkg/meta/sql.go), where a power loss or hard crash can drop
-    # recently committed metadata even after an application's fsync() returned
-    # (JuiceFS documents this explicitly). This is a laptop, so pay the extra WAL
-    # fsync per metadata commit and keep POSIX fsync semantics.
-    metaUrl = "sqlite3://${metaDir}/${volume}.db?_sync=FULL";
+    # Role `juicefs`, database `juicefs`. TLS terminates at Postgres and
+    # `verify-full` checks the hostname against the dedicated certificate.
+    metaUrl = "postgres://juicefs@postgres.waynevanson.com:2345/${metaDb}?sslmode=verify-full";
+    # `META_PASSWORD` (read by the module wrapper) and `PGPASSWORD` (in the
+    # environment file below) both carry the same secret, covering whichever
+    # one JuiceFS' pgx driver consults.
+    metaPasswordFile = config.sops.secrets.postgres-juicefs-password.path;
     mountPoint = "/home/${user}/mnt/${volume}";
     user = user;
     group = group;
 
-    # Formats the volume on first start only (guarded by `juicefs status`).
-    autoFormat = true;
-    format = {
-      name = volume;
-      storage = "s3";
-      # Path-style S3, which is what Garage serves here: `s3_api.root_domain` is
-      # not configured for virtual-hosted-style buckets, and JuiceFS defaults to
-      # path style unless JFS_S3_VHOST_STYLE is set.
-      bucket = "https://s3.waynevanson.com/${bucket}";
-      compression = "zstd";
-      blockSize = "4M";
-      trashDays = 7;
-    };
+    # Never format automatically. With `autoFormat = true`, a transient
+    # `juicefs status` failure (e.g. server unreachable) would format a
+    # brand-new empty volume against the existing bucket, and a later
+    # `juicefs gc` would treat every existing object as unreferenced.
+    # Formatting is a deliberate, one-off manual action against a fresh bucket.
+    autoFormat = false;
 
     # 20 GiB local read cache (roughly the old rclone vfs-cache sizing).
     cacheSize = 20 * 1024;
 
-    # Hourly metadata backup into the object store (the JuiceFS default, made
-    # explicit). `juicefs restore` rebuilds the SQLite DB from it if the laptop
-    # disk is lost.
+    # Hourly metadata backup into the object store. This backup is
+    # engine-independent and can be loaded into a fresh metadata engine with
+    # `juicefs load`.
     backupMeta = "1h";
 
     environmentFile = config.sops.templates.${envTemplate}.path;
@@ -109,5 +109,15 @@ in
 #   s5cmd --endpoint-url https://s3.waynevanson.com cp 's3://files/*' \
 #     /home/waynevanson/mnt/files/
 #
-# Deleting `files` afterwards is optional; `juicefs gc` and `juicefs fsck` only
-# ever look at this volume's own objects in the `juicefs` bucket.
+# Migrating metadata from the old SQLite engine to Postgres (once):
+#
+#   systemctl stop juicefs-files.service
+#   juicefs dump "sqlite3:///var/lib/juicefs/files.db?_sync=FULL" /var/tmp/files.meta.json
+#   export PGPASSWORD="$(cat /run/secrets/postgres-juicefs-password)"
+#   export META_PASSWORD="$PGPASSWORD"
+#   juicefs load "postgres://juicefs@postgres.waynevanson.com:2345/juicefs?sslmode=verify-full" \
+#     /var/tmp/files.meta.json
+#   juicefs status "postgres://juicefs@postgres.waynevanson.com:2345/juicefs?sslmode=verify-full"
+#   juicefs fsck   "postgres://juicefs@postgres.waynevanson.com:2345/juicefs?sslmode=verify-full"
+#
+# The Garage objects are untouched by dump/load; only the metadata moves.
