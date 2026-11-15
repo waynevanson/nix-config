@@ -16,6 +16,8 @@
       garage-secret-key.key = "garage/secret-key";
       digitalocean-token.key = "digitalocean/token";
       postgres-juicefs-password.key = "postgres/juicefs-password";
+      keycloak-db-password.key = "keycloak/db-password";
+      keycloak-admin-password.key = "keycloak/admin-password";
     };
   };
 }

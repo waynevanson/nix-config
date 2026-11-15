@@ -9,6 +9,7 @@
     ./disko-configuration
     ./garage.nix
     ./jellyfin.nix
+    ./keycloak.nix
     ./blog.nix
     ./postgresql.nix
     ./system.nix

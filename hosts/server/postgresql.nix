@@ -43,9 +43,13 @@
     authentication = lib.mkForce ''
       local   all all            peer
       # The superuser is only reachable through the unix socket (peer auth),
-      # never over TCP - including through the nginx tunnel.
+      # never over TCP - including through the nginx tunnel. Both loopback
+      # addresses are listed because Keycloak's JDBC driver may resolve
+      # `localhost` to either one.
       hostssl all postgres 127.0.0.1/32 reject
+      hostssl all postgres ::1/128      reject
       hostssl all all      127.0.0.1/32 scram-sha-256
+      hostssl all all      ::1/128      scram-sha-256
     '';
 
     ensureDatabases = [ "juicefs" ];
@@ -228,7 +232,10 @@
 
   services.postgresqlBackup = {
     enable = true;
-    databases = [ "juicefs" ];
+    databases = [
+      "juicefs"
+      "keycloak"
+    ];
     location = "/srv/data/backups/postgresql";
     compression = "zstd";
   };
