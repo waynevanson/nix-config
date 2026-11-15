@@ -1,7 +1,7 @@
 ## Todo
 
 1. Use stable nixos release instead of unstable.
-2. Add jelllyfin.
+2. Hardware transcoding for Jellyfin (see `docs/03-jellyfin.md`).
 
 ## USB
 

@@ -8,6 +8,7 @@
     self.nixosModules.sops
     ./disko-configuration
     ./garage.nix
+    ./jellyfin.nix
     ./blog.nix
     ./postgresql.nix
     ./system.nix
