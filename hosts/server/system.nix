@@ -1,4 +1,25 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  # Every name nginx serves on this host terminates TLS on this host, so
+  # resolving them to loopback keeps server-to-server calls on the box instead
+  # of hairpinning out through the router and back in (NAT loopback). Derived
+  # from the vhosts so a new service is covered without touching this list.
+  #
+  # Deliberately absent:
+  # - www.waynevanson.com: no vhost, and the certificate does not cover it.
+  # - atticd.waynevanson.com: nothing on this host answers for it.
+  # - *.s3.waynevanson.com: Garage is configured path-style only, so presigned
+  #   URLs use the s3.waynevanson.com host below.
+  loopbackNames = lib.attrNames config.services.nginx.virtualHosts ++ [
+    # Served by the nginx stream block on :2345, so not a virtualHost.
+    "postgres.waynevanson.com"
+  ];
+in
 {
   # .sops.yaml encrypts to this host key's age recipient. Preserve it across
   # reinstalls with `nixos-anywhere --copy-host-keys`, otherwise NixOS will
@@ -23,9 +44,7 @@
   networking = {
     hostName = "server";
     hostId = "0331c65f";
-    extraHosts = ''
-      127.0.0.1 s3.waynevanson.com
-    '';
+    extraHosts = lib.concatMapStrings (name: "127.0.0.1 ${name}\n") loopbackNames;
   };
 
   boot = {
