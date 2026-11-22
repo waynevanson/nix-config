@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794981919,
-        "narHash": "sha256-jELNSNQ9H6YmoZ0grwkmPX4J5o4dNAv0xOFR6ZB6wEQ=",
+        "lastModified": 1795040511,
+        "narHash": "sha256-18uKgB0NO2FeHqbCA+eVRXIYZm47wQvt8TZMX7xdcVs=",
         "owner": "waynevanson",
         "repo": "blog",
-        "rev": "0764701b01a2c0fc4fc847b35bdfa0eb3f2da75d",
+        "rev": "709da55195e900d05c4a9e696c89e47503f82c5c",
         "type": "github"
       },
       "original": {
