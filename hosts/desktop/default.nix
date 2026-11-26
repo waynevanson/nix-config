@@ -114,6 +114,8 @@ in
     # JuiceFS volume backed by the Garage S3 bucket (replaces the old
     # user-scoped rclone mount of the `files` bucket).
     ./juicefs.nix
+    # Joins the self-hosted Headscale tailnet as node `nixos`.
+    ./tailscale.nix
     ../../modules
     inputs.home-manager.nixosModules.default
     inputs.juicefs-nix.nixosModules.default

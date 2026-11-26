@@ -18,6 +18,9 @@
       postgres-juicefs-password.key = "postgres/juicefs-password";
       keycloak-db-password.key = "keycloak/db-password";
       keycloak-admin-password.key = "keycloak/admin-password";
+      # Pre-auth key for the server's own tailnet node. Created with
+      # `headscale preauthkeys create` on the server, then pasted in with sops.
+      headscale-preauth-key.key = "headscale/preauth-key";
     };
   };
 }

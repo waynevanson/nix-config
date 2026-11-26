@@ -38,6 +38,17 @@ in
       enable = true;
       silent = true;
     };
+    # VS Code's remote server and its extensions (`ripgrep`, node addons, Go/Rust
+    # tooling installed by extensions) are prebuilt glibc binaries that expect
+    # /lib64/ld-linux-x86-64.so.2. nix-ld supplies that shim.
+    nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc.lib
+        openssl
+        zlib
+      ];
+    };
     zsh.enable = true;
   };
 
