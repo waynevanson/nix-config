@@ -13,7 +13,15 @@
 # State lives in /var/lib/headscale (SQLite database, noise private key and DERP
 # server key). Back that directory up: losing it means every node has to
 # re-authenticate, and the keys cannot be recovered.
+#
+# The only node this repo enrols automatically is the server itself:
+# `headscale-bootstrap` creates the owner and a reusable pre-auth key, and the
+# server's own tailscaled reads that key off disk. It is the one host where that
+# cannot deadlock, because it is also the host that mints keys. Every other host
+# is enrolled by hand — see modules/custom/services/headscale-client.nix for why.
 {
+  config,
+  pkgs,
   ...
 }:
 let
@@ -127,6 +135,91 @@ in
   # `networking.extraHosts` in system.nix already resolves this name to
   # loopback on the host itself, so a node running here reaches Headscale
   # without hairpinning out through the router.
+  #
+  # Before that: make sure the owner and a reusable pre-auth key exist, and leave
+  # the key on disk for this host's own tailscaled (`hosts/server/tailscale.nix`)
+  # and for `nix run .#headscale-preauth-key` to copy into sops if another host
+  # is ever opted into automatic enrolment.
+  #
+  # Headscale only validates keys it generated itself (it stores a bcrypt hash,
+  # never the key), so this cannot be replaced by a value from sops: the control
+  # plane is the source of truth and sops is at most a distribution channel.
+  systemd.services.headscale-bootstrap = {
+    description = "Provision the Headscale user and its reusable pre-auth key";
+    wantedBy = [ "multi-user.target" ];
+    requires = [ "headscale.service" ];
+    after = [ "headscale.service" ];
+
+    path = [
+      config.services.headscale.package
+      pkgs.coreutils
+      pkgs.jq
+    ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      UMask = "0077";
+    };
+
+    script = ''
+      set -euo pipefail
+
+      user="waynevanson"
+      keyFile="${dataDir}/preauth-key"
+
+      # headscale.service counts as started before it listens on the unix socket
+      # the CLI talks to, so wait for it to answer instead of racing it.
+      for _ in $(seq 1 60); do
+        if headscale users list -o json > /dev/null 2>&1; then
+          break
+        fi
+        sleep 1
+      done
+
+      if ! headscale users list -o json \
+        | jq -e --arg user "$user" 'any((. // [])[]; .name == $user)' > /dev/null; then
+        echo "creating headscale user $user"
+        headscale users create "$user"
+      fi
+
+      userId=$(headscale users list -o json \
+        | jq -r --arg user "$user" 'first((. // [])[] | select(.name == $user)).id')
+
+      # Keep the key that was already handed out as long as Headscale still
+      # knows it and it has not expired. Minting on every switch would invalidate
+      # any copy that has been exported to sops.
+      #
+      # `preauthkeys list` only exposes the prefix (`hskey-auth-<prefix>-***`),
+      # which is exactly what is needed to look the stored key up.
+      keyIsLive=false
+      if [[ -s "$keyFile" ]]; then
+        prefix=$(cat "$keyFile")
+        prefix=''${prefix#hskey-auth-}
+        prefix=''${prefix:0:12}
+        if headscale preauthkeys list -o json \
+          | jq -e --arg masked "hskey-auth-$prefix-***" --argjson now "$(date +%s)" \
+            'any((. // [])[]; .key == $masked and (.expiration == null or .expiration.seconds > $now))' \
+            > /dev/null; then
+          keyIsLive=true
+        fi
+      fi
+
+      if [[ "$keyIsLive" == false ]]; then
+        echo "minting a reusable pre-auth key for $user"
+        headscale preauthkeys create -u "$userId" -e 8760h --reusable -o json \
+          | jq -r '.key' > "$keyFile.tmp"
+        mv "$keyFile.tmp" "$keyFile"
+      fi
+    '';
+  };
+
+  # A server that stays up for a year would otherwise keep an expired key on
+  # disk, so re-run the check daily and mint a fresh one when needed.
+  systemd.timers.headscale-bootstrap = {
+    description = "Keep the Headscale pre-auth key provisioned";
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = "daily";
+  };
   #
   # Backups are not wired up yet: add /var/lib/headscale to whatever picks up
   # /srv/data/backups (see postgresql.nix) if the tailnet should survive a

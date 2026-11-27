@@ -18,8 +18,13 @@
       postgres-juicefs-password.key = "postgres/juicefs-password";
       keycloak-db-password.key = "keycloak/db-password";
       keycloak-admin-password.key = "keycloak/admin-password";
-      # Pre-auth key for the server's own tailnet node. Created with
-      # `headscale preauthkeys create` on the server, then pasted in with sops.
+      # Reusable pre-auth key, only used by hosts that opt into automatic
+      # enrolment (`custom.services.headscale-client.authKeyFile`). Headscale
+      # mints it during activation (`headscale-bootstrap.service`,
+      # hosts/server/headscale.nix) and keeps it at
+      # /var/lib/headscale/preauth-key on the server; `nix run
+      # .#headscale-preauth-key` copies it here. Nothing reads it by default, and
+      # the server itself never does — it uses the key it generated.
       headscale-preauth-key.key = "headscale/preauth-key";
     };
   };

@@ -138,6 +138,43 @@
           --target-host 115.186.205.123 \
           --sudo
         '';
+        "headscale-preauth-key" = ''
+          set -euo pipefail
+
+          # Export the pre-auth key the control plane minted for itself into
+          # sops. Only needed when a host opts into automatic enrolment
+          # (`custom.services.headscale-client.authKeyFile` pointing at the sops
+          # secret); by default hosts enrol by hand, because a key can only be
+          # produced by the server that validates it.
+          #
+          # Usage: nix run .#headscale-preauth-key [waynevanson@<host>]
+          target="''${1:-waynevanson@115.186.205.123}"
+
+          repo_root=$(git rev-parse --show-toplevel)
+          cd "$repo_root"
+
+          # sudo is passwordless for wheel on the server (hosts/server/system.nix).
+          key=$(${pkgs.openssh}/bin/ssh "$target" 'sudo cat /var/lib/headscale/preauth-key' | tr -d '\r')
+
+          if [[ ! "$key" =~ ^hskey-auth-[A-Za-z0-9_-]{12}-[A-Za-z0-9_-]{64}$ ]]; then
+            echo "error: $target did not return a pre-auth key (got: $key)" >&2
+            echo "hint: run 'nix run .#server switch' first, then check headscale-bootstrap.service" >&2
+            exit 1
+          fi
+
+          # sops parses the value as JSON, so the string needs its own quotes.
+          ${pkgs.sops}/bin/sops set .sops.secrets.yaml \
+            '["headscale"]["preauth-key"]' "\"$key\""
+
+          cat <<EOF
+          Stored headscale/preauth-key in .sops.secrets.yaml.
+
+          No host reads it until its tailscale.nix sets
+            custom.services.headscale-client.authKeyFile =
+              config.sops.secrets.headscale-preauth-key.path;
+          so this only affects hosts you have opted into automatic enrolment.
+          EOF
+        '';
         "server-overwrite" = ''
           set -euo pipefail
 

@@ -50,55 +50,100 @@ curl -s https://headscale.waynevanson.com/health   # {"status":"pass"}
 ```
 
 `headscale` is on the server's `PATH`; the CLI talks to the running server over
-`/run/headscale/headscale.sock`.
+`/run/headscale/headscale.sock`, which only root may open, so use
+`sudo headscale …`.
 
-## Enrolment (sops, no manual `tailscale up`)
+## Enrolment
 
-Both hosts are enrolled from the same reusable pre-auth key, through the shared
-module `modules/custom/services/headscale-client.nix`:
+Enrolment is split in two on purpose, because a pre-auth key can only be minted
+by the running control plane (Headscale stores a bcrypt hash, never the key, so
+sops cannot hold one). A client configured to enrol itself therefore depends on
+a value that only the machine it is joining can produce — the chicken-and-egg
+problem. Rather than paper over that with a placeholder secret, nodes are
+enrolled explicitly.
 
-| host | node name | instantiated in | flags |
-| --- | --- | --- | --- |
-| server | `server` | `hosts/server/tailscale.nix` | `--accept-dns=false` |
-| desktop | `nixos` | `hosts/desktop/tailscale.nix` | `--operator=waynevanson` |
+### The server enrols itself
 
-The module points `services.tailscale.authKeyFile` at the sops secret
-`headscale/preauth-key` and adds `--login-server`, so `tailscaled-autoconnect`
-enrols the node on boot and again after a reinstall. Nodes are independent
-entries in Headscale (`headscale nodes list`) even though they share a key: the
-node identity is `tailscaled`'s own key in `/var/lib/tailscale`.
+`headscale-bootstrap.service` in `hosts/server/headscale.nix` runs on every boot
+and once a day and:
 
-The sops file currently holds a placeholder. After the first switch with
-Headscale running, mint a reusable key and store it (one time, from this
-machine):
+1. creates the user `waynevanson` if it is missing;
+2. keeps `/var/lib/headscale/preauth-key` while Headscale still knows that
+   prefix and its expiry is in the future;
+3. otherwise mints a reusable key with a one-year expiry and writes it there
+   (root-only, inside the state directory, so it is in the backup set).
 
-```sh
-ssh waynevanson@<server-lan-ip>            # direct/LAN path, not the tailnet yet
-headscale users create waynevanson
-headscale users list                       # note the numeric ID
-headscale preauthkeys create -u <ID> -e 8760h --reusable
-headscale preauthkeys list                 # confirm `reusable: true`
-```
+The server's own `tailscaled` then enrols from that file
+(`hosts/server/tailscale.nix`), which is the one case with no ordering problem:
+the host minting the key is the host using it.
 
 ```sh
-sops set .sops.secrets.yaml '["headscale"]["preauth-key"]' '"<key from above>"'
 nix run .#server switch
-```
-
-The unit retries on failure, so after the switch it picks the new key up on the
-next attempt (`RestartSec = 30s`). To skip the wait:
-
-```sh
-systemctl restart tailscaled-autoconnect   # on the server
+sudo systemctl status headscale-bootstrap.service headscale.service
 sudo tailscale status                      # expect: server  100.64.x.x
 ```
 
+### Every other host is enrolled by hand, once
+
+`custom.services.headscale-client.authKeyFile` defaults to `null`, so the module
+starts `tailscaled` but generates **no** `tailscaled-autoconnect` unit: the node
+sits at `NeedsLogin` instead of retrying forever with a key that does not exist
+yet. Enrol it after the server is up:
+
+```sh
+# on the client (desktop, laptop, …)
+sudo tailscale up --login-server https://headscale.waynevanson.com --operator=waynevanson
+# tailscaled prints https://headscale.waynevanson.com/register/hskey-authreq-…
+```
+
+Then on the server (that URL prints the same command):
+
+```sh
+sudo headscale auth register --auth-id hskey-authreq-… --user waynevanson
+sudo headscale nodes list
+```
+
+It is a one-time action per machine: the node identity lives in
+`/var/lib/tailscale`, so tailscaled reconnects on its own from then on and only
+a reinstall loses it. `sudo headscale auth approve --auth-id …` is the
+equivalent when re-authenticating an existing node.
+
+### Opting a host into automatic enrolment
+
+If a machine should re-enrol itself after a reinstall, export the key the control
+plane minted and point that host at it:
+
+```sh
+nix run .#headscale-preauth-key      # ssh + `sudo cat` on the server, then `sops set`
+```
+
+```nix
+custom.services.headscale-client.authKeyFile =
+  config.sops.secrets.headscale-preauth-key.path;
+```
+
+That is distribution, not pre-distribution: it only works once the server is
+running, which is exactly why it is not the default. Nodes are independent
+entries in Headscale whatever the source of the key, because the node identity
+is `tailscaled`'s own key in `/var/lib/tailscale`.
+
+### Rotating the key
+
+Enrolled nodes are unaffected — they authenticate with their node key:
+
+```sh
+sudo rm /var/lib/headscale/preauth-key
+sudo systemctl start headscale-bootstrap.service
+nix run .#headscale-preauth-key      # only if some host uses the sops copy
+```
+
+`sudo headscale preauthkeys list` shows the live keys (only the prefix is
+printable); `sudo headscale preauthkeys expire --id <id>` retires a leaked one.
+
 ## Enrol the desktop
 
-The desktop is already configured: `nixos-rebuild switch` and it joins as
-`nixos`, reading the same sops secret with the admin age key
-(`/home/waynevanson/.config/sops/age/keys.txt`). Because it passes
-`--operator=waynevanson`, the CLI needs no sudo there:
+After the manual enrolment above, `tailscale` on the desktop needs no sudo when
+it was started with `--operator=waynevanson`:
 
 ```sh
 tailscale status
@@ -109,11 +154,6 @@ tailscale netcheck                          # DERP relay `waynevanson`, STUN :34
 VS Code Remote-SSH, Zed remote development and JetBrains Gateway all work off
 that host entry; `hosts/server/system.nix` enables `nix-ld` so the VS Code server
 and extension binaries run on NixOS.
-
-To give each host its own key instead of sharing a reusable one (so revoking one
-would not touch the other), the `preauthKeySecret` constant in
-`modules/custom/services/headscale-client.nix` has to become a per-host option
-first; the shared reusable key is what the module supports today.
 
 SSH is allowed on `tailscale0` via `hosts/server/tailscale.nix`, but port 22 is
 currently open on **every** interface too (`services.openssh.openFirewall`
@@ -131,9 +171,9 @@ the server, make the server a subnet router instead: set
 on the server (plus `--accept-routes` on the desktop), then approve it:
 
 ```sh
-headscale nodes list
-headscale routes list
-headscale routes enable -r <route-id>
+sudo headscale nodes list
+sudo headscale routes list
+sudo headscale routes enable -r <route-id>
 ```
 
 ## Notes
@@ -155,6 +195,12 @@ headscale routes enable -r <route-id>
   deprecated upstream; harmless.
 - Back up `/var/lib/headscale`. Without it every node must re-authenticate and
   the noise/DERP keys are lost. Not wired into `services.postgresqlBackup` yet.
+  The directory also holds `preauth-key`, minted by
+  `headscale-bootstrap.service`; it is regenerated if lost, but then has
+  to be re-exported for any host that opted into automatic enrolment.
+- `headscale-bootstrap.service` is idempotent and safe to re-run:
+  `sudo systemctl start headscale-bootstrap.service`, then `journalctl -u` it
+  if the server's own node will not come up.
 - `--accept-dns=false` on the server: the host keeps systemd-resolved, so a
   Headscale outage cannot take DNS away from nginx/ACME. Clients still get
   MagicDNS.

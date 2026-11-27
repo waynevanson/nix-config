@@ -6,19 +6,32 @@
 # is what lets the desktop reach this host from anywhere as `server` /
 # `server.ts.waynevanson.com` rather than over the public address.
 #
-# Enrolment is declarative: the pre-auth key comes from sops, so the node is
-# created on first boot and again after a reinstall without a manual
-# `tailscale up`. See modules/custom/services/headscale-client.nix.
+# This is the only host that opts into automatic enrolment, and it is the only
+# one that safely can: `headscale-bootstrap.service` (hosts/server/headscale.nix)
+# mints the key on this machine, so there is no "wait for the control plane to
+# produce a key that only the control plane can produce" loop. Every other host
+# is enrolled by hand — see modules/custom/services/headscale-client.nix.
 { ... }:
 {
   custom.services.headscale-client = {
     enable = true;
+
+    # Written by headscale-bootstrap.service. Not a pre-distributed secret: it
+    # never travels, and it exists only on the host that mints it.
+    authKeyFile = "/var/lib/headscale/preauth-key";
 
     # Keep systemd-resolved in charge here: nginx, ACME and every service on this
     # host resolve names through it, so a Headscale restart must not be able to
     # take DNS away from them. Other nodes still get MagicDNS, so
     # `server.ts.waynevanson.com` resolves from the desktop.
     extraUpFlags = [ "--accept-dns=false" ];
+  };
+
+  # The key only exists once the control plane is up and provisioned, so order
+  # the client behind that instead of letting it start with an unreadable file.
+  systemd.services.tailscaled-autoconnect = {
+    wants = [ "headscale-bootstrap.service" ];
+    after = [ "headscale-bootstrap.service" ];
   };
 
   # Allow SSH from the tailnet. Port 22 is still open on every interface because
