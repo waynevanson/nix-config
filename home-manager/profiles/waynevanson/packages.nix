@@ -26,6 +26,7 @@
     unzip
     vscode-fhs
     wget
+    wl-clipboard
     xz
     zed-editor.fhs
     zip
