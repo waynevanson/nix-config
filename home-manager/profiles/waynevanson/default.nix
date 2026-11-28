@@ -8,6 +8,7 @@
     ./oh-my-posh
     ./packages.nix
     ./pi-coding-agent
+    ./sccache.nix
     ./sops.nix
     ./vim.nix
     ./zsh.nix
