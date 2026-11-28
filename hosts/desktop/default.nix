@@ -24,11 +24,17 @@ let
   # HP DeskJet 2700 series all-in-one, attached over USB as 03f0:1853.
   # HPLIP provides both the CUPS driver and the `hpaio` SANE backend for
   # this model; sane-airscan adds driverless eSCL/WSD support.
+  #
+  # The 2700 series scans through HPLIP's closed `bb_escl` plugin. With plain
+  # `hplip` the device is detected but every scan fails in `hpaio` with
+  # "Plugin version is not matching" (hplip.state/plugin absent from the
+  # read-only store). `hplipWithPlugin` ships the plugin plus hplip.state.
+  hplip = pkgs.hplipWithPlugin;
   printing' = {
     services = {
       printing = {
         enable = true;
-        drivers = [ pkgs.hplip ];
+        drivers = [ hplip ];
         # Advertise queues over mDNS/DNS-SD, and allow other machines to
         # print to them (TCP 631).
         browsing = true;
@@ -43,9 +49,9 @@ let
     };
     hardware.sane = {
       enable = true;
-      extraBackends = with pkgs; [
+      extraBackends = [
         hplip
-        sane-airscan
+        pkgs.sane-airscan
       ];
     };
     environment.systemPackages = with pkgs; [
