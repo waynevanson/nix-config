@@ -21,6 +21,47 @@ let
       };
     };
   };
+  # HP DeskJet 2700 series all-in-one, attached over USB as 03f0:1853.
+  # HPLIP provides both the CUPS driver and the `hpaio` SANE backend for
+  # this model; sane-airscan adds driverless eSCL/WSD support.
+  printing' = {
+    services = {
+      printing = {
+        enable = true;
+        drivers = [ pkgs.hplip ];
+        # Advertise queues over mDNS/DNS-SD, and allow other machines to
+        # print to them (TCP 631).
+        browsing = true;
+        openFirewall = true;
+      };
+      # Needed to discover network printers/scanners (and `.local` names).
+      avahi = {
+        enable = true;
+        nssmdns4 = true;
+        openFirewall = true;
+      };
+    };
+    hardware.sane = {
+      enable = true;
+      extraBackends = with pkgs; [
+        hplip
+        sane-airscan
+      ];
+    };
+    environment.systemPackages = with pkgs; [
+      # GNOME Document Scanner.
+      simple-scan
+      # CUPS/GNOME printer management GUI.
+      system-config-printer
+    ];
+    # `scanner` for SANE (USB `uaccess` also covers local logins), `lpadmin`
+    # to add/remove queues without sudo, `lp` to use them.
+    users.users.waynevanson.extraGroups = [
+      "lp"
+      "lpadmin"
+      "scanner"
+    ];
+  };
   # Home Manager configuration for both users
   homeManager' = {
     # Use global pkgs and enable user packages
@@ -121,6 +162,7 @@ in
     inputs.juicefs-nix.nixosModules.default
     self.nixosModules.sops
     hardware'
+    printing'
     host'
     system'
     user'
